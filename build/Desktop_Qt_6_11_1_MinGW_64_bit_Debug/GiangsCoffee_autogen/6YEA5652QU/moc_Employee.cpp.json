@@ -1,0 +1,18 @@
+{
+    "classes": [
+        {
+            "className": "Employee",
+            "lineNumber": 5,
+            "object": true,
+            "qualifiedClassName": "Employee",
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "User"
+                }
+            ]
+        }
+    ],
+    "inputFile": "Employee.h",
+    "outputRevision": 69
+}

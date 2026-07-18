@@ -1,0 +1,222 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16,
+						17,
+						18
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "GiangsCoffee",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16,
+						17,
+						18
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "GiangsCoffee::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-GiangsCoffee-Debug-1e9470ad6ca416224f21.json",
+					"name" : "GiangsCoffee",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "GiangsCoffee_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-GiangsCoffee_autogen-Debug-de1fb1375f83db971622.json",
+					"name" : "GiangsCoffee_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "GiangsCoffee_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-GiangsCoffee_autogen_timestamp_deps-Debug-072f37a54376973a84ff.json",
+					"name" : "GiangsCoffee_autogen_timestamp_deps",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "GiangsCoffee_copy_qml::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-GiangsCoffee_copy_qml-Debug-63fb99d3d3cb1aa44ae7.json",
+					"name" : "GiangsCoffee_copy_qml",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "GiangsCoffee_copy_res::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-GiangsCoffee_copy_res-Debug-37a212979e6464564b59.json",
+					"name" : "GiangsCoffee_copy_res",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "GiangsCoffee_qmlimportscan::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-GiangsCoffee_qmlimportscan-Debug-f8d75cdba5eeb181ba75.json",
+					"name" : "GiangsCoffee_qmlimportscan",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "GiangsCoffee_qmllint::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-GiangsCoffee_qmllint-Debug-3127e860472d1b1696d6.json",
+					"name" : "GiangsCoffee_qmllint",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "GiangsCoffee_qmllint_json::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-GiangsCoffee_qmllint_json-Debug-e0346bb278d44f211a70.json",
+					"name" : "GiangsCoffee_qmllint_json",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "GiangsCoffee_qmllint_module::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-GiangsCoffee_qmllint_module-Debug-dc46f05a2f061a445701.json",
+					"name" : "GiangsCoffee_qmllint_module",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "GiangsCoffee_qmltyperegistration::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-GiangsCoffee_qmltyperegistration-Debug-efea269998846dcb0fdd.json",
+					"name" : "GiangsCoffee_qmltyperegistration",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "all_aotstats::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_aotstats-Debug-cec40d525ead576fe224.json",
+					"name" : "all_aotstats",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "all_qmllint::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_qmllint-Debug-fc3cc1bd1cac61cecd92.json",
+					"name" : "all_qmllint",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "all_qmllint_json::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_qmllint_json-Debug-a1d91dc6e917bf430844.json",
+					"name" : "all_qmllint_json",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "all_qmllint_module::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_qmllint_module-Debug-8afeb63364a5dd0ff6d9.json",
+					"name" : "all_qmllint_module",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "all_qmltyperegistrations::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_qmltyperegistrations-Debug-0cc052d7170c7f793aeb.json",
+					"name" : "all_qmltyperegistrations",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "clean_qml_context_properties::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-clean_qml_context_properties-Debug-7337392b4f3c310fc9f0.json",
+					"name" : "clean_qml_context_properties",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "dump_qml_context_properties::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-dump_qml_context_properties-Debug-e103400a0ff225fec0f5.json",
+					"name" : "dump_qml_context_properties",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "generate_qmlls_build_ini_file::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-generate_qmlls_build_ini_file-Debug-a54247606f57f53d7c93.json",
+					"name" : "generate_qmlls_build_ini_file",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "module_GiangsCoffee_aotstats_target::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-module_GiangsCoffee_aotstats_target-Debug-a75b37bc167921f1b263.json",
+					"name" : "module_GiangsCoffee_aotstats_target",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "E:/code/Project/OOP_Coffee/GiangsCoffee/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug",
+		"source" : "E:/code/Project/OOP_Coffee/GiangsCoffee"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}

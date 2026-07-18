@@ -1,0 +1,351 @@
+[
+    {
+        "classes": [
+            {
+                "className": "Customer",
+                "lineNumber": 6,
+                "object": true,
+                "properties": [
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 0,
+                        "lineNumber": 8,
+                        "name": "loyaltyPoints",
+                        "notify": "loyaltyPointsChanged",
+                        "override": false,
+                        "read": "loyaltyPoints",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "int",
+                        "user": false,
+                        "virtual": false,
+                        "write": "setLoyaltyPoints"
+                    },
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 1,
+                        "lineNumber": 9,
+                        "name": "phoneNumber",
+                        "override": false,
+                        "read": "phoneNumber",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false,
+                        "virtual": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 2,
+                        "lineNumber": 10,
+                        "name": "rank",
+                        "notify": "rankChanged",
+                        "override": false,
+                        "read": "rank",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false,
+                        "virtual": false
+                    }
+                ],
+                "qualifiedClassName": "Customer",
+                "signals": [
+                    {
+                        "access": "public",
+                        "index": 0,
+                        "lineNumber": 25,
+                        "name": "loyaltyPointsChanged",
+                        "returnType": "void"
+                    }
+                ],
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "User"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "Customer.h",
+        "outputRevision": 69
+    },
+    {
+        "classes": [
+            {
+                "className": "Employee",
+                "lineNumber": 5,
+                "object": true,
+                "qualifiedClassName": "Employee",
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "User"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "Employee.h",
+        "outputRevision": 69
+    },
+    {
+        "classes": [
+            {
+                "className": "GiangCoffeeSystem",
+                "lineNumber": 15,
+                "methods": [
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "emp",
+                                "type": "Employee*"
+                            }
+                        ],
+                        "index": 0,
+                        "lineNumber": 39,
+                        "name": "addEmployee",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "empID",
+                                "type": "QString"
+                            }
+                        ],
+                        "index": 1,
+                        "lineNumber": 40,
+                        "name": "removeEmployee",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "id",
+                                "type": "QString"
+                            },
+                            {
+                                "name": "shift",
+                                "type": "QString"
+                            }
+                        ],
+                        "index": 2,
+                        "lineNumber": 41,
+                        "name": "updateEmployeeShift",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "index": 3,
+                        "lineNumber": 42,
+                        "name": "calculatePayroll",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "item",
+                                "type": "Menu"
+                            }
+                        ],
+                        "index": 4,
+                        "lineNumber": 45,
+                        "name": "addItem",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "itemId",
+                                "type": "QString"
+                            }
+                        ],
+                        "index": 5,
+                        "lineNumber": 46,
+                        "name": "removeItem",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "name",
+                                "type": "QString"
+                            }
+                        ],
+                        "index": 6,
+                        "lineNumber": 47,
+                        "name": "searchMenu",
+                        "returnType": "Menu"
+                    },
+                    {
+                        "access": "public",
+                        "index": 7,
+                        "lineNumber": 48,
+                        "name": "printMenu",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "order",
+                                "type": "Order*"
+                            }
+                        ],
+                        "index": 8,
+                        "lineNumber": 56,
+                        "name": "placeOrder",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "tableNum",
+                                "type": "int"
+                            }
+                        ],
+                        "index": 9,
+                        "lineNumber": 57,
+                        "name": "reserveTable",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "num1",
+                                "type": "int"
+                            },
+                            {
+                                "name": "num2",
+                                "type": "int"
+                            }
+                        ],
+                        "index": 10,
+                        "lineNumber": 58,
+                        "name": "mergeTable",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "date",
+                                "type": "QDateTime"
+                            }
+                        ],
+                        "index": 11,
+                        "lineNumber": 61,
+                        "name": "generateReport",
+                        "returnType": "void"
+                    }
+                ],
+                "object": true,
+                "qualifiedClassName": "GiangCoffeeSystem",
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "GiangCoffeeSystem.h",
+        "outputRevision": 69
+    },
+    {
+        "classes": [
+            {
+                "className": "User",
+                "lineNumber": 9,
+                "object": true,
+                "properties": [
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 0,
+                        "lineNumber": 12,
+                        "name": "id",
+                        "override": false,
+                        "read": "id",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false,
+                        "virtual": false
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 1,
+                        "lineNumber": 13,
+                        "name": "name",
+                        "notify": "nameChanged",
+                        "override": false,
+                        "read": "name",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false,
+                        "virtual": false,
+                        "write": "setName"
+                    },
+                    {
+                        "constant": true,
+                        "designable": true,
+                        "final": false,
+                        "index": 2,
+                        "lineNumber": 14,
+                        "name": "role",
+                        "override": false,
+                        "read": "role",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false,
+                        "virtual": false
+                    }
+                ],
+                "qualifiedClassName": "User",
+                "signals": [
+                    {
+                        "access": "public",
+                        "index": 0,
+                        "lineNumber": 32,
+                        "name": "nameChanged",
+                        "returnType": "void"
+                    }
+                ],
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "User.h",
+        "outputRevision": 69
+    }
+]

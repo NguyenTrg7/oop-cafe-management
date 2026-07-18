@@ -1,0 +1,7 @@
+module GiangsCoffee
+typeinfo GiangsCoffee.qmltypes
+prefer :/qt/qml/GiangsCoffee/
+OrderPage 1.0 ui/OrderPage.qml
+LoyaltyPage 1.0 ui/LoyaltyPage.qml
+depends QtQuick
+

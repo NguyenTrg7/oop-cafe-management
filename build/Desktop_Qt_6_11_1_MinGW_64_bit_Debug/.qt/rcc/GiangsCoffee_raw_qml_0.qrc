@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="/qt/qml/GiangsCoffee/">
+    <file alias="ui/main.qml">E:/code/Project/OOP_Coffee/GiangsCoffee/ui/main.qml</file>
+    <file alias="ui/OrderPage.qml">E:/code/Project/OOP_Coffee/GiangsCoffee/ui/OrderPage.qml</file>
+    <file alias="ui/LoyaltyPage.qml">E:/code/Project/OOP_Coffee/GiangsCoffee/ui/LoyaltyPage.qml</file>
+  </qresource>
+</RCC>
+
