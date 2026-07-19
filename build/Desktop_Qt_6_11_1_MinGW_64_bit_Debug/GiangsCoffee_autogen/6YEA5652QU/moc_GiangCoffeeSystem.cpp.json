@@ -1,0 +1,172 @@
+{
+    "classes": [
+        {
+            "className": "GiangCoffeeSystem",
+            "lineNumber": 15,
+            "methods": [
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "emp",
+                            "type": "Employee*"
+                        }
+                    ],
+                    "index": 0,
+                    "lineNumber": 39,
+                    "name": "addEmployee",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "empID",
+                            "type": "QString"
+                        }
+                    ],
+                    "index": 1,
+                    "lineNumber": 40,
+                    "name": "removeEmployee",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "id",
+                            "type": "QString"
+                        },
+                        {
+                            "name": "shift",
+                            "type": "QString"
+                        }
+                    ],
+                    "index": 2,
+                    "lineNumber": 41,
+                    "name": "updateEmployeeShift",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "index": 3,
+                    "lineNumber": 42,
+                    "name": "calculatePayroll",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "item",
+                            "type": "Menu"
+                        }
+                    ],
+                    "index": 4,
+                    "lineNumber": 45,
+                    "name": "addItem",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "itemId",
+                            "type": "QString"
+                        }
+                    ],
+                    "index": 5,
+                    "lineNumber": 46,
+                    "name": "removeItem",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "name",
+                            "type": "QString"
+                        }
+                    ],
+                    "index": 6,
+                    "lineNumber": 47,
+                    "name": "searchMenu",
+                    "returnType": "Menu"
+                },
+                {
+                    "access": "public",
+                    "index": 7,
+                    "lineNumber": 48,
+                    "name": "printMenu",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "order",
+                            "type": "Order*"
+                        }
+                    ],
+                    "index": 8,
+                    "lineNumber": 56,
+                    "name": "placeOrder",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "tableNum",
+                            "type": "int"
+                        }
+                    ],
+                    "index": 9,
+                    "lineNumber": 57,
+                    "name": "reserveTable",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "num1",
+                            "type": "int"
+                        },
+                        {
+                            "name": "num2",
+                            "type": "int"
+                        }
+                    ],
+                    "index": 10,
+                    "lineNumber": 58,
+                    "name": "mergeTable",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "date",
+                            "type": "QDateTime"
+                        }
+                    ],
+                    "index": 11,
+                    "lineNumber": 61,
+                    "name": "generateReport",
+                    "returnType": "void"
+                }
+            ],
+            "object": true,
+            "qualifiedClassName": "GiangCoffeeSystem",
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QObject"
+                }
+            ]
+        }
+    ],
+    "inputFile": "GiangCoffeeSystem.h",
+    "outputRevision": 69
+}

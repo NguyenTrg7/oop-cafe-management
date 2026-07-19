@@ -1,0 +1,222 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16,
+						17,
+						18
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "GiangsCoffee",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16,
+						17,
+						18
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "GiangsCoffee::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-GiangsCoffee-Debug-79f6305947ca419ec649.json",
+					"name" : "GiangsCoffee",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "GiangsCoffee_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-GiangsCoffee_autogen-Debug-de1fb1375f83db971622.json",
+					"name" : "GiangsCoffee_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "GiangsCoffee_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-GiangsCoffee_autogen_timestamp_deps-Debug-605af37bcfc83b951a9d.json",
+					"name" : "GiangsCoffee_autogen_timestamp_deps",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "GiangsCoffee_copy_qml::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-GiangsCoffee_copy_qml-Debug-246efbe33b8fe8b692da.json",
+					"name" : "GiangsCoffee_copy_qml",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "GiangsCoffee_copy_res::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-GiangsCoffee_copy_res-Debug-9a8cb40ea0e057a95b21.json",
+					"name" : "GiangsCoffee_copy_res",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "GiangsCoffee_qmlimportscan::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-GiangsCoffee_qmlimportscan-Debug-4ffbe296ab62f2cf0017.json",
+					"name" : "GiangsCoffee_qmlimportscan",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "GiangsCoffee_qmllint::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-GiangsCoffee_qmllint-Debug-78652d3b05c4a58d50b8.json",
+					"name" : "GiangsCoffee_qmllint",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "GiangsCoffee_qmllint_json::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-GiangsCoffee_qmllint_json-Debug-09c9e497e3194a77e2d5.json",
+					"name" : "GiangsCoffee_qmllint_json",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "GiangsCoffee_qmllint_module::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-GiangsCoffee_qmllint_module-Debug-1fa8a6f0f0091587511a.json",
+					"name" : "GiangsCoffee_qmllint_module",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "GiangsCoffee_qmltyperegistration::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-GiangsCoffee_qmltyperegistration-Debug-804160d668730fd3ebb4.json",
+					"name" : "GiangsCoffee_qmltyperegistration",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "all_aotstats::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_aotstats-Debug-1cdadc9636844f54bbb1.json",
+					"name" : "all_aotstats",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "all_qmllint::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_qmllint-Debug-5e5e368acd0f19b1c726.json",
+					"name" : "all_qmllint",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "all_qmllint_json::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_qmllint_json-Debug-3e2f9317fe34df854811.json",
+					"name" : "all_qmllint_json",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "all_qmllint_module::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_qmllint_module-Debug-fe20e4ed4ca6a4d4d25b.json",
+					"name" : "all_qmllint_module",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "all_qmltyperegistrations::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_qmltyperegistrations-Debug-5891ced63a4da4cbb961.json",
+					"name" : "all_qmltyperegistrations",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "clean_qml_context_properties::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-clean_qml_context_properties-Debug-400279400a71044e63db.json",
+					"name" : "clean_qml_context_properties",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "dump_qml_context_properties::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-dump_qml_context_properties-Debug-db84b8a042ee1c8af176.json",
+					"name" : "dump_qml_context_properties",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "generate_qmlls_build_ini_file::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-generate_qmlls_build_ini_file-Debug-4579edfed799cf33aabe.json",
+					"name" : "generate_qmlls_build_ini_file",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "module_GiangsCoffee_aotstats_target::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-module_GiangsCoffee_aotstats_target-Debug-398275416cdcd9ac8eac.json",
+					"name" : "module_GiangsCoffee_aotstats_target",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug",
+		"source" : "D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}

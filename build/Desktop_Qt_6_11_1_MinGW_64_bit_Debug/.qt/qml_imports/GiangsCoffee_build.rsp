@@ -1,0 +1,15 @@
+-rootPath
+D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture
+-cmake-output
+-output-file
+D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/qml_imports/GiangsCoffee_build.cmake
+-importPath
+D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug
+-importPath
+D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee
+-importPath
+D:/QT/6.11.1/mingw_64/qml
+-qrcFiles
+D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qmake_GiangsCoffee.qrc
+D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/GiangsCoffee_raw_qml_0.qrc
+D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/GiangsCoffee_raw_qml_0_extra_qmldirs.qrc

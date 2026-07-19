@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/qt/qml/GiangsCoffee">
+    <file alias="qmldir">D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee/qmldir</file>
+  </qresource>
+</RCC>
+
