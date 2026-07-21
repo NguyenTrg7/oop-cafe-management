@@ -2,10 +2,16 @@
 #include <fstream>  // Thư viện đọc/ghi file chuẩn C++
 #include <sstream>  // Thư viện cắt chuỗi chuẩn C++
 #include <iostream> // Thư viện in ra màn hình (cout)
+#include <QCoreApplication> // 🌟 Thêm thư viện Qt để lấy đường dẫn app
 
 Account::Account(QObject *parent) : QObject(parent)
 {
-    m_csvFilePath = "accounts.csv";
+    // Lấy đường dẫn thư mục chứa file chạy (.exe) và ghép với "/accounts.csv"
+    QString absolutePath = QCoreApplication::applicationDirPath() + "/accounts.csv";
+
+    // Ép kiểu về std::string để sử dụng với C++ chuẩn
+    m_csvFilePath = absolutePath.toStdString();
+
     initFile();
 }
 
@@ -21,7 +27,7 @@ void Account::initFile()
     if (file.is_open()) {
         file.close();
     } else {
-        std::cout << "Loi: Khong the tao file CSV!\n";
+        std::cout << "Loi: Khong the tao file CSV tai: " << m_csvFilePath << "\n";
     }
 }
 
@@ -45,6 +51,11 @@ bool Account::authenticate(const QString &username, const QString &password)
     while (std::getline(file, line)) {
         // Bỏ qua nếu gặp dòng trống
         if (line.empty()) continue;
+
+        // 🌟 Xóa ký tự \r ở cuối dòng (nếu chạy trên hệ điều hành Windows)
+        if (!line.empty() && line.back() == '\r') {
+            line.pop_back();
+        }
 
         std::stringstream ss(line);
         std::string dbUser, dbPass;
@@ -80,6 +91,11 @@ bool Account::registerAccount(const QString &username, const QString &password)
         std::string line;
         while (std::getline(inFile, line)) {
             if (line.empty()) continue;
+
+            // 🌟 Xóa ký tự \r trước khi cắt chuỗi
+            if (!line.empty() && line.back() == '\r') {
+                line.pop_back();
+            }
 
             std::stringstream ss(line);
             std::string dbUser;

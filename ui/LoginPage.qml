@@ -1,52 +1,123 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
-import QtQuick.Particles 2.15
 
 Rectangle {
     id: root
     width: parent.width
     height: parent.height
 
-    // 1. Phông nền Bầu Trời Sáng (Light Sky)
     gradient: Gradient {
         GradientStop { position: 0.0; color: "#BAE6FD" }
         GradientStop { position: 1.0; color: "#F0F9FF" }
     }
 
-    // 2. Hệ thống hạt: Tuyết rơi
-    ParticleSystem {
-        id: snowSystem
+    // ==========================================
+    // HIỆU ỨNG TUYẾT RƠI PURE QML (CHỐNG CRASH 100%)
+    // ==========================================
+    Item {
+        id: snowContainer
         anchors.fill: parent
-    }
+        clip: true
 
-    ItemParticle {
-        system: snowSystem
-        delegate: Rectangle {
-            width: Math.random() * 6 + 4
-            height: width
-            radius: width / 2
-            color: "#FFFFFF"
-            opacity: Math.random() * 0.6 + 0.4
+        Repeater {
+            model: 40 // Số lượng hạt tuyết
+
+            Rectangle {
+                id: flake
+                property real speed: Math.random() * 5000 + 4000
+                property real initialDelay: Math.random() * 7000
+
+                width: Math.random() * 5 + 3
+                height: width
+                radius: width / 2
+                color: "#FFFFFF"
+                opacity: Math.random() * 0.6 + 0.3
+                x: Math.random() * root.width
+                y: -20
+
+                SequentialAnimation on y {
+                    loops: Animation.Infinite
+                    running: true
+
+                    PauseAnimation { duration: flake.initialDelay }
+                    NumberAnimation {
+                        from: -20
+                        to: root.height + 20
+                        duration: flake.speed
+                        easing.type: Easing.Linear
+                    }
+                    ScriptAction {
+                        script: {
+                            flake.initialDelay = 0;
+                            flake.x = Math.random() * root.width;
+                        }
+                    }
+                }
+            }
         }
     }
 
-    Emitter {
-        system: snowSystem
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-        height: 1
-        emitRate: 35
-        lifeSpan: 10000
-        lifeSpanVariation: 2000
-        velocity: PointDirection {
-            y: 50
-            yVariation: 15
-            xVariation: 20
+    // ==========================================
+    // LOGIC XỬ LÝ
+    // ==========================================
+    function doLogin() {
+        var user = loginUserInput.text
+        var pass = loginPassInput.text
+        var isSuccess = accountHandler.authenticate(user, pass)
+
+        if (isSuccess) {
+            loginErrorText.visible = false
+            stackView.push("qrc:/qt/qml/GiangsCoffee/ui/OrderPage.qml")
+        } else {
+            loginErrorText.text = qsTr("Sai tài khoản hoặc mật khẩu!")
+            loginErrorText.color = "#E53935"
+            loginErrorText.visible = true
+            loginPassInput.text = ""
         }
     }
 
-    // 3. Khung Giao diện Kính trong suốt
+    function doRegister() {
+        var pass = registerPassInput.text
+        var confirmPass = registerConfirmInput.text
+        var user = registerUserInput.text
+
+        if (user === "" || pass === "") {
+            registerErrorText.text = qsTr("Vui lòng nhập đủ thông tin!")
+            registerErrorText.visible = true
+            return
+        }
+
+        if (pass !== confirmPass) {
+            registerErrorText.text = qsTr("Mật khẩu không khớp!")
+            registerErrorText.visible = true
+            registerPassInput.text = ""
+            registerConfirmInput.text = ""
+            return
+        }
+
+        var isSuccess = accountHandler.registerAccount(user, pass)
+
+        if (isSuccess) {
+            registerErrorText.visible = false
+            registerUserInput.text = ""
+            registerPassInput.text = ""
+            registerConfirmInput.text = ""
+
+            root.state = "login"
+            loginErrorText.text = qsTr("Đăng ký thành công! Hãy đăng nhập.")
+            loginErrorText.color = "#43A047"
+            loginErrorText.visible = true
+            loginUserInput.forceActiveFocus()
+        } else {
+            registerErrorText.text = qsTr("Tài khoản đã tồn tại!")
+            registerErrorText.visible = true
+            registerUserInput.text = ""
+        }
+    }
+
+    // ==========================================
+    // KHUNG GIAO DIỆN
+    // ==========================================
     Rectangle {
         id: glassBox
         width: 380
@@ -68,9 +139,6 @@ Rectangle {
             anchors.centerIn: parent
             spacing: 25
 
-            // ==========================================
-            // TIÊU ĐỀ
-            // ==========================================
             Text {
                 id: titleText
                 text: qsTr("☕ GIANG'S COFFEE")
@@ -80,15 +148,12 @@ Rectangle {
                 anchors.horizontalCenter: parent.horizontalCenter
             }
 
-            // ==========================================
-            // FORM ĐĂNG NHẬP
-            // ==========================================
+            // Form Đăng nhập
             Column {
                 id: loginForm
                 spacing: 15
                 visible: root.state === "login"
 
-                // Cụm Tên đăng nhập
                 Column {
                     spacing: 5
                     Text {
@@ -99,7 +164,7 @@ Rectangle {
                     }
                     TextField {
                         id: loginUserInput
-                        focus: true // 🌟 Tự động nháy con trỏ khi mở app
+                        focus: true
                         placeholderText: qsTr("Nhập tên tài khoản...")
                         leftPadding: 40
                         width: 300
@@ -121,13 +186,10 @@ Rectangle {
                             anchors.leftMargin: 12
                             opacity: 0.7
                         }
-
-                        // 🌟 Nhấn Enter nhảy sang ô Mật khẩu
                         onAccepted: loginPassInput.forceActiveFocus()
                     }
                 }
 
-                // Cụm Mật khẩu
                 Column {
                     spacing: 5
                     Text {
@@ -160,9 +222,7 @@ Rectangle {
                             anchors.leftMargin: 12
                             opacity: 0.7
                         }
-
-                        // 🌟 Nhấn Enter tự động bấm nút Đăng nhập
-                        onAccepted: loginBtn.clicked()
+                        onAccepted: doLogin()
                     }
                 }
 
@@ -176,7 +236,7 @@ Rectangle {
                 }
 
                 Button {
-                    id: loginBtn // 🌟 Khai báo ID để gọi ở trên
+                    id: loginBtn
                     text: qsTr("ĐĂNG NHẬP")
                     width: 300
                     height: 52
@@ -198,22 +258,7 @@ Rectangle {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
-
-                    onClicked: {
-                        var user = loginUserInput.text
-                        var pass = loginPassInput.text
-                        var isSuccess = accountHandler.authenticate(user, pass)
-
-                        if (isSuccess) {
-                            loginErrorText.visible = false
-                            stackView.push("qrc:/qt/qml/GiangsCoffee/ui/OrderPage.qml")
-                        } else {
-                            loginErrorText.text = qsTr("Sai tài khoản hoặc mật khẩu!")
-                            loginErrorText.color = "#E53935"
-                            loginErrorText.visible = true
-                            loginPassInput.text = ""
-                        }
-                    }
+                    onClicked: doLogin()
                 }
 
                 Text {
@@ -227,26 +272,22 @@ Rectangle {
                         onClicked: {
                             root.state = "register"
                             loginErrorText.visible = false
-                            // 🌟 Chuyển sang form Đăng ký là tự động focus ô User mới
                             registerUserInput.forceActiveFocus()
                         }
                     }
                 }
-            } // Hết form Login
+            }
 
-            // ==========================================
-            // FORM ĐĂNG KÝ
-            // ==========================================
+            // Form Đăng ký
             Column {
                 id: registerForm
                 spacing: 15
                 visible: root.state === "register"
 
-                // Cụm Tên đăng nhập mới
                 Column {
                     spacing: 5
                     Text {
-                        text: qsTr("Tên đăng nhập ")
+                        text: qsTr("Tên đăng nhập")
                         font.pixelSize: 14
                         font.bold: true
                         color: "#0284C7"
@@ -274,17 +315,14 @@ Rectangle {
                             anchors.leftMargin: 12
                             opacity: 0.7
                         }
-
-                        // 🌟 Nhấn Enter nhảy sang ô Mật khẩu
                         onAccepted: registerPassInput.forceActiveFocus()
                     }
                 }
 
-                // Cụm Mật khẩu mới
                 Column {
                     spacing: 5
                     Text {
-                        text: qsTr("Mật khẩu ")
+                        text: qsTr("Mật khẩu")
                         font.pixelSize: 14
                         font.bold: true
                         color: "#0284C7"
@@ -313,13 +351,10 @@ Rectangle {
                             anchors.leftMargin: 12
                             opacity: 0.7
                         }
-
-                        // 🌟 Nhấn Enter nhảy sang ô Xác nhận mật khẩu
                         onAccepted: registerConfirmInput.forceActiveFocus()
                     }
                 }
 
-                // Cụm Nhập lại mật khẩu
                 Column {
                     spacing: 5
                     Text {
@@ -352,9 +387,7 @@ Rectangle {
                             anchors.leftMargin: 12
                             opacity: 0.7
                         }
-
-                        // 🌟 Nhấn Enter bấm nút Đăng ký
-                        onAccepted: registerBtn.clicked()
+                        onAccepted: doRegister()
                     }
                 }
 
@@ -368,7 +401,7 @@ Rectangle {
                 }
 
                 Button {
-                    id: registerBtn // 🌟 Khai báo ID để gọi
+                    id: registerBtn
                     text: qsTr("ĐĂNG KÝ")
                     width: 300
                     height: 52
@@ -390,47 +423,7 @@ Rectangle {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
-
-                    onClicked: {
-                        var pass = registerPassInput.text
-                        var confirmPass = registerConfirmInput.text
-                        var user = registerUserInput.text
-
-                        if (user === "" || pass === "") {
-                            registerErrorText.text = qsTr("Vui lòng nhập đủ thông tin!")
-                            registerErrorText.visible = true
-                            return
-                        }
-
-                        if (pass !== confirmPass) {
-                            registerErrorText.text = qsTr("Mật khẩu không khớp!")
-                            registerErrorText.visible = true
-                            registerPassInput.text = ""
-                            registerConfirmInput.text = ""
-                            return
-                        }
-
-                        var isSuccess = accountHandler.registerAccount(user, pass)
-
-                        if (isSuccess) {
-                            registerErrorText.visible = false
-                            registerUserInput.text = ""
-                            registerPassInput.text = ""
-                            registerConfirmInput.text = ""
-
-                            root.state = "login"
-                            loginErrorText.text = qsTr("Đăng ký thành công! Hãy đăng nhập.")
-                            loginErrorText.color = "#43A047"
-                            loginErrorText.visible = true
-
-                            // 🌟 Về màn hình đăng nhập thì tự động focus ô User đăng nhập
-                            loginUserInput.forceActiveFocus()
-                        } else {
-                            registerErrorText.text = qsTr("Tài khoản đã tồn tại!")
-                            registerErrorText.visible = true
-                            registerUserInput.text = ""
-                        }
-                    }
+                    onClicked: doRegister()
                 }
 
                 Text {
@@ -442,20 +435,16 @@ Rectangle {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
-                            root.state = "login"
+                            root.state = "register"
                             registerErrorText.visible = false
-                            // 🌟 Chuyển về login thì focus lại vào ô User
                             loginUserInput.forceActiveFocus()
                         }
                     }
                 }
-            } // Hết form Register
+            }
         }
     }
 
-    // ==========================================
-    // QUẢN LÝ TRẠNG THÁI (STATES)
-    // ==========================================
     state: "login"
     states: [
         State {

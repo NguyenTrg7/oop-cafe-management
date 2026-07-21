@@ -17,7 +17,7 @@ public:
     Q_INVOKABLE bool registerAccount(const QString &username, const QString &password);
 
 private:
-    std::string m_csvFilePath; // Khai báo tên file bằng string chuẩn C++
+    std::string m_csvFilePath;
     void initFile();
 };
 
