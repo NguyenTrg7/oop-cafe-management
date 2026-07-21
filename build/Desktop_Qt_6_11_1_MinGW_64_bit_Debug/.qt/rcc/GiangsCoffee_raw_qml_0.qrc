@@ -1,9 +1,0 @@
-<RCC>
-  <qresource prefix="/qt/qml/GiangsCoffee/">
-    <file alias="ui/main.qml">C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/ui/main.qml</file>
-    <file alias="ui/OrderPage.qml">C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/ui/OrderPage.qml</file>
-    <file alias="ui/LoyaltyPage.qml">C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/ui/LoyaltyPage.qml</file>
-    <file alias="ui/LoginPage.qml">C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/ui/LoginPage.qml</file>
-  </qresource>
-</RCC>
-
