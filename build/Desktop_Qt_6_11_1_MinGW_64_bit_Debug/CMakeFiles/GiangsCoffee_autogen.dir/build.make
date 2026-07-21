@@ -52,10 +52,10 @@ RM = D:\QT\Tools\CMake_64\bin\cmake.exe -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture
+CMAKE_SOURCE_DIR = C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug
+CMAKE_BINARY_DIR = C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug
 
 # Utility rule file for GiangsCoffee_autogen.
 
@@ -69,9 +69,9 @@ CMakeFiles/GiangsCoffee_autogen: GiangsCoffee_autogen/timestamp
 
 GiangsCoffee_autogen/timestamp: D:/QT/6.11.1/mingw_64/bin/moc.exe
 GiangsCoffee_autogen/timestamp: CMakeFiles/GiangsCoffee_autogen.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic MOC and UIC for target GiangsCoffee"
-	D:\QT\Tools\CMake_64\bin\cmake.exe -E cmake_autogen D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/CMakeFiles/GiangsCoffee_autogen.dir/AutogenInfo.json Debug
-	D:\QT\Tools\CMake_64\bin\cmake.exe -E touch D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee_autogen/timestamp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic MOC and UIC for target GiangsCoffee"
+	D:\QT\Tools\CMake_64\bin\cmake.exe -E cmake_autogen C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/CMakeFiles/GiangsCoffee_autogen.dir/AutogenInfo.json Debug
+	D:\QT\Tools\CMake_64\bin\cmake.exe -E touch C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee_autogen/timestamp
 
 GiangsCoffee_autogen: CMakeFiles/GiangsCoffee_autogen
 GiangsCoffee_autogen: GiangsCoffee_autogen/timestamp
@@ -87,6 +87,6 @@ CMakeFiles/GiangsCoffee_autogen.dir/clean:
 .PHONY : CMakeFiles/GiangsCoffee_autogen.dir/clean
 
 CMakeFiles/GiangsCoffee_autogen.dir/depend:
-	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles\GiangsCoffee_autogen.dir\DependInfo.cmake "--color=$(COLOR)"
+	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles\GiangsCoffee_autogen.dir\DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/GiangsCoffee_autogen.dir/depend
 

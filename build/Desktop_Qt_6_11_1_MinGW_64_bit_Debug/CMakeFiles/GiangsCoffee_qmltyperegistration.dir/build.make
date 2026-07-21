@@ -52,10 +52,10 @@ RM = D:\QT\Tools\CMake_64\bin\cmake.exe -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture
+CMAKE_SOURCE_DIR = C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug
+CMAKE_BINARY_DIR = C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug
 
 # Utility rule file for GiangsCoffee_qmltyperegistration.
 
@@ -78,34 +78,34 @@ giangscoffee_qmltyperegistrations.cpp: D:/QT/6.11.1/mingw_64/metatypes/qt6gui_me
 giangscoffee_qmltyperegistrations.cpp: D:/QT/6.11.1/mingw_64/metatypes/qt6quick_metatypes.json
 giangscoffee_qmltyperegistrations.cpp: D:/QT/6.11.1/mingw_64/metatypes/qt6opengl_metatypes.json
 giangscoffee_qmltyperegistrations.cpp: D:/QT/6.11.1/mingw_64/metatypes/qt6sql_metatypes.json
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic QML type registration for target GiangsCoffee"
-	call .qt\bin\qt_setup_tool_path.bat D:/QT/6.11.1/mingw_64/bin/qmltyperegistrar.exe --generate-qmltypes=D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee/GiangsCoffee.qmltypes --import-name=GiangsCoffee --major-version=1 --minor-version=0 @D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/qmltypes/GiangsCoffee_foreign_types.txt -o D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/giangscoffee_qmltyperegistrations.cpp D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/meta_types/qt6giangscoffee_metatypes.json
-	D:\QT\Tools\CMake_64\bin\cmake.exe -E make_directory D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/qmltypes
-	D:\QT\Tools\CMake_64\bin\cmake.exe -E touch D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/qmltypes/GiangsCoffee.qmltypes
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic QML type registration for target GiangsCoffee"
+	call .qt\bin\qt_setup_tool_path.bat D:/QT/6.11.1/mingw_64/bin/qmltyperegistrar.exe --generate-qmltypes=C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee/GiangsCoffee.qmltypes --import-name=GiangsCoffee --major-version=1 --minor-version=0 @C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/qmltypes/GiangsCoffee_foreign_types.txt -o C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/giangscoffee_qmltyperegistrations.cpp C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/meta_types/qt6giangscoffee_metatypes.json
+	D:\QT\Tools\CMake_64\bin\cmake.exe -E make_directory C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/qmltypes
+	D:\QT\Tools\CMake_64\bin\cmake.exe -E touch C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/qmltypes/GiangsCoffee.qmltypes
 
 GiangsCoffee/GiangsCoffee.qmltypes: giangscoffee_qmltyperegistrations.cpp
 	@$(CMAKE_COMMAND) -E touch_nocreate GiangsCoffee\GiangsCoffee.qmltypes
 
 meta_types/qt6giangscoffee_metatypes.json: meta_types/qt6giangscoffee_metatypes.json.gen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating meta_types/qt6giangscoffee_metatypes.json"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating meta_types/qt6giangscoffee_metatypes.json"
 	D:\QT\Tools\CMake_64\bin\cmake.exe -E true
 
 meta_types/qt6giangscoffee_metatypes.json.gen: D:/QT/6.11.1/mingw_64/bin/moc.exe
 meta_types/qt6giangscoffee_metatypes.json.gen: meta_types/GiangsCoffee_json_file_list.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Running moc --collect-json for target GiangsCoffee"
-	D:\QT\6.11.1\mingw_64\bin\moc.exe -o D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/meta_types/qt6giangscoffee_metatypes.json.gen --collect-json @D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/meta_types/GiangsCoffee_json_file_list.txt
-	D:\QT\Tools\CMake_64\bin\cmake.exe -E copy_if_different D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/meta_types/qt6giangscoffee_metatypes.json.gen D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/meta_types/qt6giangscoffee_metatypes.json
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Running moc --collect-json for target GiangsCoffee"
+	D:\QT\6.11.1\mingw_64\bin\moc.exe -o C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/meta_types/qt6giangscoffee_metatypes.json.gen --collect-json @C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/meta_types/GiangsCoffee_json_file_list.txt
+	D:\QT\Tools\CMake_64\bin\cmake.exe -E copy_if_different C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/meta_types/qt6giangscoffee_metatypes.json.gen C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/meta_types/qt6giangscoffee_metatypes.json
 
 meta_types/GiangsCoffee_json_file_list.txt: D:/QT/6.11.1/mingw_64/bin/cmake_automoc_parser.exe
 meta_types/GiangsCoffee_json_file_list.txt: GiangsCoffee_autogen/timestamp
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Running AUTOMOC file extraction for target GiangsCoffee"
-	D:\QT\6.11.1\mingw_64\bin\cmake_automoc_parser.exe --cmake-autogen-cache-file D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/CMakeFiles/GiangsCoffee_autogen.dir/ParseCache.txt --cmake-autogen-info-file D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/CMakeFiles/GiangsCoffee_autogen.dir/AutogenInfo.json --output-file-path D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/meta_types/GiangsCoffee_json_file_list.txt --timestamp-file-path D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/meta_types/GiangsCoffee_json_file_list.txt.timestamp --cmake-autogen-include-dir-path D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee_autogen/include
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Running AUTOMOC file extraction for target GiangsCoffee"
+	D:\QT\6.11.1\mingw_64\bin\cmake_automoc_parser.exe --cmake-autogen-cache-file C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/CMakeFiles/GiangsCoffee_autogen.dir/ParseCache.txt --cmake-autogen-info-file C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/CMakeFiles/GiangsCoffee_autogen.dir/AutogenInfo.json --output-file-path C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/meta_types/GiangsCoffee_json_file_list.txt --timestamp-file-path C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/meta_types/GiangsCoffee_json_file_list.txt.timestamp --cmake-autogen-include-dir-path C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee_autogen/include
 
 GiangsCoffee_autogen/timestamp: D:/QT/6.11.1/mingw_64/bin/moc.exe
 GiangsCoffee_autogen/timestamp: CMakeFiles/GiangsCoffee_qmltyperegistration.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Automatic MOC and UIC for target GiangsCoffee"
-	D:\QT\Tools\CMake_64\bin\cmake.exe -E cmake_autogen D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/CMakeFiles/GiangsCoffee_autogen.dir/AutogenInfo.json Debug
-	D:\QT\Tools\CMake_64\bin\cmake.exe -E touch D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee_autogen/timestamp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Automatic MOC and UIC for target GiangsCoffee"
+	D:\QT\Tools\CMake_64\bin\cmake.exe -E cmake_autogen C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/CMakeFiles/GiangsCoffee_autogen.dir/AutogenInfo.json Debug
+	D:\QT\Tools\CMake_64\bin\cmake.exe -E touch C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee_autogen/timestamp
 
 GiangsCoffee_qmltyperegistration: CMakeFiles/GiangsCoffee_qmltyperegistration
 GiangsCoffee_qmltyperegistration: GiangsCoffee/GiangsCoffee.qmltypes
@@ -126,6 +126,6 @@ CMakeFiles/GiangsCoffee_qmltyperegistration.dir/clean:
 .PHONY : CMakeFiles/GiangsCoffee_qmltyperegistration.dir/clean
 
 CMakeFiles/GiangsCoffee_qmltyperegistration.dir/depend:
-	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles\GiangsCoffee_qmltyperegistration.dir\DependInfo.cmake "--color=$(COLOR)"
+	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles\GiangsCoffee_qmltyperegistration.dir\DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/GiangsCoffee_qmltyperegistration.dir/depend
 

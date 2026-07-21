@@ -1,7 +1,7 @@
 CMakeFiles/GiangsCoffee.dir/GiangsCoffee_autogen/mocs_compilation.cpp.obj: \
- D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\GiangsCoffee_autogen\mocs_compilation.cpp \
- D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\GiangsCoffee_autogen\6YEA5652QU/moc_Account.cpp \
- D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/Account.h \
+ C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\GiangsCoffee_autogen\mocs_compilation.cpp \
+ C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\GiangsCoffee_autogen\6YEA5652QU/moc_Account.cpp \
+ C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/Account.h \
  D:/QT/6.11.1/mingw_64/include/QtCore/QObject \
  D:/QT/6.11.1/mingw_64/include/QtCore/qobject.h \
  D:/QT/6.11.1/mingw_64/include/QtCore/qobjectdefs.h \
@@ -324,12 +324,26 @@ CMakeFiles/GiangsCoffee.dir/GiangsCoffee_autogen/mocs_compilation.cpp.obj: \
  D:/QT/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/ratio \
  D:/QT/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/ctime \
  D:/QT/6.11.1/mingw_64/include/QtCore/QString \
- D:/QT/6.11.1/mingw_64/include/QtSql/QSqlDatabase \
- D:/QT/6.11.1/mingw_64/include/QtSql/qsqldatabase.h \
- D:/QT/6.11.1/mingw_64/include/QtSql/qtsqlglobal.h \
- D:/QT/6.11.1/mingw_64/include/QtSql/qtsql-config.h \
- D:/QT/6.11.1/mingw_64/include/QtSql/qtsqlexports.h \
- D:/QT/6.11.1/mingw_64/include/QtCore/qmetaobject.h \
+ D:/QT/6.11.1/mingw_64/include/QtCore/qtmochelpers.h \
+ D:/QT/6.11.1/mingw_64/include/QtCore/qtmocconstants.h \
+ D:/QT/6.11.1/mingw_64/include/QtCore/q20algorithm.h \
+ C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\GiangsCoffee_autogen\6YEA5652QU/moc_Customer.cpp \
+ C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/Customer.h \
+ C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/User.h \
+ C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\GiangsCoffee_autogen\6YEA5652QU/moc_Employee.cpp \
+ C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/Employee.h \
+ C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\GiangsCoffee_autogen\6YEA5652QU/moc_GiangCoffeeSystem.cpp \
+ C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/GiangCoffeeSystem.h \
+ D:/QT/6.11.1/mingw_64/include/QtCore/QList \
+ C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/Employee.h \
+ C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/Menu.h \
+ C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/Ingredient.h \
+ C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/Supplier.h \
+ C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/Order.h \
+ D:/QT/6.11.1/mingw_64/include/QtCore/QDateTime \
+ D:/QT/6.11.1/mingw_64/include/QtCore/qdatetime.h \
+ D:/QT/6.11.1/mingw_64/include/QtCore/qcalendar.h \
+ D:/QT/6.11.1/mingw_64/include/QtCore/qlocale.h \
  D:/QT/6.11.1/mingw_64/include/QtCore/qvariant.h \
  D:/QT/6.11.1/mingw_64/include/QtCore/qdebug.h \
  D:/QT/6.11.1/mingw_64/include/QtCore/qtextstream.h \
@@ -351,30 +365,8 @@ CMakeFiles/GiangsCoffee.dir/GiangsCoffee_autogen/mocs_compilation.cpp.obj: \
  D:/QT/6.11.1/mingw_64/include/QtCore/qalloc.h \
  D:/QT/6.11.1/mingw_64/include/QtCore/q23utility.h \
  D:/QT/6.11.1/mingw_64/include/QtCore/q20utility.h \
- D:/QT/6.11.1/mingw_64/include/QtSql/QSqlError \
- D:/QT/6.11.1/mingw_64/include/QtSql/qsqlerror.h \
- D:/QT/6.11.1/mingw_64/include/QtCore/qtmochelpers.h \
- D:/QT/6.11.1/mingw_64/include/QtCore/qtmocconstants.h \
- D:/QT/6.11.1/mingw_64/include/QtCore/q20algorithm.h \
- D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\GiangsCoffee_autogen\6YEA5652QU/moc_Customer.cpp \
- D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/Customer.h \
- D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/User.h \
- D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\GiangsCoffee_autogen\6YEA5652QU/moc_Employee.cpp \
- D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/Employee.h \
- D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\GiangsCoffee_autogen\6YEA5652QU/moc_GiangCoffeeSystem.cpp \
- D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/GiangCoffeeSystem.h \
- D:/QT/6.11.1/mingw_64/include/QtCore/QList \
- D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/Employee.h \
- D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/Menu.h \
- D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/Ingredient.h \
- D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/Supplier.h \
- D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/Order.h \
- D:/QT/6.11.1/mingw_64/include/QtCore/QDateTime \
- D:/QT/6.11.1/mingw_64/include/QtCore/qdatetime.h \
- D:/QT/6.11.1/mingw_64/include/QtCore/qcalendar.h \
- D:/QT/6.11.1/mingw_64/include/QtCore/qlocale.h \
- D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/Customer.h \
- D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/Seating.h \
- D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/Account.h \
- D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\GiangsCoffee_autogen\6YEA5652QU/moc_User.cpp \
- D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/User.h
+ C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/Customer.h \
+ C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/Seating.h \
+ C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/Account.h \
+ C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\GiangsCoffee_autogen\6YEA5652QU/moc_User.cpp \
+ C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/User.h

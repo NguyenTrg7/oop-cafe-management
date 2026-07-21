@@ -1,7 +1,7 @@
 CMakeFiles/GiangsCoffee.dir/src/Employee.cpp.obj: \
- D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\Employee.cpp \
- D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/Employee.h \
- D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/User.h \
+ C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\Employee.cpp \
+ C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/Employee.h \
+ C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/User.h \
  D:/QT/6.11.1/mingw_64/include/QtCore/QObject \
  D:/QT/6.11.1/mingw_64/include/QtCore/qobject.h \
  D:/QT/6.11.1/mingw_64/include/QtCore/qobjectdefs.h \

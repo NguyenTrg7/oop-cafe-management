@@ -35,7 +35,7 @@ set(__QT_DEPLOY_SYSTEM_NAME "Windows")
 set(__QT_DEPLOY_SHARED_LIBRARY_SUFFIX ".dll")
 set(__QT_DEPLOY_IS_SHARED_LIBS_BUILD "ON")
 set(__QT_DEPLOY_TOOL "D:/QT/6.11.1/mingw_64/bin/windeployqt.exe")
-set(__QT_DEPLOY_IMPL_DIR "D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt")
+set(__QT_DEPLOY_IMPL_DIR "C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt")
 set(__QT_DEPLOY_VERBOSE "")
 set(__QT_CMAKE_EXPORT_NAMESPACE "Qt6")
 set(__QT_LIBINFIX "")
@@ -60,7 +60,7 @@ set(__QT_DEPLOY_QT_DEBUG_POSTFIX "")
 
 # Define the CMake commands to be made available during deployment.
 set(__qt_deploy_support_files
-    "D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/QtDeployTargets.cmake"
+    "C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/QtDeployTargets.cmake"
     "D:/QT/6.11.1/mingw_64/lib/cmake/Qt6Core/Qt6CoreDeploySupport.cmake"
     "D:/QT/6.11.1/mingw_64/lib/cmake/Qt6Qml/Qt6QmlDeploySupport.cmake"
 )

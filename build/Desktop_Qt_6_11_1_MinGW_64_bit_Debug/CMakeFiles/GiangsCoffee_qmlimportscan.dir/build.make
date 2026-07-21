@@ -52,10 +52,10 @@ RM = D:\QT\Tools\CMake_64\bin\cmake.exe -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture
+CMAKE_SOURCE_DIR = C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug
+CMAKE_BINARY_DIR = C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug
 
 # Utility rule file for GiangsCoffee_qmlimportscan.
 
@@ -71,12 +71,12 @@ CMakeFiles/GiangsCoffee_qmlimportscan: .qt/qml_imports/GiangsCoffee_build.cmake
 .qt/qml_imports/GiangsCoffee_build.cmake: .qt/rcc/qmake_GiangsCoffee.qrc
 .qt/qml_imports/GiangsCoffee_build.cmake: .qt/rcc/GiangsCoffee_raw_qml_0.qrc
 .qt/qml_imports/GiangsCoffee_build.cmake: .qt/rcc/GiangsCoffee_raw_qml_0_extra_qmldirs.qrc
-.qt/qml_imports/GiangsCoffee_build.cmake: D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/ui/main.qml
-.qt/qml_imports/GiangsCoffee_build.cmake: D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/ui/OrderPage.qml
-.qt/qml_imports/GiangsCoffee_build.cmake: D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/ui/LoyaltyPage.qml
-.qt/qml_imports/GiangsCoffee_build.cmake: D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/ui/LoginPage.qml
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Running qmlimportscanner for GiangsCoffee"
-	cd /d D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture && call D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\bin\qt_setup_tool_path.bat D:/QT/6.11.1/mingw_64/bin/qmlimportscanner.exe @D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/qml_imports/GiangsCoffee_build.rsp
+.qt/qml_imports/GiangsCoffee_build.cmake: C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/ui/main.qml
+.qt/qml_imports/GiangsCoffee_build.cmake: C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/ui/OrderPage.qml
+.qt/qml_imports/GiangsCoffee_build.cmake: C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/ui/LoyaltyPage.qml
+.qt/qml_imports/GiangsCoffee_build.cmake: C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/ui/LoginPage.qml
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Running qmlimportscanner for GiangsCoffee"
+	cd /d C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture && call C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\bin\qt_setup_tool_path.bat D:/QT/6.11.1/mingw_64/bin/qmlimportscanner.exe @C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/qml_imports/GiangsCoffee_build.rsp
 
 GiangsCoffee_qmlimportscan: .qt/qml_imports/GiangsCoffee_build.cmake
 GiangsCoffee_qmlimportscan: CMakeFiles/GiangsCoffee_qmlimportscan
@@ -92,6 +92,6 @@ CMakeFiles/GiangsCoffee_qmlimportscan.dir/clean:
 .PHONY : CMakeFiles/GiangsCoffee_qmlimportscan.dir/clean
 
 CMakeFiles/GiangsCoffee_qmlimportscan.dir/depend:
-	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles\GiangsCoffee_qmlimportscan.dir\DependInfo.cmake "--color=$(COLOR)"
+	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles\GiangsCoffee_qmlimportscan.dir\DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/GiangsCoffee_qmlimportscan.dir/depend
 

@@ -154,15 +154,23 @@
                             "column": 44,
                             "durationMicroseconds": 0,
                             "functionName": "verticalAlignment",
-                            "line": 108,
+                            "line": 109,
                             "message": "Could not find property \"verticalAlignment\"."
+                        },
+                        {
+                            "codegenResult": 2,
+                            "column": 37,
+                            "durationMicroseconds": 0,
+                            "functionName": "onAccepted",
+                            "line": 126,
+                            "message": "Could not find signal \"accepted\"."
                         },
                         {
                             "codegenResult": 0,
                             "column": 43,
                             "durationMicroseconds": 0,
                             "functionName": "left",
-                            "line": 118,
+                            "line": 119,
                             "message": ""
                         },
                         {
@@ -170,7 +178,7 @@
                             "column": 53,
                             "durationMicroseconds": 0,
                             "functionName": "verticalCenter",
-                            "line": 119,
+                            "line": 120,
                             "message": ""
                         },
                         {
@@ -178,7 +186,7 @@
                             "column": 35,
                             "durationMicroseconds": 0,
                             "functionName": "echoMode",
-                            "line": 138,
+                            "line": 142,
                             "message": "Could not find property \"echoMode\"."
                         },
                         {
@@ -186,15 +194,23 @@
                             "column": 44,
                             "durationMicroseconds": 0,
                             "functionName": "verticalAlignment",
-                            "line": 144,
+                            "line": 148,
                             "message": "Could not find property \"verticalAlignment\"."
+                        },
+                        {
+                            "codegenResult": 2,
+                            "column": 37,
+                            "durationMicroseconds": 0,
+                            "functionName": "onAccepted",
+                            "line": 165,
+                            "message": "Could not find signal \"accepted\"."
                         },
                         {
                             "codegenResult": 0,
                             "column": 43,
                             "durationMicroseconds": 0,
                             "functionName": "left",
-                            "line": 154,
+                            "line": 158,
                             "message": ""
                         },
                         {
@@ -202,7 +218,7 @@
                             "column": 53,
                             "durationMicroseconds": 0,
                             "functionName": "verticalCenter",
-                            "line": 155,
+                            "line": 159,
                             "message": ""
                         },
                         {
@@ -210,7 +226,7 @@
                             "column": 47,
                             "durationMicroseconds": 0,
                             "functionName": "horizontalCenter",
-                            "line": 168,
+                            "line": 175,
                             "message": ""
                         },
                         {
@@ -218,7 +234,7 @@
                             "column": 32,
                             "durationMicroseconds": 0,
                             "functionName": "onClicked",
-                            "line": 194,
+                            "line": 202,
                             "message": "Could not find signal \"clicked\"."
                         },
                         {
@@ -226,7 +242,7 @@
                             "column": 47,
                             "durationMicroseconds": 0,
                             "functionName": "horizontalCenter",
-                            "line": 175,
+                            "line": 183,
                             "message": "Could not find property \"horizontalCenter\"."
                         },
                         {
@@ -234,23 +250,23 @@
                             "column": 39,
                             "durationMicroseconds": 0,
                             "functionName": "width",
-                            "line": 182,
-                            "message": "Cannot load property pressed from (component in D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/ui/LoginPage.qml)::parent with type QQuickItem."
+                            "line": 190,
+                            "message": "Cannot load property pressed from (component in C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/ui/LoginPage.qml)::parent with type QQuickItem."
                         },
                         {
                             "codegenResult": 2,
                             "column": 31,
                             "durationMicroseconds": 0,
                             "functionName": "text",
-                            "line": 186,
-                            "message": "Cannot load property text from (component in D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/ui/LoginPage.qml)::parent with type QQuickItem."
+                            "line": 194,
+                            "message": "Cannot load property text from (component in C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/ui/LoginPage.qml)::parent with type QQuickItem."
                         },
                         {
                             "codegenResult": 0,
                             "column": 46,
                             "durationMicroseconds": 0,
                             "functionName": "horizontalAlignment",
-                            "line": 190,
+                            "line": 198,
                             "message": ""
                         },
                         {
@@ -258,7 +274,7 @@
                             "column": 44,
                             "durationMicroseconds": 0,
                             "functionName": "verticalAlignment",
-                            "line": 191,
+                            "line": 199,
                             "message": ""
                         },
                         {
@@ -266,7 +282,7 @@
                             "column": 47,
                             "durationMicroseconds": 0,
                             "functionName": "horizontalCenter",
-                            "line": 215,
+                            "line": 223,
                             "message": ""
                         },
                         {
@@ -274,23 +290,23 @@
                             "column": 38,
                             "durationMicroseconds": 0,
                             "functionName": "cursorShape",
-                            "line": 218,
+                            "line": 226,
                             "message": ""
                         },
                         {
-                            "codegenResult": 0,
+                            "codegenResult": 2,
                             "column": 36,
                             "durationMicroseconds": 0,
                             "functionName": "onClicked",
-                            "line": 219,
-                            "message": ""
+                            "line": 227,
+                            "message": "Cannot retrieve a non-object type by ID: registerUserInput"
                         },
                         {
                             "codegenResult": 0,
                             "column": 39,
                             "durationMicroseconds": 0,
                             "functionName": "fill",
-                            "line": 217,
+                            "line": 225,
                             "message": ""
                         },
                         {
@@ -298,7 +314,7 @@
                             "column": 26,
                             "durationMicroseconds": 0,
                             "functionName": "visible",
-                            "line": 233,
+                            "line": 243,
                             "message": ""
                         },
                         {
@@ -306,15 +322,23 @@
                             "column": 44,
                             "durationMicroseconds": 0,
                             "functionName": "verticalAlignment",
-                            "line": 252,
-                            "message": "Could not find property \"verticalAlignment\"."
-                        },
-                        {
-                            "codegenResult": 0,
-                            "column": 43,
-                            "durationMicroseconds": 0,
-                            "functionName": "left",
                             "line": 262,
+                            "message": "Could not find property \"verticalAlignment\"."
+                        },
+                        {
+                            "codegenResult": 2,
+                            "column": 37,
+                            "durationMicroseconds": 0,
+                            "functionName": "onAccepted",
+                            "line": 279,
+                            "message": "Could not find signal \"accepted\"."
+                        },
+                        {
+                            "codegenResult": 0,
+                            "column": 43,
+                            "durationMicroseconds": 0,
+                            "functionName": "left",
+                            "line": 272,
                             "message": ""
                         },
                         {
@@ -322,7 +346,7 @@
                             "column": 53,
                             "durationMicroseconds": 0,
                             "functionName": "verticalCenter",
-                            "line": 263,
+                            "line": 273,
                             "message": ""
                         },
                         {
@@ -330,7 +354,7 @@
                             "column": 35,
                             "durationMicroseconds": 0,
                             "functionName": "echoMode",
-                            "line": 282,
+                            "line": 295,
                             "message": "Could not find property \"echoMode\"."
                         },
                         {
@@ -338,47 +362,23 @@
                             "column": 44,
                             "durationMicroseconds": 0,
                             "functionName": "verticalAlignment",
-                            "line": 288,
+                            "line": 301,
                             "message": "Could not find property \"verticalAlignment\"."
                         },
                         {
-                            "codegenResult": 0,
-                            "column": 43,
-                            "durationMicroseconds": 0,
-                            "functionName": "left",
-                            "line": 298,
-                            "message": ""
-                        },
-                        {
-                            "codegenResult": 0,
-                            "column": 53,
-                            "durationMicroseconds": 0,
-                            "functionName": "verticalCenter",
-                            "line": 299,
-                            "message": ""
-                        },
-                        {
                             "codegenResult": 2,
-                            "column": 35,
+                            "column": 37,
                             "durationMicroseconds": 0,
-                            "functionName": "echoMode",
+                            "functionName": "onAccepted",
                             "line": 318,
-                            "message": "Could not find property \"echoMode\"."
-                        },
-                        {
-                            "codegenResult": 2,
-                            "column": 44,
-                            "durationMicroseconds": 0,
-                            "functionName": "verticalAlignment",
-                            "line": 324,
-                            "message": "Could not find property \"verticalAlignment\"."
+                            "message": "Could not find signal \"accepted\"."
                         },
                         {
                             "codegenResult": 0,
                             "column": 43,
                             "durationMicroseconds": 0,
                             "functionName": "left",
-                            "line": 334,
+                            "line": 311,
                             "message": ""
                         },
                         {
@@ -386,7 +386,47 @@
                             "column": 53,
                             "durationMicroseconds": 0,
                             "functionName": "verticalCenter",
-                            "line": 335,
+                            "line": 312,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 2,
+                            "column": 35,
+                            "durationMicroseconds": 0,
+                            "functionName": "echoMode",
+                            "line": 334,
+                            "message": "Could not find property \"echoMode\"."
+                        },
+                        {
+                            "codegenResult": 2,
+                            "column": 44,
+                            "durationMicroseconds": 0,
+                            "functionName": "verticalAlignment",
+                            "line": 340,
+                            "message": "Could not find property \"verticalAlignment\"."
+                        },
+                        {
+                            "codegenResult": 2,
+                            "column": 37,
+                            "durationMicroseconds": 0,
+                            "functionName": "onAccepted",
+                            "line": 357,
+                            "message": "Could not find signal \"accepted\"."
+                        },
+                        {
+                            "codegenResult": 0,
+                            "column": 43,
+                            "durationMicroseconds": 0,
+                            "functionName": "left",
+                            "line": 350,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 0,
+                            "column": 53,
+                            "durationMicroseconds": 0,
+                            "functionName": "verticalCenter",
+                            "line": 351,
                             "message": ""
                         },
                         {
@@ -394,7 +434,7 @@
                             "column": 47,
                             "durationMicroseconds": 0,
                             "functionName": "horizontalCenter",
-                            "line": 348,
+                            "line": 367,
                             "message": ""
                         },
                         {
@@ -402,7 +442,7 @@
                             "column": 32,
                             "durationMicroseconds": 0,
                             "functionName": "onClicked",
-                            "line": 374,
+                            "line": 394,
                             "message": "Could not find signal \"clicked\"."
                         },
                         {
@@ -410,7 +450,7 @@
                             "column": 47,
                             "durationMicroseconds": 0,
                             "functionName": "horizontalCenter",
-                            "line": 355,
+                            "line": 375,
                             "message": "Could not find property \"horizontalCenter\"."
                         },
                         {
@@ -418,23 +458,23 @@
                             "column": 39,
                             "durationMicroseconds": 0,
                             "functionName": "width",
-                            "line": 362,
-                            "message": "Cannot load property pressed from (component in D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/ui/LoginPage.qml)::parent with type QQuickItem."
+                            "line": 382,
+                            "message": "Cannot load property pressed from (component in C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/ui/LoginPage.qml)::parent with type QQuickItem."
                         },
                         {
                             "codegenResult": 2,
                             "column": 31,
                             "durationMicroseconds": 0,
                             "functionName": "text",
-                            "line": 366,
-                            "message": "Cannot load property text from (component in D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/ui/LoginPage.qml)::parent with type QQuickItem."
+                            "line": 386,
+                            "message": "Cannot load property text from (component in C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/ui/LoginPage.qml)::parent with type QQuickItem."
                         },
                         {
                             "codegenResult": 0,
                             "column": 46,
                             "durationMicroseconds": 0,
                             "functionName": "horizontalAlignment",
-                            "line": 370,
+                            "line": 390,
                             "message": ""
                         },
                         {
@@ -442,7 +482,7 @@
                             "column": 44,
                             "durationMicroseconds": 0,
                             "functionName": "verticalAlignment",
-                            "line": 371,
+                            "line": 391,
                             "message": ""
                         },
                         {
@@ -450,7 +490,7 @@
                             "column": 47,
                             "durationMicroseconds": 0,
                             "functionName": "horizontalCenter",
-                            "line": 417,
+                            "line": 440,
                             "message": ""
                         },
                         {
@@ -458,30 +498,22 @@
                             "column": 38,
                             "durationMicroseconds": 0,
                             "functionName": "cursorShape",
-                            "line": 420,
+                            "line": 443,
                             "message": ""
                         },
                         {
-                            "codegenResult": 0,
+                            "codegenResult": 2,
                             "column": 36,
                             "durationMicroseconds": 0,
                             "functionName": "onClicked",
-                            "line": 421,
-                            "message": ""
+                            "line": 444,
+                            "message": "Cannot retrieve a non-object type by ID: loginUserInput"
                         },
                         {
                             "codegenResult": 0,
                             "column": 39,
                             "durationMicroseconds": 0,
                             "functionName": "fill",
-                            "line": 419,
-                            "message": ""
-                        },
-                        {
-                            "codegenResult": 0,
-                            "column": 39,
-                            "durationMicroseconds": 0,
-                            "functionName": "target",
                             "line": 442,
                             "message": ""
                         },
@@ -490,11 +522,19 @@
                             "column": 39,
                             "durationMicroseconds": 0,
                             "functionName": "target",
-                            "line": 438,
+                            "line": 467,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 0,
+                            "column": 39,
+                            "durationMicroseconds": 0,
+                            "functionName": "target",
+                            "line": 463,
                             "message": ""
                         }
                     ],
-                    "filePath": "D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/ui/LoginPage.qml"
+                    "filePath": "C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/ui/LoginPage.qml"
                 }
             ],
             "moduleId": "GiangsCoffee(GiangsCoffee)"

@@ -1,14 +1,14 @@
-D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee_autogen/6YEA5652QU/moc_GiangCoffeeSystem.cpp: D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/GiangCoffeeSystem.h \
-  D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee_autogen/moc_predefs.h \
-  D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/Account.h \
-  D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/Customer.h \
-  D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/Employee.h \
-  D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/Ingredient.h \
-  D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/Menu.h \
-  D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/Order.h \
-  D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/Seating.h \
-  D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/Supplier.h \
-  D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/User.h \
+C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee_autogen/6YEA5652QU/moc_GiangCoffeeSystem.cpp: C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/GiangCoffeeSystem.h \
+  C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee_autogen/moc_predefs.h \
+  C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/Account.h \
+  C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/Customer.h \
+  C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/Employee.h \
+  C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/Ingredient.h \
+  C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/Menu.h \
+  C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/Order.h \
+  C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/Seating.h \
+  C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/Supplier.h \
+  C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/User.h \
   D:/QT/6.11.1/mingw_64/include/QtCore/QDateTime \
   D:/QT/6.11.1/mingw_64/include/QtCore/QList \
   D:/QT/6.11.1/mingw_64/include/QtCore/QObject \
@@ -74,7 +74,6 @@ D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/bu
   D:/QT/6.11.1/mingw_64/include/QtCore/qmap.h \
   D:/QT/6.11.1/mingw_64/include/QtCore/qmath.h \
   D:/QT/6.11.1/mingw_64/include/QtCore/qmetacontainer.h \
-  D:/QT/6.11.1/mingw_64/include/QtCore/qmetaobject.h \
   D:/QT/6.11.1/mingw_64/include/QtCore/qmetatype.h \
   D:/QT/6.11.1/mingw_64/include/QtCore/qminmax.h \
   D:/QT/6.11.1/mingw_64/include/QtCore/qnamespace.h \
@@ -136,13 +135,6 @@ D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/bu
   D:/QT/6.11.1/mingw_64/include/QtCore/qversiontagging.h \
   D:/QT/6.11.1/mingw_64/include/QtCore/qxptype_traits.h \
   D:/QT/6.11.1/mingw_64/include/QtCore/qyieldcpu.h \
-  D:/QT/6.11.1/mingw_64/include/QtSql/QSqlDatabase \
-  D:/QT/6.11.1/mingw_64/include/QtSql/QSqlError \
-  D:/QT/6.11.1/mingw_64/include/QtSql/qsqldatabase.h \
-  D:/QT/6.11.1/mingw_64/include/QtSql/qsqlerror.h \
-  D:/QT/6.11.1/mingw_64/include/QtSql/qtsql-config.h \
-  D:/QT/6.11.1/mingw_64/include/QtSql/qtsqlexports.h \
-  D:/QT/6.11.1/mingw_64/include/QtSql/qtsqlglobal.h \
   D:/QT/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/algorithm \
   D:/QT/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/array \
   D:/QT/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/atomic \

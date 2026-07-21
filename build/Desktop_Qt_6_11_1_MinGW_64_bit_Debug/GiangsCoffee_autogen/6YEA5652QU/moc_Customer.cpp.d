@@ -1,6 +1,6 @@
-D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee_autogen/6YEA5652QU/moc_Customer.cpp: D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/Customer.h \
-  D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee_autogen/moc_predefs.h \
-  D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/User.h \
+C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee_autogen/6YEA5652QU/moc_Customer.cpp: C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/Customer.h \
+  C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee_autogen/moc_predefs.h \
+  C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/User.h \
   D:/QT/6.11.1/mingw_64/include/QtCore/QObject \
   D:/QT/6.11.1/mingw_64/include/QtCore/QString \
   D:/QT/6.11.1/mingw_64/include/QtCore/q17memory.h \

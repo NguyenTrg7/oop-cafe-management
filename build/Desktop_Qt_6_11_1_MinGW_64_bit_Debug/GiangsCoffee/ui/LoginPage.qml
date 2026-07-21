@@ -99,13 +99,14 @@ Rectangle {
                     }
                     TextField {
                         id: loginUserInput
+                        focus: true // 🌟 Tự động nháy con trỏ khi mở app
                         placeholderText: qsTr("Nhập tên tài khoản...")
                         leftPadding: 40
                         width: 300
                         height: 48
                         font.pixelSize: 15
                         color: "#333333"
-                        verticalAlignment: TextInput.AlignVCenter // Căn giữa con trỏ dọc
+                        verticalAlignment: TextInput.AlignVCenter
                         background: Rectangle {
                             radius: 12
                             color: "#FFFFFF"
@@ -120,6 +121,9 @@ Rectangle {
                             anchors.leftMargin: 12
                             opacity: 0.7
                         }
+
+                        // 🌟 Nhấn Enter nhảy sang ô Mật khẩu
+                        onAccepted: loginPassInput.forceActiveFocus()
                     }
                 }
 
@@ -141,7 +145,7 @@ Rectangle {
                         height: 48
                         font.pixelSize: 15
                         color: "#333333"
-                        verticalAlignment: TextInput.AlignVCenter // Căn giữa con trỏ dọc
+                        verticalAlignment: TextInput.AlignVCenter
                         background: Rectangle {
                             radius: 12
                             color: "#FFFFFF"
@@ -156,6 +160,9 @@ Rectangle {
                             anchors.leftMargin: 12
                             opacity: 0.7
                         }
+
+                        // 🌟 Nhấn Enter tự động bấm nút Đăng nhập
+                        onAccepted: loginBtn.clicked()
                     }
                 }
 
@@ -169,6 +176,7 @@ Rectangle {
                 }
 
                 Button {
+                    id: loginBtn // 🌟 Khai báo ID để gọi ở trên
                     text: qsTr("ĐĂNG NHẬP")
                     width: 300
                     height: 52
@@ -219,6 +227,8 @@ Rectangle {
                         onClicked: {
                             root.state = "register"
                             loginErrorText.visible = false
+                            // 🌟 Chuyển sang form Đăng ký là tự động focus ô User mới
+                            registerUserInput.forceActiveFocus()
                         }
                     }
                 }
@@ -249,7 +259,7 @@ Rectangle {
                         height: 48
                         font.pixelSize: 15
                         color: "#333333"
-                        verticalAlignment: TextInput.AlignVCenter // Căn giữa con trỏ dọc
+                        verticalAlignment: TextInput.AlignVCenter
                         background: Rectangle {
                             radius: 12
                             color: "#FFFFFF"
@@ -264,6 +274,9 @@ Rectangle {
                             anchors.leftMargin: 12
                             opacity: 0.7
                         }
+
+                        // 🌟 Nhấn Enter nhảy sang ô Mật khẩu
+                        onAccepted: registerPassInput.forceActiveFocus()
                     }
                 }
 
@@ -285,7 +298,7 @@ Rectangle {
                         height: 48
                         font.pixelSize: 15
                         color: "#333333"
-                        verticalAlignment: TextInput.AlignVCenter // Căn giữa con trỏ dọc
+                        verticalAlignment: TextInput.AlignVCenter
                         background: Rectangle {
                             radius: 12
                             color: "#FFFFFF"
@@ -300,6 +313,9 @@ Rectangle {
                             anchors.leftMargin: 12
                             opacity: 0.7
                         }
+
+                        // 🌟 Nhấn Enter nhảy sang ô Xác nhận mật khẩu
+                        onAccepted: registerConfirmInput.forceActiveFocus()
                     }
                 }
 
@@ -321,7 +337,7 @@ Rectangle {
                         height: 48
                         font.pixelSize: 15
                         color: "#333333"
-                        verticalAlignment: TextInput.AlignVCenter // Căn giữa con trỏ dọc
+                        verticalAlignment: TextInput.AlignVCenter
                         background: Rectangle {
                             radius: 12
                             color: "#FFFFFF"
@@ -336,6 +352,9 @@ Rectangle {
                             anchors.leftMargin: 12
                             opacity: 0.7
                         }
+
+                        // 🌟 Nhấn Enter bấm nút Đăng ký
+                        onAccepted: registerBtn.clicked()
                     }
                 }
 
@@ -349,6 +368,7 @@ Rectangle {
                 }
 
                 Button {
+                    id: registerBtn // 🌟 Khai báo ID để gọi
                     text: qsTr("ĐĂNG KÝ")
                     width: 300
                     height: 52
@@ -402,6 +422,9 @@ Rectangle {
                             loginErrorText.text = qsTr("Đăng ký thành công! Hãy đăng nhập.")
                             loginErrorText.color = "#43A047"
                             loginErrorText.visible = true
+
+                            // 🌟 Về màn hình đăng nhập thì tự động focus ô User đăng nhập
+                            loginUserInput.forceActiveFocus()
                         } else {
                             registerErrorText.text = qsTr("Tài khoản đã tồn tại!")
                             registerErrorText.visible = true
@@ -421,6 +444,8 @@ Rectangle {
                         onClicked: {
                             root.state = "login"
                             registerErrorText.visible = false
+                            // 🌟 Chuyển về login thì focus lại vào ô User
+                            loginUserInput.forceActiveFocus()
                         }
                     }
                 }

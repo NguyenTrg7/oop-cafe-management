@@ -52,10 +52,10 @@ RM = D:\QT\Tools\CMake_64\bin\cmake.exe -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture
+CMAKE_SOURCE_DIR = C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug
+CMAKE_BINARY_DIR = C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug
 
 # Include any dependencies generated for this target.
 include CMakeFiles/GiangsCoffee.dir/depend.make
@@ -70,9 +70,9 @@ include CMakeFiles/GiangsCoffee.dir/flags.make
 
 meta_types/qt6giangscoffee_metatypes.json.gen: D:/QT/6.11.1/mingw_64/bin/moc.exe
 meta_types/qt6giangscoffee_metatypes.json.gen: meta_types/GiangsCoffee_json_file_list.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Running moc --collect-json for target GiangsCoffee"
-	D:\QT\6.11.1\mingw_64\bin\moc.exe -o D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/meta_types/qt6giangscoffee_metatypes.json.gen --collect-json @D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/meta_types/GiangsCoffee_json_file_list.txt
-	D:\QT\Tools\CMake_64\bin\cmake.exe -E copy_if_different D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/meta_types/qt6giangscoffee_metatypes.json.gen D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/meta_types/qt6giangscoffee_metatypes.json
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Running moc --collect-json for target GiangsCoffee"
+	D:\QT\6.11.1\mingw_64\bin\moc.exe -o C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/meta_types/qt6giangscoffee_metatypes.json.gen --collect-json @C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/meta_types/GiangsCoffee_json_file_list.txt
+	D:\QT\Tools\CMake_64\bin\cmake.exe -E copy_if_different C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/meta_types/qt6giangscoffee_metatypes.json.gen C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/meta_types/qt6giangscoffee_metatypes.json
 
 giangscoffee_qmltyperegistrations.cpp: qmltypes/GiangsCoffee_foreign_types.txt
 giangscoffee_qmltyperegistrations.cpp: meta_types/qt6giangscoffee_metatypes.json
@@ -84,10 +84,10 @@ giangscoffee_qmltyperegistrations.cpp: D:/QT/6.11.1/mingw_64/metatypes/qt6gui_me
 giangscoffee_qmltyperegistrations.cpp: D:/QT/6.11.1/mingw_64/metatypes/qt6quick_metatypes.json
 giangscoffee_qmltyperegistrations.cpp: D:/QT/6.11.1/mingw_64/metatypes/qt6opengl_metatypes.json
 giangscoffee_qmltyperegistrations.cpp: D:/QT/6.11.1/mingw_64/metatypes/qt6sql_metatypes.json
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Automatic QML type registration for target GiangsCoffee"
-	call .qt\bin\qt_setup_tool_path.bat D:/QT/6.11.1/mingw_64/bin/qmltyperegistrar.exe --generate-qmltypes=D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee/GiangsCoffee.qmltypes --import-name=GiangsCoffee --major-version=1 --minor-version=0 @D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/qmltypes/GiangsCoffee_foreign_types.txt -o D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/giangscoffee_qmltyperegistrations.cpp D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/meta_types/qt6giangscoffee_metatypes.json
-	D:\QT\Tools\CMake_64\bin\cmake.exe -E make_directory D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/qmltypes
-	D:\QT\Tools\CMake_64\bin\cmake.exe -E touch D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/qmltypes/GiangsCoffee.qmltypes
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Automatic QML type registration for target GiangsCoffee"
+	call .qt\bin\qt_setup_tool_path.bat D:/QT/6.11.1/mingw_64/bin/qmltyperegistrar.exe --generate-qmltypes=C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee/GiangsCoffee.qmltypes --import-name=GiangsCoffee --major-version=1 --minor-version=0 @C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/qmltypes/GiangsCoffee_foreign_types.txt -o C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/giangscoffee_qmltyperegistrations.cpp C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/meta_types/qt6giangscoffee_metatypes.json
+	D:\QT\Tools\CMake_64\bin\cmake.exe -E make_directory C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/qmltypes
+	D:\QT\Tools\CMake_64\bin\cmake.exe -E touch C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/qmltypes/GiangsCoffee.qmltypes
 
 GiangsCoffee/GiangsCoffee.qmltypes: giangscoffee_qmltyperegistrations.cpp
 	@$(CMAKE_COMMAND) -E touch_nocreate GiangsCoffee\GiangsCoffee.qmltypes
@@ -95,447 +95,447 @@ GiangsCoffee/GiangsCoffee.qmltypes: giangscoffee_qmltyperegistrations.cpp
 .qt/rcc/qrc_qmake_GiangsCoffee.cpp: GiangsCoffee/qmldir
 .qt/rcc/qrc_qmake_GiangsCoffee.cpp: .qt/rcc/qmake_GiangsCoffee.qrc
 .qt/rcc/qrc_qmake_GiangsCoffee.cpp: D:/QT/6.11.1/mingw_64/bin/rcc.exe
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Running rcc for resource qmake_GiangsCoffee"
-	D:\QT\6.11.1\mingw_64\bin\rcc.exe --output D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_qmake_GiangsCoffee.cpp --name qmake_GiangsCoffee D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qmake_GiangsCoffee.qrc --no-zstd
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Running rcc for resource qmake_GiangsCoffee"
+	D:\QT\6.11.1\mingw_64\bin\rcc.exe --output C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_qmake_GiangsCoffee.cpp --name qmake_GiangsCoffee C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qmake_GiangsCoffee.qrc --no-zstd
 
 .rcc/qmlcache/GiangsCoffee_qmlcache_loader.cpp: D:/QT/6.11.1/mingw_64/bin/qmlcachegen.exe
 .rcc/qmlcache/GiangsCoffee_qmlcache_loader.cpp: .rcc/qmlcache/GiangsCoffee_qml_loader_file_list.rsp
 .rcc/qmlcache/GiangsCoffee_qmlcache_loader.cpp: .qt/rcc/qmake_GiangsCoffee.qrc
 .rcc/qmlcache/GiangsCoffee_qmlcache_loader.cpp: .qt/rcc/GiangsCoffee_raw_qml_0.qrc
 .rcc/qmlcache/GiangsCoffee_qmlcache_loader.cpp: .qt/rcc/GiangsCoffee_raw_qml_0_extra_qmldirs.qrc
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Generating .rcc/qmlcache/GiangsCoffee_qmlcache_loader.cpp"
-	call .qt\bin\qt_setup_tool_path.bat D:/QT/6.11.1/mingw_64/bin/qmlcachegen.exe --resource-name qmlcache_GiangsCoffee -o D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_qmlcache_loader.cpp @D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_qml_loader_file_list.rsp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Generating .rcc/qmlcache/GiangsCoffee_qmlcache_loader.cpp"
+	call .qt\bin\qt_setup_tool_path.bat D:/QT/6.11.1/mingw_64/bin/qmlcachegen.exe --resource-name qmlcache_GiangsCoffee -o C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_qmlcache_loader.cpp @C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_qml_loader_file_list.rsp
 
 .rcc/qmlcache/GiangsCoffee_ui/main_qml.cpp: D:/QT/6.11.1/mingw_64/bin/qmlcachegen.exe
-.rcc/qmlcache/GiangsCoffee_ui/main_qml.cpp: D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/ui/main.qml
+.rcc/qmlcache/GiangsCoffee_ui/main_qml.cpp: C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/ui/main.qml
 .rcc/qmlcache/GiangsCoffee_ui/main_qml.cpp: .qt/rcc/qmake_GiangsCoffee.qrc
 .rcc/qmlcache/GiangsCoffee_ui/main_qml.cpp: .qt/rcc/GiangsCoffee_raw_qml_0.qrc
 .rcc/qmlcache/GiangsCoffee_ui/main_qml.cpp: .qt/rcc/GiangsCoffee_raw_qml_0_extra_qmldirs.qrc
 .rcc/qmlcache/GiangsCoffee_ui/main_qml.cpp: GiangsCoffee/GiangsCoffee.qmltypes
 .rcc/qmlcache/GiangsCoffee_ui/main_qml.cpp: GiangsCoffee/qmldir
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Generating .rcc/qmlcache/GiangsCoffee_ui/main_qml.cpp, .rcc/qmlcache/GiangsCoffee_ui/main_qml.cpp.aotstats"
-	D:\QT\Tools\CMake_64\bin\cmake.exe -E make_directory D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui
-	call .qt\bin\qt_setup_tool_path.bat D:/QT/6.11.1/mingw_64/bin/qmlcachegen.exe --bare --resource-path /qt/qml/GiangsCoffee/ui/main.qml -I D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug -I D:/QT/6.11.1/mingw_64/qml -i D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee/qmldir --resource D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qmake_GiangsCoffee.qrc --resource D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/GiangsCoffee_raw_qml_0.qrc --resource D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/GiangsCoffee_raw_qml_0_extra_qmldirs.qrc --dump-aot-stats --module-id=GiangsCoffee(GiangsCoffee) -o D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/main_qml.cpp D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/ui/main.qml
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Generating .rcc/qmlcache/GiangsCoffee_ui/main_qml.cpp, .rcc/qmlcache/GiangsCoffee_ui/main_qml.cpp.aotstats"
+	D:\QT\Tools\CMake_64\bin\cmake.exe -E make_directory C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui
+	call .qt\bin\qt_setup_tool_path.bat D:/QT/6.11.1/mingw_64/bin/qmlcachegen.exe --bare --resource-path /qt/qml/GiangsCoffee/ui/main.qml -I C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug -I D:/QT/6.11.1/mingw_64/qml -i C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee/qmldir --resource C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qmake_GiangsCoffee.qrc --resource C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/GiangsCoffee_raw_qml_0.qrc --resource C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/GiangsCoffee_raw_qml_0_extra_qmldirs.qrc --dump-aot-stats --module-id=GiangsCoffee(GiangsCoffee) -o C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/main_qml.cpp C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/ui/main.qml
 
 .rcc/qmlcache/GiangsCoffee_ui/main_qml.cpp.aotstats: .rcc/qmlcache/GiangsCoffee_ui/main_qml.cpp
 	@$(CMAKE_COMMAND) -E touch_nocreate .rcc\qmlcache\GiangsCoffee_ui\main_qml.cpp.aotstats
 
 .rcc/qmlcache/GiangsCoffee_ui/OrderPage_qml.cpp: D:/QT/6.11.1/mingw_64/bin/qmlcachegen.exe
-.rcc/qmlcache/GiangsCoffee_ui/OrderPage_qml.cpp: D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/ui/OrderPage.qml
+.rcc/qmlcache/GiangsCoffee_ui/OrderPage_qml.cpp: C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/ui/OrderPage.qml
 .rcc/qmlcache/GiangsCoffee_ui/OrderPage_qml.cpp: .qt/rcc/qmake_GiangsCoffee.qrc
 .rcc/qmlcache/GiangsCoffee_ui/OrderPage_qml.cpp: .qt/rcc/GiangsCoffee_raw_qml_0.qrc
 .rcc/qmlcache/GiangsCoffee_ui/OrderPage_qml.cpp: .qt/rcc/GiangsCoffee_raw_qml_0_extra_qmldirs.qrc
 .rcc/qmlcache/GiangsCoffee_ui/OrderPage_qml.cpp: GiangsCoffee/GiangsCoffee.qmltypes
 .rcc/qmlcache/GiangsCoffee_ui/OrderPage_qml.cpp: GiangsCoffee/qmldir
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Generating .rcc/qmlcache/GiangsCoffee_ui/OrderPage_qml.cpp, .rcc/qmlcache/GiangsCoffee_ui/OrderPage_qml.cpp.aotstats"
-	D:\QT\Tools\CMake_64\bin\cmake.exe -E make_directory D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui
-	call .qt\bin\qt_setup_tool_path.bat D:/QT/6.11.1/mingw_64/bin/qmlcachegen.exe --bare --resource-path /qt/qml/GiangsCoffee/ui/OrderPage.qml -I D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug -I D:/QT/6.11.1/mingw_64/qml -i D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee/qmldir --resource D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qmake_GiangsCoffee.qrc --resource D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/GiangsCoffee_raw_qml_0.qrc --resource D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/GiangsCoffee_raw_qml_0_extra_qmldirs.qrc --dump-aot-stats --module-id=GiangsCoffee(GiangsCoffee) -o D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/OrderPage_qml.cpp D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/ui/OrderPage.qml
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Generating .rcc/qmlcache/GiangsCoffee_ui/OrderPage_qml.cpp, .rcc/qmlcache/GiangsCoffee_ui/OrderPage_qml.cpp.aotstats"
+	D:\QT\Tools\CMake_64\bin\cmake.exe -E make_directory C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui
+	call .qt\bin\qt_setup_tool_path.bat D:/QT/6.11.1/mingw_64/bin/qmlcachegen.exe --bare --resource-path /qt/qml/GiangsCoffee/ui/OrderPage.qml -I C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug -I D:/QT/6.11.1/mingw_64/qml -i C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee/qmldir --resource C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qmake_GiangsCoffee.qrc --resource C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/GiangsCoffee_raw_qml_0.qrc --resource C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/GiangsCoffee_raw_qml_0_extra_qmldirs.qrc --dump-aot-stats --module-id=GiangsCoffee(GiangsCoffee) -o C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/OrderPage_qml.cpp C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/ui/OrderPage.qml
 
 .rcc/qmlcache/GiangsCoffee_ui/OrderPage_qml.cpp.aotstats: .rcc/qmlcache/GiangsCoffee_ui/OrderPage_qml.cpp
 	@$(CMAKE_COMMAND) -E touch_nocreate .rcc\qmlcache\GiangsCoffee_ui\OrderPage_qml.cpp.aotstats
 
 .rcc/qmlcache/GiangsCoffee_ui/LoyaltyPage_qml.cpp: D:/QT/6.11.1/mingw_64/bin/qmlcachegen.exe
-.rcc/qmlcache/GiangsCoffee_ui/LoyaltyPage_qml.cpp: D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/ui/LoyaltyPage.qml
+.rcc/qmlcache/GiangsCoffee_ui/LoyaltyPage_qml.cpp: C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/ui/LoyaltyPage.qml
 .rcc/qmlcache/GiangsCoffee_ui/LoyaltyPage_qml.cpp: .qt/rcc/qmake_GiangsCoffee.qrc
 .rcc/qmlcache/GiangsCoffee_ui/LoyaltyPage_qml.cpp: .qt/rcc/GiangsCoffee_raw_qml_0.qrc
 .rcc/qmlcache/GiangsCoffee_ui/LoyaltyPage_qml.cpp: .qt/rcc/GiangsCoffee_raw_qml_0_extra_qmldirs.qrc
 .rcc/qmlcache/GiangsCoffee_ui/LoyaltyPage_qml.cpp: GiangsCoffee/GiangsCoffee.qmltypes
 .rcc/qmlcache/GiangsCoffee_ui/LoyaltyPage_qml.cpp: GiangsCoffee/qmldir
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Generating .rcc/qmlcache/GiangsCoffee_ui/LoyaltyPage_qml.cpp, .rcc/qmlcache/GiangsCoffee_ui/LoyaltyPage_qml.cpp.aotstats"
-	D:\QT\Tools\CMake_64\bin\cmake.exe -E make_directory D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui
-	call .qt\bin\qt_setup_tool_path.bat D:/QT/6.11.1/mingw_64/bin/qmlcachegen.exe --bare --resource-path /qt/qml/GiangsCoffee/ui/LoyaltyPage.qml -I D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug -I D:/QT/6.11.1/mingw_64/qml -i D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee/qmldir --resource D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qmake_GiangsCoffee.qrc --resource D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/GiangsCoffee_raw_qml_0.qrc --resource D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/GiangsCoffee_raw_qml_0_extra_qmldirs.qrc --dump-aot-stats --module-id=GiangsCoffee(GiangsCoffee) -o D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/LoyaltyPage_qml.cpp D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/ui/LoyaltyPage.qml
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Generating .rcc/qmlcache/GiangsCoffee_ui/LoyaltyPage_qml.cpp, .rcc/qmlcache/GiangsCoffee_ui/LoyaltyPage_qml.cpp.aotstats"
+	D:\QT\Tools\CMake_64\bin\cmake.exe -E make_directory C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui
+	call .qt\bin\qt_setup_tool_path.bat D:/QT/6.11.1/mingw_64/bin/qmlcachegen.exe --bare --resource-path /qt/qml/GiangsCoffee/ui/LoyaltyPage.qml -I C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug -I D:/QT/6.11.1/mingw_64/qml -i C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee/qmldir --resource C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qmake_GiangsCoffee.qrc --resource C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/GiangsCoffee_raw_qml_0.qrc --resource C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/GiangsCoffee_raw_qml_0_extra_qmldirs.qrc --dump-aot-stats --module-id=GiangsCoffee(GiangsCoffee) -o C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/LoyaltyPage_qml.cpp C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/ui/LoyaltyPage.qml
 
 .rcc/qmlcache/GiangsCoffee_ui/LoyaltyPage_qml.cpp.aotstats: .rcc/qmlcache/GiangsCoffee_ui/LoyaltyPage_qml.cpp
 	@$(CMAKE_COMMAND) -E touch_nocreate .rcc\qmlcache\GiangsCoffee_ui\LoyaltyPage_qml.cpp.aotstats
 
 .rcc/qmlcache/GiangsCoffee_ui/LoginPage_qml.cpp: D:/QT/6.11.1/mingw_64/bin/qmlcachegen.exe
-.rcc/qmlcache/GiangsCoffee_ui/LoginPage_qml.cpp: D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/ui/LoginPage.qml
+.rcc/qmlcache/GiangsCoffee_ui/LoginPage_qml.cpp: C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/ui/LoginPage.qml
 .rcc/qmlcache/GiangsCoffee_ui/LoginPage_qml.cpp: .qt/rcc/qmake_GiangsCoffee.qrc
 .rcc/qmlcache/GiangsCoffee_ui/LoginPage_qml.cpp: .qt/rcc/GiangsCoffee_raw_qml_0.qrc
 .rcc/qmlcache/GiangsCoffee_ui/LoginPage_qml.cpp: .qt/rcc/GiangsCoffee_raw_qml_0_extra_qmldirs.qrc
 .rcc/qmlcache/GiangsCoffee_ui/LoginPage_qml.cpp: GiangsCoffee/GiangsCoffee.qmltypes
 .rcc/qmlcache/GiangsCoffee_ui/LoginPage_qml.cpp: GiangsCoffee/qmldir
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Generating .rcc/qmlcache/GiangsCoffee_ui/LoginPage_qml.cpp, .rcc/qmlcache/GiangsCoffee_ui/LoginPage_qml.cpp.aotstats"
-	D:\QT\Tools\CMake_64\bin\cmake.exe -E make_directory D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui
-	call .qt\bin\qt_setup_tool_path.bat D:/QT/6.11.1/mingw_64/bin/qmlcachegen.exe --bare --resource-path /qt/qml/GiangsCoffee/ui/LoginPage.qml -I D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug -I D:/QT/6.11.1/mingw_64/qml -i D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee/qmldir --resource D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qmake_GiangsCoffee.qrc --resource D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/GiangsCoffee_raw_qml_0.qrc --resource D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/GiangsCoffee_raw_qml_0_extra_qmldirs.qrc --dump-aot-stats --module-id=GiangsCoffee(GiangsCoffee) -o D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/LoginPage_qml.cpp D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/ui/LoginPage.qml
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Generating .rcc/qmlcache/GiangsCoffee_ui/LoginPage_qml.cpp, .rcc/qmlcache/GiangsCoffee_ui/LoginPage_qml.cpp.aotstats"
+	D:\QT\Tools\CMake_64\bin\cmake.exe -E make_directory C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui
+	call .qt\bin\qt_setup_tool_path.bat D:/QT/6.11.1/mingw_64/bin/qmlcachegen.exe --bare --resource-path /qt/qml/GiangsCoffee/ui/LoginPage.qml -I C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug -I D:/QT/6.11.1/mingw_64/qml -i C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee/qmldir --resource C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qmake_GiangsCoffee.qrc --resource C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/GiangsCoffee_raw_qml_0.qrc --resource C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/GiangsCoffee_raw_qml_0_extra_qmldirs.qrc --dump-aot-stats --module-id=GiangsCoffee(GiangsCoffee) -o C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/LoginPage_qml.cpp C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/ui/LoginPage.qml
 
 .rcc/qmlcache/GiangsCoffee_ui/LoginPage_qml.cpp.aotstats: .rcc/qmlcache/GiangsCoffee_ui/LoginPage_qml.cpp
 	@$(CMAKE_COMMAND) -E touch_nocreate .rcc\qmlcache\GiangsCoffee_ui\LoginPage_qml.cpp.aotstats
 
-.qt/rcc/qrc_GiangsCoffee_raw_qml_0.cpp: D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/ui/main.qml
-.qt/rcc/qrc_GiangsCoffee_raw_qml_0.cpp: D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/ui/OrderPage.qml
-.qt/rcc/qrc_GiangsCoffee_raw_qml_0.cpp: D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/ui/LoyaltyPage.qml
-.qt/rcc/qrc_GiangsCoffee_raw_qml_0.cpp: D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/ui/LoginPage.qml
+.qt/rcc/qrc_GiangsCoffee_raw_qml_0.cpp: C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/ui/main.qml
+.qt/rcc/qrc_GiangsCoffee_raw_qml_0.cpp: C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/ui/OrderPage.qml
+.qt/rcc/qrc_GiangsCoffee_raw_qml_0.cpp: C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/ui/LoyaltyPage.qml
+.qt/rcc/qrc_GiangsCoffee_raw_qml_0.cpp: C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/ui/LoginPage.qml
 .qt/rcc/qrc_GiangsCoffee_raw_qml_0.cpp: .qt/rcc/GiangsCoffee_raw_qml_0.qrc
 .qt/rcc/qrc_GiangsCoffee_raw_qml_0.cpp: D:/QT/6.11.1/mingw_64/bin/rcc.exe
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Running rcc for resource GiangsCoffee_raw_qml_0"
-	D:\QT\6.11.1\mingw_64\bin\rcc.exe --output D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_GiangsCoffee_raw_qml_0.cpp --name GiangsCoffee_raw_qml_0 D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/GiangsCoffee_raw_qml_0.qrc --no-zstd
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Running rcc for resource GiangsCoffee_raw_qml_0"
+	D:\QT\6.11.1\mingw_64\bin\rcc.exe --output C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_GiangsCoffee_raw_qml_0.cpp --name GiangsCoffee_raw_qml_0 C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/GiangsCoffee_raw_qml_0.qrc --no-zstd
 
 .qt/rcc/qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp: GiangsCoffee/ui/qmldir
 .qt/rcc/qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp: .qt/rcc/GiangsCoffee_raw_qml_0_extra_qmldirs.qrc
 .qt/rcc/qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp: D:/QT/6.11.1/mingw_64/bin/rcc.exe
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Running rcc for resource GiangsCoffee_raw_qml_0_extra_qmldirs"
-	D:\QT\6.11.1\mingw_64\bin\rcc.exe --output D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp --name GiangsCoffee_raw_qml_0_extra_qmldirs D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/GiangsCoffee_raw_qml_0_extra_qmldirs.qrc --no-zstd
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Running rcc for resource GiangsCoffee_raw_qml_0_extra_qmldirs"
+	D:\QT\6.11.1\mingw_64\bin\rcc.exe --output C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp --name GiangsCoffee_raw_qml_0_extra_qmldirs C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/GiangsCoffee_raw_qml_0_extra_qmldirs.qrc --no-zstd
 
 GiangsCoffee_autogen/timestamp: D:/QT/6.11.1/mingw_64/bin/moc.exe
 GiangsCoffee_autogen/timestamp: CMakeFiles/GiangsCoffee.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Automatic MOC and UIC for target GiangsCoffee"
-	D:\QT\Tools\CMake_64\bin\cmake.exe -E cmake_autogen D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/CMakeFiles/GiangsCoffee_autogen.dir/AutogenInfo.json Debug
-	D:\QT\Tools\CMake_64\bin\cmake.exe -E touch D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee_autogen/timestamp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Automatic MOC and UIC for target GiangsCoffee"
+	D:\QT\Tools\CMake_64\bin\cmake.exe -E cmake_autogen C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/CMakeFiles/GiangsCoffee_autogen.dir/AutogenInfo.json Debug
+	D:\QT\Tools\CMake_64\bin\cmake.exe -E touch C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee_autogen/timestamp
 
 meta_types/GiangsCoffee_json_file_list.txt: D:/QT/6.11.1/mingw_64/bin/cmake_automoc_parser.exe
 meta_types/GiangsCoffee_json_file_list.txt: GiangsCoffee_autogen/timestamp
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Running AUTOMOC file extraction for target GiangsCoffee"
-	D:\QT\6.11.1\mingw_64\bin\cmake_automoc_parser.exe --cmake-autogen-cache-file D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/CMakeFiles/GiangsCoffee_autogen.dir/ParseCache.txt --cmake-autogen-info-file D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/CMakeFiles/GiangsCoffee_autogen.dir/AutogenInfo.json --output-file-path D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/meta_types/GiangsCoffee_json_file_list.txt --timestamp-file-path D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/meta_types/GiangsCoffee_json_file_list.txt.timestamp --cmake-autogen-include-dir-path D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee_autogen/include
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Running AUTOMOC file extraction for target GiangsCoffee"
+	D:\QT\6.11.1\mingw_64\bin\cmake_automoc_parser.exe --cmake-autogen-cache-file C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/CMakeFiles/GiangsCoffee_autogen.dir/ParseCache.txt --cmake-autogen-info-file C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/CMakeFiles/GiangsCoffee_autogen.dir/AutogenInfo.json --output-file-path C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/meta_types/GiangsCoffee_json_file_list.txt --timestamp-file-path C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/meta_types/GiangsCoffee_json_file_list.txt.timestamp --cmake-autogen-include-dir-path C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee_autogen/include
 
 meta_types/qt6giangscoffee_metatypes.json: meta_types/qt6giangscoffee_metatypes.json.gen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Generating meta_types/qt6giangscoffee_metatypes.json"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Generating meta_types/qt6giangscoffee_metatypes.json"
 	D:\QT\Tools\CMake_64\bin\cmake.exe -E true
 
 CMakeFiles/GiangsCoffee.dir/GiangsCoffee_autogen/mocs_compilation.cpp.obj: CMakeFiles/GiangsCoffee.dir/flags.make
 CMakeFiles/GiangsCoffee.dir/GiangsCoffee_autogen/mocs_compilation.cpp.obj: CMakeFiles/GiangsCoffee.dir/includes_CXX.rsp
 CMakeFiles/GiangsCoffee.dir/GiangsCoffee_autogen/mocs_compilation.cpp.obj: GiangsCoffee_autogen/mocs_compilation.cpp
 CMakeFiles/GiangsCoffee.dir/GiangsCoffee_autogen/mocs_compilation.cpp.obj: CMakeFiles/GiangsCoffee.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/GiangsCoffee.dir/GiangsCoffee_autogen/mocs_compilation.cpp.obj"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/GiangsCoffee_autogen/mocs_compilation.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\GiangsCoffee_autogen\mocs_compilation.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\GiangsCoffee_autogen\mocs_compilation.cpp.obj -c D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\GiangsCoffee_autogen\mocs_compilation.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/GiangsCoffee.dir/GiangsCoffee_autogen/mocs_compilation.cpp.obj"
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/GiangsCoffee_autogen/mocs_compilation.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\GiangsCoffee_autogen\mocs_compilation.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\GiangsCoffee_autogen\mocs_compilation.cpp.obj -c C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\GiangsCoffee_autogen\mocs_compilation.cpp
 
 CMakeFiles/GiangsCoffee.dir/GiangsCoffee_autogen/mocs_compilation.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/GiangsCoffee.dir/GiangsCoffee_autogen/mocs_compilation.cpp.i"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\GiangsCoffee_autogen\mocs_compilation.cpp > CMakeFiles\GiangsCoffee.dir\GiangsCoffee_autogen\mocs_compilation.cpp.i
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\GiangsCoffee_autogen\mocs_compilation.cpp > CMakeFiles\GiangsCoffee.dir\GiangsCoffee_autogen\mocs_compilation.cpp.i
 
 CMakeFiles/GiangsCoffee.dir/GiangsCoffee_autogen/mocs_compilation.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/GiangsCoffee.dir/GiangsCoffee_autogen/mocs_compilation.cpp.s"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\GiangsCoffee_autogen\mocs_compilation.cpp -o CMakeFiles\GiangsCoffee.dir\GiangsCoffee_autogen\mocs_compilation.cpp.s
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\GiangsCoffee_autogen\mocs_compilation.cpp -o CMakeFiles\GiangsCoffee.dir\GiangsCoffee_autogen\mocs_compilation.cpp.s
 
 CMakeFiles/GiangsCoffee.dir/src/main.cpp.obj: CMakeFiles/GiangsCoffee.dir/flags.make
 CMakeFiles/GiangsCoffee.dir/src/main.cpp.obj: CMakeFiles/GiangsCoffee.dir/includes_CXX.rsp
-CMakeFiles/GiangsCoffee.dir/src/main.cpp.obj: D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/src/main.cpp
+CMakeFiles/GiangsCoffee.dir/src/main.cpp.obj: C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/src/main.cpp
 CMakeFiles/GiangsCoffee.dir/src/main.cpp.obj: CMakeFiles/GiangsCoffee.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/GiangsCoffee.dir/src/main.cpp.obj"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/src/main.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\src\main.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\src\main.cpp.obj -c D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/GiangsCoffee.dir/src/main.cpp.obj"
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/src/main.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\src\main.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\src\main.cpp.obj -c C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\main.cpp
 
 CMakeFiles/GiangsCoffee.dir/src/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/GiangsCoffee.dir/src/main.cpp.i"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\main.cpp > CMakeFiles\GiangsCoffee.dir\src\main.cpp.i
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\main.cpp > CMakeFiles\GiangsCoffee.dir\src\main.cpp.i
 
 CMakeFiles/GiangsCoffee.dir/src/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/GiangsCoffee.dir/src/main.cpp.s"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\main.cpp -o CMakeFiles\GiangsCoffee.dir\src\main.cpp.s
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\main.cpp -o CMakeFiles\GiangsCoffee.dir\src\main.cpp.s
 
 CMakeFiles/GiangsCoffee.dir/src/User.cpp.obj: CMakeFiles/GiangsCoffee.dir/flags.make
 CMakeFiles/GiangsCoffee.dir/src/User.cpp.obj: CMakeFiles/GiangsCoffee.dir/includes_CXX.rsp
-CMakeFiles/GiangsCoffee.dir/src/User.cpp.obj: D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/src/User.cpp
+CMakeFiles/GiangsCoffee.dir/src/User.cpp.obj: C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/src/User.cpp
 CMakeFiles/GiangsCoffee.dir/src/User.cpp.obj: CMakeFiles/GiangsCoffee.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/GiangsCoffee.dir/src/User.cpp.obj"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/src/User.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\src\User.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\src\User.cpp.obj -c D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\User.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/GiangsCoffee.dir/src/User.cpp.obj"
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/src/User.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\src\User.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\src\User.cpp.obj -c C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\User.cpp
 
 CMakeFiles/GiangsCoffee.dir/src/User.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/GiangsCoffee.dir/src/User.cpp.i"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\User.cpp > CMakeFiles\GiangsCoffee.dir\src\User.cpp.i
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\User.cpp > CMakeFiles\GiangsCoffee.dir\src\User.cpp.i
 
 CMakeFiles/GiangsCoffee.dir/src/User.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/GiangsCoffee.dir/src/User.cpp.s"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\User.cpp -o CMakeFiles\GiangsCoffee.dir\src\User.cpp.s
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\User.cpp -o CMakeFiles\GiangsCoffee.dir\src\User.cpp.s
 
 CMakeFiles/GiangsCoffee.dir/src/Customer.cpp.obj: CMakeFiles/GiangsCoffee.dir/flags.make
 CMakeFiles/GiangsCoffee.dir/src/Customer.cpp.obj: CMakeFiles/GiangsCoffee.dir/includes_CXX.rsp
-CMakeFiles/GiangsCoffee.dir/src/Customer.cpp.obj: D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/src/Customer.cpp
+CMakeFiles/GiangsCoffee.dir/src/Customer.cpp.obj: C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/src/Customer.cpp
 CMakeFiles/GiangsCoffee.dir/src/Customer.cpp.obj: CMakeFiles/GiangsCoffee.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/GiangsCoffee.dir/src/Customer.cpp.obj"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/src/Customer.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\src\Customer.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\src\Customer.cpp.obj -c D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\Customer.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/GiangsCoffee.dir/src/Customer.cpp.obj"
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/src/Customer.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\src\Customer.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\src\Customer.cpp.obj -c C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\Customer.cpp
 
 CMakeFiles/GiangsCoffee.dir/src/Customer.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/GiangsCoffee.dir/src/Customer.cpp.i"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\Customer.cpp > CMakeFiles\GiangsCoffee.dir\src\Customer.cpp.i
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\Customer.cpp > CMakeFiles\GiangsCoffee.dir\src\Customer.cpp.i
 
 CMakeFiles/GiangsCoffee.dir/src/Customer.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/GiangsCoffee.dir/src/Customer.cpp.s"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\Customer.cpp -o CMakeFiles\GiangsCoffee.dir\src\Customer.cpp.s
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\Customer.cpp -o CMakeFiles\GiangsCoffee.dir\src\Customer.cpp.s
 
 CMakeFiles/GiangsCoffee.dir/src/Employee.cpp.obj: CMakeFiles/GiangsCoffee.dir/flags.make
 CMakeFiles/GiangsCoffee.dir/src/Employee.cpp.obj: CMakeFiles/GiangsCoffee.dir/includes_CXX.rsp
-CMakeFiles/GiangsCoffee.dir/src/Employee.cpp.obj: D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/src/Employee.cpp
+CMakeFiles/GiangsCoffee.dir/src/Employee.cpp.obj: C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/src/Employee.cpp
 CMakeFiles/GiangsCoffee.dir/src/Employee.cpp.obj: CMakeFiles/GiangsCoffee.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/GiangsCoffee.dir/src/Employee.cpp.obj"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/src/Employee.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\src\Employee.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\src\Employee.cpp.obj -c D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\Employee.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/GiangsCoffee.dir/src/Employee.cpp.obj"
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/src/Employee.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\src\Employee.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\src\Employee.cpp.obj -c C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\Employee.cpp
 
 CMakeFiles/GiangsCoffee.dir/src/Employee.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/GiangsCoffee.dir/src/Employee.cpp.i"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\Employee.cpp > CMakeFiles\GiangsCoffee.dir\src\Employee.cpp.i
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\Employee.cpp > CMakeFiles\GiangsCoffee.dir\src\Employee.cpp.i
 
 CMakeFiles/GiangsCoffee.dir/src/Employee.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/GiangsCoffee.dir/src/Employee.cpp.s"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\Employee.cpp -o CMakeFiles\GiangsCoffee.dir\src\Employee.cpp.s
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\Employee.cpp -o CMakeFiles\GiangsCoffee.dir\src\Employee.cpp.s
 
 CMakeFiles/GiangsCoffee.dir/src/Order.cpp.obj: CMakeFiles/GiangsCoffee.dir/flags.make
 CMakeFiles/GiangsCoffee.dir/src/Order.cpp.obj: CMakeFiles/GiangsCoffee.dir/includes_CXX.rsp
-CMakeFiles/GiangsCoffee.dir/src/Order.cpp.obj: D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/src/Order.cpp
+CMakeFiles/GiangsCoffee.dir/src/Order.cpp.obj: C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/src/Order.cpp
 CMakeFiles/GiangsCoffee.dir/src/Order.cpp.obj: CMakeFiles/GiangsCoffee.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object CMakeFiles/GiangsCoffee.dir/src/Order.cpp.obj"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/src/Order.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\src\Order.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\src\Order.cpp.obj -c D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\Order.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object CMakeFiles/GiangsCoffee.dir/src/Order.cpp.obj"
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/src/Order.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\src\Order.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\src\Order.cpp.obj -c C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\Order.cpp
 
 CMakeFiles/GiangsCoffee.dir/src/Order.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/GiangsCoffee.dir/src/Order.cpp.i"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\Order.cpp > CMakeFiles\GiangsCoffee.dir\src\Order.cpp.i
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\Order.cpp > CMakeFiles\GiangsCoffee.dir\src\Order.cpp.i
 
 CMakeFiles/GiangsCoffee.dir/src/Order.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/GiangsCoffee.dir/src/Order.cpp.s"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\Order.cpp -o CMakeFiles\GiangsCoffee.dir\src\Order.cpp.s
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\Order.cpp -o CMakeFiles\GiangsCoffee.dir\src\Order.cpp.s
 
 CMakeFiles/GiangsCoffee.dir/src/InStoreOrder.cpp.obj: CMakeFiles/GiangsCoffee.dir/flags.make
 CMakeFiles/GiangsCoffee.dir/src/InStoreOrder.cpp.obj: CMakeFiles/GiangsCoffee.dir/includes_CXX.rsp
-CMakeFiles/GiangsCoffee.dir/src/InStoreOrder.cpp.obj: D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/src/InStoreOrder.cpp
+CMakeFiles/GiangsCoffee.dir/src/InStoreOrder.cpp.obj: C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/src/InStoreOrder.cpp
 CMakeFiles/GiangsCoffee.dir/src/InStoreOrder.cpp.obj: CMakeFiles/GiangsCoffee.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object CMakeFiles/GiangsCoffee.dir/src/InStoreOrder.cpp.obj"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/src/InStoreOrder.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\src\InStoreOrder.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\src\InStoreOrder.cpp.obj -c D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\InStoreOrder.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object CMakeFiles/GiangsCoffee.dir/src/InStoreOrder.cpp.obj"
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/src/InStoreOrder.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\src\InStoreOrder.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\src\InStoreOrder.cpp.obj -c C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\InStoreOrder.cpp
 
 CMakeFiles/GiangsCoffee.dir/src/InStoreOrder.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/GiangsCoffee.dir/src/InStoreOrder.cpp.i"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\InStoreOrder.cpp > CMakeFiles\GiangsCoffee.dir\src\InStoreOrder.cpp.i
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\InStoreOrder.cpp > CMakeFiles\GiangsCoffee.dir\src\InStoreOrder.cpp.i
 
 CMakeFiles/GiangsCoffee.dir/src/InStoreOrder.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/GiangsCoffee.dir/src/InStoreOrder.cpp.s"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\InStoreOrder.cpp -o CMakeFiles\GiangsCoffee.dir\src\InStoreOrder.cpp.s
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\InStoreOrder.cpp -o CMakeFiles\GiangsCoffee.dir\src\InStoreOrder.cpp.s
 
 CMakeFiles/GiangsCoffee.dir/src/DeliverOrder.cpp.obj: CMakeFiles/GiangsCoffee.dir/flags.make
 CMakeFiles/GiangsCoffee.dir/src/DeliverOrder.cpp.obj: CMakeFiles/GiangsCoffee.dir/includes_CXX.rsp
-CMakeFiles/GiangsCoffee.dir/src/DeliverOrder.cpp.obj: D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/src/DeliverOrder.cpp
+CMakeFiles/GiangsCoffee.dir/src/DeliverOrder.cpp.obj: C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/src/DeliverOrder.cpp
 CMakeFiles/GiangsCoffee.dir/src/DeliverOrder.cpp.obj: CMakeFiles/GiangsCoffee.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object CMakeFiles/GiangsCoffee.dir/src/DeliverOrder.cpp.obj"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/src/DeliverOrder.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\src\DeliverOrder.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\src\DeliverOrder.cpp.obj -c D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\DeliverOrder.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object CMakeFiles/GiangsCoffee.dir/src/DeliverOrder.cpp.obj"
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/src/DeliverOrder.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\src\DeliverOrder.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\src\DeliverOrder.cpp.obj -c C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\DeliverOrder.cpp
 
 CMakeFiles/GiangsCoffee.dir/src/DeliverOrder.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/GiangsCoffee.dir/src/DeliverOrder.cpp.i"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\DeliverOrder.cpp > CMakeFiles\GiangsCoffee.dir\src\DeliverOrder.cpp.i
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\DeliverOrder.cpp > CMakeFiles\GiangsCoffee.dir\src\DeliverOrder.cpp.i
 
 CMakeFiles/GiangsCoffee.dir/src/DeliverOrder.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/GiangsCoffee.dir/src/DeliverOrder.cpp.s"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\DeliverOrder.cpp -o CMakeFiles\GiangsCoffee.dir\src\DeliverOrder.cpp.s
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\DeliverOrder.cpp -o CMakeFiles\GiangsCoffee.dir\src\DeliverOrder.cpp.s
 
 CMakeFiles/GiangsCoffee.dir/src/GiangCoffeeSystem.cpp.obj: CMakeFiles/GiangsCoffee.dir/flags.make
 CMakeFiles/GiangsCoffee.dir/src/GiangCoffeeSystem.cpp.obj: CMakeFiles/GiangsCoffee.dir/includes_CXX.rsp
-CMakeFiles/GiangsCoffee.dir/src/GiangCoffeeSystem.cpp.obj: D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/src/GiangCoffeeSystem.cpp
+CMakeFiles/GiangsCoffee.dir/src/GiangCoffeeSystem.cpp.obj: C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/src/GiangCoffeeSystem.cpp
 CMakeFiles/GiangsCoffee.dir/src/GiangCoffeeSystem.cpp.obj: CMakeFiles/GiangsCoffee.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building CXX object CMakeFiles/GiangsCoffee.dir/src/GiangCoffeeSystem.cpp.obj"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/src/GiangCoffeeSystem.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\src\GiangCoffeeSystem.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\src\GiangCoffeeSystem.cpp.obj -c D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\GiangCoffeeSystem.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building CXX object CMakeFiles/GiangsCoffee.dir/src/GiangCoffeeSystem.cpp.obj"
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/src/GiangCoffeeSystem.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\src\GiangCoffeeSystem.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\src\GiangCoffeeSystem.cpp.obj -c C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\GiangCoffeeSystem.cpp
 
 CMakeFiles/GiangsCoffee.dir/src/GiangCoffeeSystem.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/GiangsCoffee.dir/src/GiangCoffeeSystem.cpp.i"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\GiangCoffeeSystem.cpp > CMakeFiles\GiangsCoffee.dir\src\GiangCoffeeSystem.cpp.i
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\GiangCoffeeSystem.cpp > CMakeFiles\GiangsCoffee.dir\src\GiangCoffeeSystem.cpp.i
 
 CMakeFiles/GiangsCoffee.dir/src/GiangCoffeeSystem.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/GiangsCoffee.dir/src/GiangCoffeeSystem.cpp.s"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\GiangCoffeeSystem.cpp -o CMakeFiles\GiangsCoffee.dir\src\GiangCoffeeSystem.cpp.s
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\GiangCoffeeSystem.cpp -o CMakeFiles\GiangsCoffee.dir\src\GiangCoffeeSystem.cpp.s
 
 CMakeFiles/GiangsCoffee.dir/src/Menu.cpp.obj: CMakeFiles/GiangsCoffee.dir/flags.make
 CMakeFiles/GiangsCoffee.dir/src/Menu.cpp.obj: CMakeFiles/GiangsCoffee.dir/includes_CXX.rsp
-CMakeFiles/GiangsCoffee.dir/src/Menu.cpp.obj: D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/src/Menu.cpp
+CMakeFiles/GiangsCoffee.dir/src/Menu.cpp.obj: C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/src/Menu.cpp
 CMakeFiles/GiangsCoffee.dir/src/Menu.cpp.obj: CMakeFiles/GiangsCoffee.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building CXX object CMakeFiles/GiangsCoffee.dir/src/Menu.cpp.obj"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/src/Menu.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\src\Menu.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\src\Menu.cpp.obj -c D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\Menu.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building CXX object CMakeFiles/GiangsCoffee.dir/src/Menu.cpp.obj"
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/src/Menu.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\src\Menu.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\src\Menu.cpp.obj -c C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\Menu.cpp
 
 CMakeFiles/GiangsCoffee.dir/src/Menu.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/GiangsCoffee.dir/src/Menu.cpp.i"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\Menu.cpp > CMakeFiles\GiangsCoffee.dir\src\Menu.cpp.i
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\Menu.cpp > CMakeFiles\GiangsCoffee.dir\src\Menu.cpp.i
 
 CMakeFiles/GiangsCoffee.dir/src/Menu.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/GiangsCoffee.dir/src/Menu.cpp.s"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\Menu.cpp -o CMakeFiles\GiangsCoffee.dir\src\Menu.cpp.s
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\Menu.cpp -o CMakeFiles\GiangsCoffee.dir\src\Menu.cpp.s
 
 CMakeFiles/GiangsCoffee.dir/src/Ingredient.cpp.obj: CMakeFiles/GiangsCoffee.dir/flags.make
 CMakeFiles/GiangsCoffee.dir/src/Ingredient.cpp.obj: CMakeFiles/GiangsCoffee.dir/includes_CXX.rsp
-CMakeFiles/GiangsCoffee.dir/src/Ingredient.cpp.obj: D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/src/Ingredient.cpp
+CMakeFiles/GiangsCoffee.dir/src/Ingredient.cpp.obj: C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/src/Ingredient.cpp
 CMakeFiles/GiangsCoffee.dir/src/Ingredient.cpp.obj: CMakeFiles/GiangsCoffee.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building CXX object CMakeFiles/GiangsCoffee.dir/src/Ingredient.cpp.obj"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/src/Ingredient.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\src\Ingredient.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\src\Ingredient.cpp.obj -c D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\Ingredient.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building CXX object CMakeFiles/GiangsCoffee.dir/src/Ingredient.cpp.obj"
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/src/Ingredient.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\src\Ingredient.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\src\Ingredient.cpp.obj -c C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\Ingredient.cpp
 
 CMakeFiles/GiangsCoffee.dir/src/Ingredient.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/GiangsCoffee.dir/src/Ingredient.cpp.i"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\Ingredient.cpp > CMakeFiles\GiangsCoffee.dir\src\Ingredient.cpp.i
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\Ingredient.cpp > CMakeFiles\GiangsCoffee.dir\src\Ingredient.cpp.i
 
 CMakeFiles/GiangsCoffee.dir/src/Ingredient.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/GiangsCoffee.dir/src/Ingredient.cpp.s"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\Ingredient.cpp -o CMakeFiles\GiangsCoffee.dir\src\Ingredient.cpp.s
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\Ingredient.cpp -o CMakeFiles\GiangsCoffee.dir\src\Ingredient.cpp.s
 
 CMakeFiles/GiangsCoffee.dir/src/Supplier.cpp.obj: CMakeFiles/GiangsCoffee.dir/flags.make
 CMakeFiles/GiangsCoffee.dir/src/Supplier.cpp.obj: CMakeFiles/GiangsCoffee.dir/includes_CXX.rsp
-CMakeFiles/GiangsCoffee.dir/src/Supplier.cpp.obj: D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/src/Supplier.cpp
+CMakeFiles/GiangsCoffee.dir/src/Supplier.cpp.obj: C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/src/Supplier.cpp
 CMakeFiles/GiangsCoffee.dir/src/Supplier.cpp.obj: CMakeFiles/GiangsCoffee.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building CXX object CMakeFiles/GiangsCoffee.dir/src/Supplier.cpp.obj"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/src/Supplier.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\src\Supplier.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\src\Supplier.cpp.obj -c D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\Supplier.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building CXX object CMakeFiles/GiangsCoffee.dir/src/Supplier.cpp.obj"
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/src/Supplier.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\src\Supplier.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\src\Supplier.cpp.obj -c C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\Supplier.cpp
 
 CMakeFiles/GiangsCoffee.dir/src/Supplier.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/GiangsCoffee.dir/src/Supplier.cpp.i"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\Supplier.cpp > CMakeFiles\GiangsCoffee.dir\src\Supplier.cpp.i
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\Supplier.cpp > CMakeFiles\GiangsCoffee.dir\src\Supplier.cpp.i
 
 CMakeFiles/GiangsCoffee.dir/src/Supplier.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/GiangsCoffee.dir/src/Supplier.cpp.s"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\Supplier.cpp -o CMakeFiles\GiangsCoffee.dir\src\Supplier.cpp.s
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\Supplier.cpp -o CMakeFiles\GiangsCoffee.dir\src\Supplier.cpp.s
 
 CMakeFiles/GiangsCoffee.dir/src/Seating.cpp.obj: CMakeFiles/GiangsCoffee.dir/flags.make
 CMakeFiles/GiangsCoffee.dir/src/Seating.cpp.obj: CMakeFiles/GiangsCoffee.dir/includes_CXX.rsp
-CMakeFiles/GiangsCoffee.dir/src/Seating.cpp.obj: D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/src/Seating.cpp
+CMakeFiles/GiangsCoffee.dir/src/Seating.cpp.obj: C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/src/Seating.cpp
 CMakeFiles/GiangsCoffee.dir/src/Seating.cpp.obj: CMakeFiles/GiangsCoffee.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building CXX object CMakeFiles/GiangsCoffee.dir/src/Seating.cpp.obj"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/src/Seating.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\src\Seating.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\src\Seating.cpp.obj -c D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\Seating.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building CXX object CMakeFiles/GiangsCoffee.dir/src/Seating.cpp.obj"
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/src/Seating.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\src\Seating.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\src\Seating.cpp.obj -c C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\Seating.cpp
 
 CMakeFiles/GiangsCoffee.dir/src/Seating.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/GiangsCoffee.dir/src/Seating.cpp.i"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\Seating.cpp > CMakeFiles\GiangsCoffee.dir\src\Seating.cpp.i
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\Seating.cpp > CMakeFiles\GiangsCoffee.dir\src\Seating.cpp.i
 
 CMakeFiles/GiangsCoffee.dir/src/Seating.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/GiangsCoffee.dir/src/Seating.cpp.s"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\Seating.cpp -o CMakeFiles\GiangsCoffee.dir\src\Seating.cpp.s
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\Seating.cpp -o CMakeFiles\GiangsCoffee.dir\src\Seating.cpp.s
 
 CMakeFiles/GiangsCoffee.dir/src/Account.cpp.obj: CMakeFiles/GiangsCoffee.dir/flags.make
 CMakeFiles/GiangsCoffee.dir/src/Account.cpp.obj: CMakeFiles/GiangsCoffee.dir/includes_CXX.rsp
-CMakeFiles/GiangsCoffee.dir/src/Account.cpp.obj: D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/src/Account.cpp
+CMakeFiles/GiangsCoffee.dir/src/Account.cpp.obj: C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/src/Account.cpp
 CMakeFiles/GiangsCoffee.dir/src/Account.cpp.obj: CMakeFiles/GiangsCoffee.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Building CXX object CMakeFiles/GiangsCoffee.dir/src/Account.cpp.obj"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/src/Account.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\src\Account.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\src\Account.cpp.obj -c D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\Account.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Building CXX object CMakeFiles/GiangsCoffee.dir/src/Account.cpp.obj"
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/src/Account.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\src\Account.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\src\Account.cpp.obj -c C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\Account.cpp
 
 CMakeFiles/GiangsCoffee.dir/src/Account.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/GiangsCoffee.dir/src/Account.cpp.i"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\Account.cpp > CMakeFiles\GiangsCoffee.dir\src\Account.cpp.i
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\Account.cpp > CMakeFiles\GiangsCoffee.dir\src\Account.cpp.i
 
 CMakeFiles/GiangsCoffee.dir/src/Account.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/GiangsCoffee.dir/src/Account.cpp.s"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\Account.cpp -o CMakeFiles\GiangsCoffee.dir\src\Account.cpp.s
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\Account.cpp -o CMakeFiles\GiangsCoffee.dir\src\Account.cpp.s
 
 CMakeFiles/GiangsCoffee.dir/giangscoffee_qmltyperegistrations.cpp.obj: CMakeFiles/GiangsCoffee.dir/flags.make
 CMakeFiles/GiangsCoffee.dir/giangscoffee_qmltyperegistrations.cpp.obj: CMakeFiles/GiangsCoffee.dir/includes_CXX.rsp
 CMakeFiles/GiangsCoffee.dir/giangscoffee_qmltyperegistrations.cpp.obj: giangscoffee_qmltyperegistrations.cpp
 CMakeFiles/GiangsCoffee.dir/giangscoffee_qmltyperegistrations.cpp.obj: CMakeFiles/GiangsCoffee.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building CXX object CMakeFiles/GiangsCoffee.dir/giangscoffee_qmltyperegistrations.cpp.obj"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -Wa,-mbig-obj -MD -MT CMakeFiles/GiangsCoffee.dir/giangscoffee_qmltyperegistrations.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\giangscoffee_qmltyperegistrations.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\giangscoffee_qmltyperegistrations.cpp.obj -c D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\giangscoffee_qmltyperegistrations.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building CXX object CMakeFiles/GiangsCoffee.dir/giangscoffee_qmltyperegistrations.cpp.obj"
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -Wa,-mbig-obj -MD -MT CMakeFiles/GiangsCoffee.dir/giangscoffee_qmltyperegistrations.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\giangscoffee_qmltyperegistrations.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\giangscoffee_qmltyperegistrations.cpp.obj -c C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\giangscoffee_qmltyperegistrations.cpp
 
 CMakeFiles/GiangsCoffee.dir/giangscoffee_qmltyperegistrations.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/GiangsCoffee.dir/giangscoffee_qmltyperegistrations.cpp.i"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -Wa,-mbig-obj -E D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\giangscoffee_qmltyperegistrations.cpp > CMakeFiles\GiangsCoffee.dir\giangscoffee_qmltyperegistrations.cpp.i
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -Wa,-mbig-obj -E C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\giangscoffee_qmltyperegistrations.cpp > CMakeFiles\GiangsCoffee.dir\giangscoffee_qmltyperegistrations.cpp.i
 
 CMakeFiles/GiangsCoffee.dir/giangscoffee_qmltyperegistrations.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/GiangsCoffee.dir/giangscoffee_qmltyperegistrations.cpp.s"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -Wa,-mbig-obj -S D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\giangscoffee_qmltyperegistrations.cpp -o CMakeFiles\GiangsCoffee.dir\giangscoffee_qmltyperegistrations.cpp.s
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -Wa,-mbig-obj -S C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\giangscoffee_qmltyperegistrations.cpp -o CMakeFiles\GiangsCoffee.dir\giangscoffee_qmltyperegistrations.cpp.s
 
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_qmake_GiangsCoffee.cpp.obj: CMakeFiles/GiangsCoffee.dir/flags.make
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_qmake_GiangsCoffee.cpp.obj: CMakeFiles/GiangsCoffee.dir/includes_CXX.rsp
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_qmake_GiangsCoffee.cpp.obj: .qt/rcc/qrc_qmake_GiangsCoffee.cpp
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_qmake_GiangsCoffee.cpp.obj: CMakeFiles/GiangsCoffee.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Building CXX object CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_qmake_GiangsCoffee.cpp.obj"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_qmake_GiangsCoffee.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_qmake_GiangsCoffee.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_qmake_GiangsCoffee.cpp.obj -c D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_qmake_GiangsCoffee.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Building CXX object CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_qmake_GiangsCoffee.cpp.obj"
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_qmake_GiangsCoffee.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_qmake_GiangsCoffee.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_qmake_GiangsCoffee.cpp.obj -c C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_qmake_GiangsCoffee.cpp
 
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_qmake_GiangsCoffee.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_qmake_GiangsCoffee.cpp.i"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_qmake_GiangsCoffee.cpp > CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_qmake_GiangsCoffee.cpp.i
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_qmake_GiangsCoffee.cpp > CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_qmake_GiangsCoffee.cpp.i
 
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_qmake_GiangsCoffee.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_qmake_GiangsCoffee.cpp.s"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_qmake_GiangsCoffee.cpp -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_qmake_GiangsCoffee.cpp.s
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_qmake_GiangsCoffee.cpp -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_qmake_GiangsCoffee.cpp.s
 
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_qmlcache_loader.cpp.obj: CMakeFiles/GiangsCoffee.dir/flags.make
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_qmlcache_loader.cpp.obj: CMakeFiles/GiangsCoffee.dir/includes_CXX.rsp
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_qmlcache_loader.cpp.obj: .rcc/qmlcache/GiangsCoffee_qmlcache_loader.cpp
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_qmlcache_loader.cpp.obj: CMakeFiles/GiangsCoffee.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Building CXX object CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_qmlcache_loader.cpp.obj"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_qmlcache_loader.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_qmlcache_loader.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_qmlcache_loader.cpp.obj -c D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_qmlcache_loader.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Building CXX object CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_qmlcache_loader.cpp.obj"
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_qmlcache_loader.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_qmlcache_loader.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_qmlcache_loader.cpp.obj -c C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_qmlcache_loader.cpp
 
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_qmlcache_loader.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_qmlcache_loader.cpp.i"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_qmlcache_loader.cpp > CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_qmlcache_loader.cpp.i
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_qmlcache_loader.cpp > CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_qmlcache_loader.cpp.i
 
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_qmlcache_loader.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_qmlcache_loader.cpp.s"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_qmlcache_loader.cpp -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_qmlcache_loader.cpp.s
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_qmlcache_loader.cpp -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_qmlcache_loader.cpp.s
 
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/main_qml.cpp.obj: CMakeFiles/GiangsCoffee.dir/flags.make
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/main_qml.cpp.obj: CMakeFiles/GiangsCoffee.dir/includes_CXX.rsp
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/main_qml.cpp.obj: .rcc/qmlcache/GiangsCoffee_ui/main_qml.cpp
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/main_qml.cpp.obj: CMakeFiles/GiangsCoffee.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Building CXX object CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/main_qml.cpp.obj"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/main_qml.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\main_qml.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\main_qml.cpp.obj -c D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\main_qml.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Building CXX object CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/main_qml.cpp.obj"
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/main_qml.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\main_qml.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\main_qml.cpp.obj -c C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\main_qml.cpp
 
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/main_qml.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/main_qml.cpp.i"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\main_qml.cpp > CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\main_qml.cpp.i
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\main_qml.cpp > CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\main_qml.cpp.i
 
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/main_qml.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/main_qml.cpp.s"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\main_qml.cpp -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\main_qml.cpp.s
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\main_qml.cpp -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\main_qml.cpp.s
 
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/OrderPage_qml.cpp.obj: CMakeFiles/GiangsCoffee.dir/flags.make
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/OrderPage_qml.cpp.obj: CMakeFiles/GiangsCoffee.dir/includes_CXX.rsp
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/OrderPage_qml.cpp.obj: .rcc/qmlcache/GiangsCoffee_ui/OrderPage_qml.cpp
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/OrderPage_qml.cpp.obj: CMakeFiles/GiangsCoffee.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_32) "Building CXX object CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/OrderPage_qml.cpp.obj"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/OrderPage_qml.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\OrderPage_qml.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\OrderPage_qml.cpp.obj -c D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\OrderPage_qml.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_32) "Building CXX object CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/OrderPage_qml.cpp.obj"
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/OrderPage_qml.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\OrderPage_qml.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\OrderPage_qml.cpp.obj -c C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\OrderPage_qml.cpp
 
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/OrderPage_qml.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/OrderPage_qml.cpp.i"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\OrderPage_qml.cpp > CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\OrderPage_qml.cpp.i
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\OrderPage_qml.cpp > CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\OrderPage_qml.cpp.i
 
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/OrderPage_qml.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/OrderPage_qml.cpp.s"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\OrderPage_qml.cpp -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\OrderPage_qml.cpp.s
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\OrderPage_qml.cpp -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\OrderPage_qml.cpp.s
 
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/LoyaltyPage_qml.cpp.obj: CMakeFiles/GiangsCoffee.dir/flags.make
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/LoyaltyPage_qml.cpp.obj: CMakeFiles/GiangsCoffee.dir/includes_CXX.rsp
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/LoyaltyPage_qml.cpp.obj: .rcc/qmlcache/GiangsCoffee_ui/LoyaltyPage_qml.cpp
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/LoyaltyPage_qml.cpp.obj: CMakeFiles/GiangsCoffee.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_33) "Building CXX object CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/LoyaltyPage_qml.cpp.obj"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/LoyaltyPage_qml.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\LoyaltyPage_qml.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\LoyaltyPage_qml.cpp.obj -c D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\LoyaltyPage_qml.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_33) "Building CXX object CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/LoyaltyPage_qml.cpp.obj"
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/LoyaltyPage_qml.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\LoyaltyPage_qml.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\LoyaltyPage_qml.cpp.obj -c C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\LoyaltyPage_qml.cpp
 
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/LoyaltyPage_qml.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/LoyaltyPage_qml.cpp.i"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\LoyaltyPage_qml.cpp > CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\LoyaltyPage_qml.cpp.i
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\LoyaltyPage_qml.cpp > CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\LoyaltyPage_qml.cpp.i
 
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/LoyaltyPage_qml.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/LoyaltyPage_qml.cpp.s"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\LoyaltyPage_qml.cpp -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\LoyaltyPage_qml.cpp.s
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\LoyaltyPage_qml.cpp -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\LoyaltyPage_qml.cpp.s
 
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/LoginPage_qml.cpp.obj: CMakeFiles/GiangsCoffee.dir/flags.make
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/LoginPage_qml.cpp.obj: CMakeFiles/GiangsCoffee.dir/includes_CXX.rsp
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/LoginPage_qml.cpp.obj: .rcc/qmlcache/GiangsCoffee_ui/LoginPage_qml.cpp
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/LoginPage_qml.cpp.obj: CMakeFiles/GiangsCoffee.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_34) "Building CXX object CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/LoginPage_qml.cpp.obj"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/LoginPage_qml.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\LoginPage_qml.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\LoginPage_qml.cpp.obj -c D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\LoginPage_qml.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_34) "Building CXX object CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/LoginPage_qml.cpp.obj"
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/LoginPage_qml.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\LoginPage_qml.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\LoginPage_qml.cpp.obj -c C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\LoginPage_qml.cpp
 
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/LoginPage_qml.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/LoginPage_qml.cpp.i"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\LoginPage_qml.cpp > CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\LoginPage_qml.cpp.i
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\LoginPage_qml.cpp > CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\LoginPage_qml.cpp.i
 
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/LoginPage_qml.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/LoginPage_qml.cpp.s"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\LoginPage_qml.cpp -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\LoginPage_qml.cpp.s
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\LoginPage_qml.cpp -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\LoginPage_qml.cpp.s
 
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_GiangsCoffee_raw_qml_0.cpp.obj: CMakeFiles/GiangsCoffee.dir/flags.make
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_GiangsCoffee_raw_qml_0.cpp.obj: CMakeFiles/GiangsCoffee.dir/includes_CXX.rsp
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_GiangsCoffee_raw_qml_0.cpp.obj: .qt/rcc/qrc_GiangsCoffee_raw_qml_0.cpp
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_GiangsCoffee_raw_qml_0.cpp.obj: CMakeFiles/GiangsCoffee.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_35) "Building CXX object CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_GiangsCoffee_raw_qml_0.cpp.obj"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_GiangsCoffee_raw_qml_0.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_GiangsCoffee_raw_qml_0.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_GiangsCoffee_raw_qml_0.cpp.obj -c D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_GiangsCoffee_raw_qml_0.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_35) "Building CXX object CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_GiangsCoffee_raw_qml_0.cpp.obj"
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_GiangsCoffee_raw_qml_0.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_GiangsCoffee_raw_qml_0.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_GiangsCoffee_raw_qml_0.cpp.obj -c C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_GiangsCoffee_raw_qml_0.cpp
 
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_GiangsCoffee_raw_qml_0.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_GiangsCoffee_raw_qml_0.cpp.i"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_GiangsCoffee_raw_qml_0.cpp > CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_GiangsCoffee_raw_qml_0.cpp.i
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_GiangsCoffee_raw_qml_0.cpp > CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_GiangsCoffee_raw_qml_0.cpp.i
 
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_GiangsCoffee_raw_qml_0.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_GiangsCoffee_raw_qml_0.cpp.s"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_GiangsCoffee_raw_qml_0.cpp -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_GiangsCoffee_raw_qml_0.cpp.s
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_GiangsCoffee_raw_qml_0.cpp -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_GiangsCoffee_raw_qml_0.cpp.s
 
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp.obj: CMakeFiles/GiangsCoffee.dir/flags.make
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp.obj: CMakeFiles/GiangsCoffee.dir/includes_CXX.rsp
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp.obj: .qt/rcc/qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp.obj: CMakeFiles/GiangsCoffee.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_36) "Building CXX object CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp.obj"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp.obj -c D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_36) "Building CXX object CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp.obj"
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp.obj -MF CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp.obj.d -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp.obj -c C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp
 
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp.i"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp > CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp.i
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp > CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp.i
 
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp.s"
-	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp.s
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp -o CMakeFiles\GiangsCoffee.dir\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.qt\rcc\qrc_GiangsCoffee_raw_qml_0_extra_qmldirs.cpp.s
 
 # Object files for target GiangsCoffee
 GiangsCoffee_OBJECTS = \
@@ -601,7 +601,7 @@ GiangsCoffee.exe: GiangsCoffee.exe.manifest
 GiangsCoffee.exe: CMakeFiles/GiangsCoffee.dir/linkLibs.rsp
 GiangsCoffee.exe: CMakeFiles/GiangsCoffee.dir/objects1.rsp
 GiangsCoffee.exe: CMakeFiles/GiangsCoffee.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_37) "Linking CXX executable GiangsCoffee.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_37) "Linking CXX executable GiangsCoffee.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\GiangsCoffee.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -630,6 +630,6 @@ CMakeFiles/GiangsCoffee.dir/depend: giangscoffee_qmltyperegistrations.cpp
 CMakeFiles/GiangsCoffee.dir/depend: meta_types/GiangsCoffee_json_file_list.txt
 CMakeFiles/GiangsCoffee.dir/depend: meta_types/qt6giangscoffee_metatypes.json
 CMakeFiles/GiangsCoffee.dir/depend: meta_types/qt6giangscoffee_metatypes.json.gen
-	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles\GiangsCoffee.dir\DependInfo.cmake "--color=$(COLOR)"
+	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\CMakeFiles\GiangsCoffee.dir\DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/GiangsCoffee.dir/depend
 

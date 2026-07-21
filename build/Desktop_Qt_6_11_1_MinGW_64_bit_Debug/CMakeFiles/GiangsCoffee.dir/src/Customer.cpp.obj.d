@@ -1,7 +1,7 @@
 CMakeFiles/GiangsCoffee.dir/src/Customer.cpp.obj: \
- D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\Customer.cpp \
- D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/Customer.h \
- D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/User.h \
+ C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\Customer.cpp \
+ C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/Customer.h \
+ C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/User.h \
  D:/QT/6.11.1/mingw_64/include/QtCore/QObject \
  D:/QT/6.11.1/mingw_64/include/QtCore/qobject.h \
  D:/QT/6.11.1/mingw_64/include/QtCore/qobjectdefs.h \

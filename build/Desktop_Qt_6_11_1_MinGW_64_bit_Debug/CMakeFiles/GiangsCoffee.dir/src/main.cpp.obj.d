@@ -1,5 +1,5 @@
 CMakeFiles/GiangsCoffee.dir/src/main.cpp.obj: \
- D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\main.cpp \
+ C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\main.cpp \
  D:/QT/6.11.1/mingw_64/include/QtGui/QGuiApplication \
  D:/QT/6.11.1/mingw_64/include/QtGui/qguiapplication.h \
  D:/QT/6.11.1/mingw_64/include/QtGui/qtguiglobal.h \
@@ -402,16 +402,9 @@ CMakeFiles/GiangsCoffee.dir/src/main.cpp.obj: \
  D:/QT/6.11.1/mingw_64/include/QtQml/qqmlabstracturlinterceptor.h \
  D:/QT/6.11.1/mingw_64/include/QtQml/QQmlContext \
  D:/QT/6.11.1/mingw_64/include/QtQml/qqmlcontext.h \
- D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/Account.h \
+ C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/Account.h \
  D:/QT/6.11.1/mingw_64/include/QtCore/QObject \
  D:/QT/6.11.1/mingw_64/include/QtCore/QString \
- D:/QT/6.11.1/mingw_64/include/QtSql/QSqlDatabase \
- D:/QT/6.11.1/mingw_64/include/QtSql/qsqldatabase.h \
- D:/QT/6.11.1/mingw_64/include/QtSql/qtsqlglobal.h \
- D:/QT/6.11.1/mingw_64/include/QtSql/qtsql-config.h \
- D:/QT/6.11.1/mingw_64/include/QtSql/qtsqlexports.h \
- D:/QT/6.11.1/mingw_64/include/QtSql/QSqlError \
- D:/QT/6.11.1/mingw_64/include/QtSql/qsqlerror.h \
  D:/QT/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/iostream \
  D:/QT/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/ostream \
  D:/QT/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/ios \

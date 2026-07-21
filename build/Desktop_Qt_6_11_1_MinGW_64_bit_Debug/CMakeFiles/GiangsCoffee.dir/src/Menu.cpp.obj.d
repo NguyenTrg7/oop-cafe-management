@@ -1,6 +1,6 @@
 CMakeFiles/GiangsCoffee.dir/src/Menu.cpp.obj: \
- D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\Menu.cpp \
- D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/Menu.h \
+ C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\Menu.cpp \
+ C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/Menu.h \
  D:/QT/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/string \
  D:/QT/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/requires_hosted.h \
  D:/QT/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32/bits/c++config.h \

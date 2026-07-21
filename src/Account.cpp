@@ -1,112 +1,111 @@
 #include "Account.h"
-#include <QSqlQuery> // Thư viện để thực thi câu lệnh SQL
-#include <QDebug>
-#include <QDir>       // Để quản lý đường dẫn file
-#include <QStandardPaths> // Để lấy đường dẫn thư mục lưu dữ liệu app an toàn
+#include <fstream>  // Thư viện đọc/ghi file chuẩn C++
+#include <sstream>  // Thư viện cắt chuỗi chuẩn C++
+#include <iostream> // Thư viện in ra màn hình (cout)
 
-Account::Account(QObject *parent) : QObject(parent) {
-    // Lúc khởi tạo, gọi ngay hàm tạo Database
-    if (!initializeDatabase()) {
-        qCritical() << "[Database] Không thể khởi tạo hệ thống lưu trữ tài khoản!";
+Account::Account(QObject *parent) : QObject(parent)
+{
+    m_csvFilePath = "accounts.csv";
+    initFile();
+}
+
+Account::~Account() {}
+
+// ========================================================
+// 🛠️ KHỞI TẠO FILE
+// ========================================================
+void Account::initFile()
+{
+    // Mở file ở chế độ ios::app (Ghi tiếp). Nếu file chưa có, C++ sẽ tự động tạo mới.
+    std::ofstream file(m_csvFilePath, std::ios::app);
+    if (file.is_open()) {
+        file.close();
+    } else {
+        std::cout << "Loi: Khong the tao file CSV!\n";
     }
 }
 
-Account::~Account() {
-    // Đóng database khi app tắt
-    if (m_db.isOpen()) {
-        m_db.close();
-    }
-}
+// ========================================================
+// 🔐 LOGIC ĐĂNG NHẬP (C++ Chuẩn)
+// ========================================================
+bool Account::authenticate(const QString &username, const QString &password)
+{
+    // 1. Dịch dữ liệu từ QML (QString) sang C++ (std::string)
+    std::string inputUser = username.toStdString();
+    std::string inputPass = password.toStdString();
 
-bool Account::initializeDatabase() {
-    qDebug() << "[Database] Đang khởi tạo kết nối...";
-
-    // 1. Định nghĩa loại driver database là SQLite
-    m_db = QSqlDatabase::addDatabase("QSQLITE");
-
-    // 2. Định nghĩa tên file và nơi lưu file database trên ổ cứng
-    // Chúng ta nên lưu vào thư mục 'AppData' của user để an toàn, không lo bị xóa nhầm
-    QString dbPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    QDir dir(dbPath);
-    if (!dir.exists()) {
-        dir.mkpath("."); // Tạo thư mục nếu chưa có
-    }
-
-    QString dbName = dbPath + "/giangs_coffee_accounts.db";
-    qDebug() << "[Database] File database sẽ được lưu tại:" << dbName;
-    m_db.setDatabaseName(dbName);
-
-    // 3. Mở database
-    if (!m_db.open()) {
-        qDebug() << "[Database] Lỗi không mở được file!" << m_db.lastError().text();
+    // 2. Mở file để ĐỌC (ifstream)
+    std::ifstream file(m_csvFilePath);
+    if (!file.is_open()) {
         return false;
     }
 
-    // 4. Tạo bảng 'Accounts' nếu chưa tồn tại
-    // Bảng này có 2 cột: username (PRIMARY KEY - khóa chính, duy nhất), password
-    QSqlQuery query;
-    QString createTableSql = "CREATE TABLE IF NOT EXISTS Accounts ("
-                             "username TEXT PRIMARY KEY, "
-                             "password TEXT NOT NULL"
-                             ")";
+    std::string line;
+    // 3. Đọc từng dòng cho đến hết file
+    while (std::getline(file, line)) {
+        // Bỏ qua nếu gặp dòng trống
+        if (line.empty()) continue;
 
-    if (!query.exec(createTableSql)) {
-        qDebug() << "[Database] Lỗi không tạo được bảng!" << query.lastError().text();
-        return false;
-    }
+        std::stringstream ss(line);
+        std::string dbUser, dbPass;
 
-    qDebug() << "[Database] Khởi tạo thành công và sẵn sàng!";
-    return true;
-}
-
-// Logic KIỂM TRA ĐĂNG NHẬP (Dùng SELECT)
-bool Account::authenticate(const QString& username, const QString& password) {
-    qDebug() << "[Database] Đang kiểm tra đăng nhập cho:" << username;
-
-    if (username.isEmpty() || password.isEmpty()) return false;
-
-    // Sử dụng câu lệnh SELECT để tìm password của username nhập vào
-    QSqlQuery query;
-    query.prepare("SELECT password FROM Accounts WHERE username = :user");
-    query.bindValue(":user", username); // bindValue để chống SQL Injection
-
-    if (!query.exec()) {
-        qDebug() << "[Database] Lỗi thực thi truy vấn!" << query.lastError().text();
-        return false;
-    }
-
-    // Nếu tìm thấy 1 dòng kết quả
-    if (query.next()) {
-        QString dbPassword = query.value(0).toString(); // Lấy password từ database ra
-        // So sánh
-        if (dbPassword == password) {
-            qDebug() << "[Database] Đăng nhập THÀNH CÔNG cho:" << username;
-            return true;
+        // 4. Cắt chuỗi bằng dấu phẩy ','
+        if (std::getline(ss, dbUser, ',') && std::getline(ss, dbPass)) {
+            // 5. So sánh dữ liệu trong file với dữ liệu người dùng gõ
+            if (dbUser == inputUser && dbPass == inputPass) {
+                file.close();
+                return true; // Khớp 100% -> Đăng nhập thành công!
+            }
         }
     }
 
-    qDebug() << "[Database] Đăng nhập THẤT BẠI: Sai tài khoản hoặc mật khẩu.";
-    return false;
+    file.close();
+    return false; // Chạy hết vòng lặp mà không thấy -> Báo sai!
 }
 
-// Logic ĐĂNG KÝ TÀI KHOẢN MỚI (Dùng INSERT)
-bool Account::registerAccount(const QString& username, const QString& password) {
-    qDebug() << "[Database] Đang đăng ký tài khoản mới:" << username;
+// ========================================================
+// ❄️ LOGIC ĐĂNG KÝ (C++ Chuẩn)
+// ========================================================
+bool Account::registerAccount(const QString &username, const QString &password)
+{
+    // 1. Dịch dữ liệu
+    std::string inputUser = username.toStdString();
+    std::string inputPass = password.toStdString();
 
-    if (username.isEmpty() || password.isEmpty()) return false;
+    // =======================================
+    // BƯỚC 1: Đọc file để kiểm tra tài khoản trùng
+    // =======================================
+    std::ifstream inFile(m_csvFilePath);
+    if (inFile.is_open()) {
+        std::string line;
+        while (std::getline(inFile, line)) {
+            if (line.empty()) continue;
 
-    // Sử dụng câu lệnh INSERT để thêm một dòng mới vào bảng Accounts
-    QSqlQuery query;
-    query.prepare("INSERT INTO Accounts (username, password) VALUES (:user, :pass)");
-    query.bindValue(":user", username);
-    query.bindValue(":pass", password);
+            std::stringstream ss(line);
+            std::string dbUser;
 
-    if (!query.exec()) {
-        // Nếu INSERT thất bại, thường là do 'username' đã tồn tại ( PRIMARY KEY )
-        qDebug() << "[Database] Lỗi đăng ký (có thể tài khoản đã tồn tại)!" << query.lastError().text();
-        return false; // Đăng ký thất bại
+            // Chỉ cần lấy phần chữ trước dấu phẩy (tên tài khoản) để kiểm tra
+            if (std::getline(ss, dbUser, ',')) {
+                if (dbUser == inputUser) {
+                    inFile.close();
+                    return false; // ❌ Thất bại: Tài khoản đã bị trùng!
+                }
+            }
+        }
+        inFile.close();
     }
 
-    qDebug() << "[Database] Đăng ký THÀNH CÔNG cho tài khoản mới:" << username;
-    return true; // Đăng ký thành công
+    // =======================================
+    // BƯỚC 2: Ghi tài khoản mới vào cuối file
+    // =======================================
+    // Mở file ở chế độ ios::app (Append - Ghi nối tiếp vào đuôi file)
+    std::ofstream outFile(m_csvFilePath, std::ios::app);
+    if (outFile.is_open()) {
+        // Ghi theo định dạng: user,pass rồi xuống dòng (\n)
+        outFile << inputUser << "," << inputPass << "\n";
+        outFile.close();
+        return true; // ✅ Đăng ký thành công!
+    }
+
+    return false; // Lỗi không mở được file
 }

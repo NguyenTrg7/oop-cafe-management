@@ -1,7 +1,7 @@
 CMakeFiles/GiangsCoffee.dir/src/DeliverOrder.cpp.obj: \
- D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\src\DeliverOrder.cpp \
- D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/DeliverOrder.h \
- D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/Order.h \
+ C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\src\DeliverOrder.cpp \
+ C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/DeliverOrder.h \
+ C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/Order.h \
  D:/QT/6.11.1/mingw_64/include/QtCore/QString \
  D:/QT/6.11.1/mingw_64/include/QtCore/qstring.h \
  D:/QT/6.11.1/mingw_64/include/QtCore/qchar.h \
@@ -349,7 +349,7 @@ CMakeFiles/GiangsCoffee.dir/src/DeliverOrder.cpp.obj: \
  D:/QT/6.11.1/mingw_64/include/QtCore/qobject.h \
  D:/QT/6.11.1/mingw_64/include/QtCore/qobject_impl.h \
  D:/QT/6.11.1/mingw_64/include/QtCore/qbindingstorage.h \
- D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/Menu.h \
- D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/Customer.h \
- D:/Download/oop-cafe-management-architecture/oop-cafe-management-architecture/include/User.h \
+ C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/Menu.h \
+ C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/Customer.h \
+ C:/Users/Quang/OneDrive/Desktop/oop-cafe-management-architecture/include/User.h \
  D:/QT/6.11.1/mingw_64/include/QtCore/QObject

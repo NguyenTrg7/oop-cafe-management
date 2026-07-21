@@ -2,7 +2,7 @@
     "classes": [
         {
             "className": "Account",
-            "lineNumber": 9,
+            "lineNumber": 8,
             "methods": [
                 {
                     "access": "public",

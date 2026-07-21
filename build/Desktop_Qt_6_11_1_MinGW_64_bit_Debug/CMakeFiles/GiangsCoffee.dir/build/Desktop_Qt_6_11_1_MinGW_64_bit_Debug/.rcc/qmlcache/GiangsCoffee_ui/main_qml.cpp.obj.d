@@ -1,5 +1,5 @@
 CMakeFiles/GiangsCoffee.dir/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.rcc/qmlcache/GiangsCoffee_ui/main_qml.cpp.obj: \
- D:\Download\oop-cafe-management-architecture\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\main_qml.cpp \
+ C:\Users\Quang\OneDrive\Desktop\oop-cafe-management-architecture\build\Desktop_Qt_6_11_1_MinGW_64_bit_Debug\.rcc\qmlcache\GiangsCoffee_ui\main_qml.cpp \
  D:/QT/6.11.1/mingw_64/include/QtQml/qqmlprivate.h \
  D:/QT/6.11.1/mingw_64/include/QtQml/qjsprimitivevalue.h \
  D:/QT/6.11.1/mingw_64/include/QtQml/qtqmlglobal.h \
