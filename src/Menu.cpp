@@ -1,37 +1,19 @@
 #include "Menu.h"
 #include <iostream>
-#include <algorithm> // Thư viện hỗ trợ hàm xóa (remove_if)
+#include <QDebug>
 
-Menu::Menu() {
-    // Khởi tạo sẵn một vài món signature của Giang Coffee khi chạy chương trình
-    addMenuItem("C01", "Ca phe sua da", 29000, "Coffee");
-    addMenuItem("C02", "Ca phe den", 25000, "Coffee");
-    addMenuItem("T01", "Tra dao cam sa", 35000, "Tea");
-    addMenuItem("T02", "Tra vai", 35000, "Tea");
-}
+Menu::Menu()
+    : m_id(""), m_name(""), m_price(0.0), m_category("Coffee"), m_size("M"), m_status("Available") {}
 
-Menu::~Menu() {
-    // Dọn dẹp bộ nhớ (nếu có)
-}
+Menu::Menu(const QString& id, const QString& name, double price, const QString& category, const QString& size, const QString& status)
+    : m_id(id), m_name(name), m_price(price), m_category(category), m_size(size), m_status(status) {}
 
-void Menu::addMenuItem(const std::string& id, const std::string& name, double price, const std::string& category) {
-    items.push_back({id, name, price, category});
-    // std::cout << "[Menu] Da them: " << name << std::endl;
-}
-
-void Menu::removeMenuItem(const std::string& id) {
-    // Sử dụng erase-remove idiom của C++ để tìm và xóa món nước theo ID
-    items.erase(std::remove_if(items.begin(), items.end(),
-                               [&id](const MenuItem& item) { return item.id == id; }),
-                items.end());
-    // std::cout << "[Menu] Da xoa mon co ID: " << id << std::endl;
-}
+Menu::~Menu() {}
 
 void Menu::displayMenu() const {
-    std::cout << "\n--- MENU GIANG COFFEE ---" << std::endl;
-    for (const auto& item : items) {
-        std::cout << "[" << item.id << "] " << item.name
-                  << " - " << item.price << " VND (" << item.category << ")" << std::endl;
-    }
-    std::cout << "-------------------------\n";
+    std::cout << "[" << m_id.toStdString() << "] "
+              << m_name.toStdString() << " - "
+              << m_price << " VND ("
+              << m_category.toStdString() << " | Size: "
+              << m_size.toStdString() << ")" << std::endl;
 }

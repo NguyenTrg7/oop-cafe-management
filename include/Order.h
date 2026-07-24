@@ -4,30 +4,37 @@
 #include <QString>
 #include <QList>
 #include <QDateTime>
-#include "Menu.h" // Chứa class Menu (itemId, itemName, price, size, status)
+#include "Menu.h"
 #include "Customer.h"
 
 class Order {
 protected:
-    QString m_ID;           //
-    QDateTime m_date;       //[cite: 2]
-    Customer* m_customer;   //[cite: 2]
-    QList<Menu> m_items;    //[cite: 2]
-    double m_totalPrice;    //[cite: 2]
-    QString m_status;       //[cite: 2]
+    QString m_ID;
+    QDateTime m_date;
+    Customer* m_customer;
+    QList<Menu> m_items;
+    double m_totalPrice;
+    QString m_status;
 
 public:
-    Order(const QString& id, Customer* customer);
+    Order(const QString& id, Customer* customer = nullptr);
     virtual ~Order() = default;
 
-    void addItem(const Menu& item);         //[cite: 2]
-    void removeItem(const QString& itemId); //[cite: 2]
-    void printInvoice() const;              //[cite: 2]
+    void addItem(const Menu& item);
+    void removeItem(const QString& itemId);
+    void printInvoice() const;
 
-    // Hàm ảo (Virtual function) để tính Đa hình[cite: 2]
-    virtual void calculate() = 0;           //[cite: 2]
+    // Hàm ảo thuần túy (Pure Virtual Function) phục vụ tính Đa hình (InStoreOrder / DeliverOrder)
+    virtual void calculate() = 0;
 
+    // Getters
+    QString getID() const { return m_ID; }
     double getTotalPrice() const { return m_totalPrice; }
+    QString getStatus() const { return m_status; }
+    QList<Menu> getItems() const { return m_items; }
+
+    // Setters
+    void setStatus(const QString& status) { m_status = status; }
 };
 
 #endif // ORDER_H

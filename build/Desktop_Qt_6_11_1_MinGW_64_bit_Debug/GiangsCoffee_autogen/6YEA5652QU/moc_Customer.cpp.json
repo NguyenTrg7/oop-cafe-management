@@ -1,0 +1,94 @@
+{
+    "classes": [
+        {
+            "className": "Customer",
+            "lineNumber": 6,
+            "object": true,
+            "properties": [
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 0,
+                    "lineNumber": 8,
+                    "name": "loyaltyPoints",
+                    "notify": "loyaltyPointsChanged",
+                    "override": false,
+                    "read": "loyaltyPoints",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "int",
+                    "user": false,
+                    "virtual": false,
+                    "write": "setLoyaltyPoints"
+                },
+                {
+                    "constant": true,
+                    "designable": true,
+                    "final": false,
+                    "index": 1,
+                    "lineNumber": 9,
+                    "name": "phoneNumber",
+                    "override": false,
+                    "read": "phoneNumber",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QString",
+                    "user": false,
+                    "virtual": false
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 2,
+                    "lineNumber": 10,
+                    "name": "rank",
+                    "notify": "rankChanged",
+                    "override": false,
+                    "read": "rank",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QString",
+                    "user": false,
+                    "virtual": false
+                }
+            ],
+            "qualifiedClassName": "Customer",
+            "signals": [
+                {
+                    "access": "public",
+                    "index": 0,
+                    "lineNumber": 27,
+                    "name": "loyaltyPointsChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "index": 1,
+                    "lineNumber": 28,
+                    "name": "phoneNumberChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "index": 2,
+                    "lineNumber": 29,
+                    "name": "rankChanged",
+                    "returnType": "void"
+                }
+            ],
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "User"
+                }
+            ]
+        }
+    ],
+    "inputFile": "Customer.h",
+    "outputRevision": 69
+}
