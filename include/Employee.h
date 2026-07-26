@@ -18,7 +18,7 @@ public:
     // Phương thức theo UML[cite: 2]
     double calculateSalary() const;
     void setShift(const QString& newShift);
-    QString getID();
+
     QString role() const override { return "Employee"; }
     void displayInfo() const override;
 };

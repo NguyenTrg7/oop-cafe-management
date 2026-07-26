@@ -13,5 +13,3 @@ void User::setName(const QString& name) {
         emit nameChanged(); // Cập nhật View (QML)
     }
 }
-
-QString User::getName(){return this->m_name;}

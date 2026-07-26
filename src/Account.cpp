@@ -1,118 +1,127 @@
 #include "Account.h"
-#include <QFile>
-#include <QTextStream>
-#include <QDebug>
+#include <fstream>  // Thư viện đọc/ghi file chuẩn C++
+#include <sstream>  // Thư viện cắt chuỗi chuẩn C++
+#include <iostream> // Thư viện in ra màn hình (cout)
+#include <QCoreApplication> // 🌟 Thêm thư viện Qt để lấy đường dẫn app
 
-Account::Account(QObject *parent) : QObject(parent) {}
+Account::Account(QObject *parent) : QObject(parent)
+{
+    // Lấy đường dẫn thư mục chứa file chạy (.exe) và ghép với "/accounts.csv"
+    QString absolutePath = QCoreApplication::applicationDirPath() + "/accounts.csv";
 
-// Đọc dữ liệu từ file CSV
-bool Account::loadFromFile(const QString& filePath) {
-    m_filePath = filePath;
-    QFile file(filePath);
+    // Ép kiểu về std::string để sử dụng với C++ chuẩn
+    m_csvFilePath = absolutePath.toStdString();
 
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning() << "Không thể mở file dữ liệu:" << filePath;
+    initFile();
+}
+
+Account::~Account() {}
+
+// ========================================================
+// 🛠️ KHỞI TẠO FILE
+// ========================================================
+void Account::initFile()
+{
+    // Mở file ở chế độ ios::app (Ghi tiếp). Nếu file chưa có, C++ sẽ tự động tạo mới.
+    std::ofstream file(m_csvFilePath, std::ios::app);
+    if (file.is_open()) {
+        file.close();
+    } else {
+        std::cout << "Loi: Khong the tao file CSV tai: " << m_csvFilePath << "\n";
+    }
+}
+
+// ========================================================
+// 🔐 LOGIC ĐĂNG NHẬP (C++ Chuẩn)
+// ========================================================
+bool Account::authenticate(const QString &username, const QString &password)
+{
+    // 1. Dịch dữ liệu từ QML (QString) sang C++ (std::string)
+    std::string inputUser = username.toStdString();
+    std::string inputPass = password.toStdString();
+
+    // 2. Mở file để ĐỌC (ifstream)
+    std::ifstream file(m_csvFilePath);
+    if (!file.is_open()) {
         return false;
     }
 
-    m_accounts.clear();
-    QTextStream in(&file);
+    std::string line;
+    // 3. Đọc từng dòng cho đến hết file
+    while (std::getline(file, line)) {
+        // Bỏ qua nếu gặp dòng trống
+        if (line.empty()) continue;
 
-    while (!in.atEnd()) {
-        QString line = in.readLine().trimmed();
-        if (line.isEmpty() || line.startsWith("#")) continue;
+        // 🌟 Xóa ký tự \r ở cuối dòng (nếu chạy trên hệ điều hành Windows)
+        if (!line.empty() && line.back() == '\r') {
+            line.pop_back();
+        }
 
-        QStringList parts = line.split(",");
-        if (parts.size() >= 3) {
-            QString user = parts[0].trimmed();
-            QString pass = parts[1].trimmed();
-            QString role = parts[2].trimmed();
-            m_accounts[user] = { pass, role };
+        std::stringstream ss(line);
+        std::string dbUser, dbPass;
+
+        // 4. Cắt chuỗi bằng dấu phẩy ','
+        if (std::getline(ss, dbUser, ',') && std::getline(ss, dbPass)) {
+            // 5. So sánh dữ liệu trong file với dữ liệu người dùng gõ
+            if (dbUser == inputUser && dbPass == inputPass) {
+                file.close();
+                return true; // Khớp 100% -> Đăng nhập thành công!
+            }
         }
     }
 
     file.close();
-    qDebug() << "Đã tải" << m_accounts.size() << "tài khoản từ file data.";
-    return true;
+    return false; // Chạy hết vòng lặp mà không thấy -> Báo sai!
 }
 
-// Lưu dữ liệu ngược lại file CSV
-bool Account::saveToFile(const QString& filePath) {
-    QString path = filePath.isEmpty() ? m_filePath : filePath;
-    QFile file(path);
+// ========================================================
+// ❄️ LOGIC ĐĂNG KÝ (C++ Chuẩn)
+// ========================================================
+bool Account::registerAccount(const QString &username, const QString &password)
+{
+    // 1. Dịch dữ liệu
+    std::string inputUser = username.toStdString();
+    std::string inputPass = password.toStdString();
 
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qWarning() << "Không thể ghi vào file:" << path;
-        return false;
+    // =======================================
+    // BƯỚC 1: Đọc file để kiểm tra tài khoản trùng
+    // =======================================
+    std::ifstream inFile(m_csvFilePath);
+    if (inFile.is_open()) {
+        std::string line;
+        while (std::getline(inFile, line)) {
+            if (line.empty()) continue;
+
+            // 🌟 Xóa ký tự \r trước khi cắt chuỗi
+            if (!line.empty() && line.back() == '\r') {
+                line.pop_back();
+            }
+
+            std::stringstream ss(line);
+            std::string dbUser;
+
+            // Chỉ cần lấy phần chữ trước dấu phẩy (tên tài khoản) để kiểm tra
+            if (std::getline(ss, dbUser, ',')) {
+                if (dbUser == inputUser) {
+                    inFile.close();
+                    return false; // ❌ Thất bại: Tài khoản đã bị trùng!
+                }
+            }
+        }
+        inFile.close();
     }
 
-    QTextStream out(&file);
-    for (auto it = m_accounts.constBegin(); it != m_accounts.constEnd(); ++it) {
-        out << it.key() << "," << it.value().password << "," << it.value().role << "\n";
+    // =======================================
+    // BƯỚC 2: Ghi tài khoản mới vào cuối file
+    // =======================================
+    // Mở file ở chế độ ios::app (Append - Ghi nối tiếp vào đuôi file)
+    std::ofstream outFile(m_csvFilePath, std::ios::app);
+    if (outFile.is_open()) {
+        // Ghi theo định dạng: user,pass rồi xuống dòng (\n)
+        outFile << inputUser << "," << inputPass << "\n";
+        outFile.close();
+        return true; // ✅ Đăng ký thành công!
     }
 
-    file.close();
-    return true;
-}
-
-// Kiểm tra đăng nhập
-QString Account::loginAndGetRole(const QString& username, const QString& password) {
-    if (m_accounts.contains(username) && m_accounts[username].password == password) {
-        m_currentUser = username; // 🔑 Ghi nhớ người đăng nhập hiện tại
-        emit currentUserChanged();
-        return m_accounts[username].role;
-    }
-    return ""; // Đăng nhập thất bại
-}
-
-// Đăng ký tài khoản mới và lưu tự động vào file
-bool Account::registerAccount(const QString& username, const QString& password, const QString& role) {
-    if (m_accounts.contains(username)) {
-        return false; // Tài khoản đã tồn tại
-    }
-
-    m_accounts[username] = { password, role };
-    saveToFile(); // Lưu lại vào file CSV ngay khi đăng ký thành công
-    return true;
-}
-
-// 1. Lấy danh sách tài khoản truyền qua QML
-QVariantList Account::getAccountList() {
-    QVariantList list;
-    for (auto it = m_accounts.constBegin(); it != m_accounts.constEnd(); ++it) {
-        QVariantMap map;
-        map["username"] = it.key();
-        map["password"] = it.value().password;
-        map["role"] = it.value().role;
-        list.append(map);
-    }
-    return list;
-}
-
-// 2. Cấp tài khoản mới
-bool Account::addAccount(const QString& username, const QString& password, const QString& role) {
-    if (username.trimmed().isEmpty() || m_accounts.contains(username)) {
-        return false; // Tài khoản rỗng hoặc đã tồn tại
-    }
-    m_accounts[username] = { password, role };
-    saveToFile(); // Lưu ngay vào file accounts.csv
-    return true;
-}
-
-// 3. Cập nhật mật khẩu / vai trò
-bool Account::updateAccount(const QString& username, const QString& newPassword, const QString& newRole) {
-    if (!m_accounts.contains(username)) return false;
-
-    m_accounts[username] = { newPassword, newRole };
-    saveToFile();
-    return true;
-}
-
-// 4. Xóa tài khoản
-bool Account::deleteAccount(const QString& username) {
-    if (!m_accounts.contains(username)) return false;
-
-    m_accounts.remove(username);
-    saveToFile();
-    return true;
+    return false; // Lỗi không mở được file
 }
