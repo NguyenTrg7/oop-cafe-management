@@ -23,7 +23,7 @@ public:
 
     // Setters
     void setName(const QString& name);
-    QString getName();
+
     // Tính trừu tượng & Đa hình: Hàm thuần ảo (Pure virtual function)
     virtual QString role() const = 0;
     virtual void displayInfo() const = 0;

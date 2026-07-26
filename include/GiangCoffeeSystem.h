@@ -3,10 +3,6 @@
 
 #include <QObject>
 #include <QList>
-#include <QDateTime>
-#include <QVariantList>
-#include <QVariantMap>
-
 #include "Employee.h"
 #include "Menu.h"
 #include "Ingredient.h"
@@ -24,7 +20,7 @@ private:
     explicit GiangCoffeeSystem(QObject *parent = nullptr);
     static GiangCoffeeSystem* m_instance;
 
-    // Các danh sách quản lý theo UML
+    // Các danh sách quản lý theo UML[cite: 2]
     QString m_address;
     QList<Employee*> m_employees_list;
     QList<Menu> m_menuItems;
@@ -39,42 +35,30 @@ public:
     // Phương thức truy xuất Instance duy nhất (Singleton)
     static GiangCoffeeSystem* getInstance();
     ~GiangCoffeeSystem();
-
-    // -- Employee Management --
+    // -- Employee Management[cite: 2] --
     Q_INVOKABLE void addEmployee(Employee* emp);
     Q_INVOKABLE void removeEmployee(const QString& empID);
     Q_INVOKABLE void updateEmployeeShift(const QString& id, const QString& shift);
-    Q_INVOKABLE void calculatePayroll();
+    Q_INVOKABLE void calculatePayroll(); // calulate()[cite: 2]
 
-    // -- Menu Management --
+    // -- Menu Management[cite: 2] --
     Q_INVOKABLE void addItem(const Menu& item);
     Q_INVOKABLE void removeItem(const QString& itemId);
     Q_INVOKABLE Menu searchMenu(const QString& name);
     Q_INVOKABLE void printMenu();
 
-    // -- Inventory Management --
+    // -- Inventory Management[cite: 2] --
     void addIngredient(const Ingredient& ing);
     void addSup(const Supplier& sup);
-    void createInventory();
+    void createInventory(); // Nhận hoặc hoàn hàng[cite: 2]
 
-    // -- Table & Order Management --
+    // -- Table Management[cite: 2] --
     Q_INVOKABLE void placeOrder(Order* order);
-    Q_INVOKABLE void reserveTable(int tableNum);
+    Q_INVOKABLE void reserveTable(int tableNum); // reserve(int TableNum)[cite: 2]
     Q_INVOKABLE void mergeTable(int num1, int num2);
 
-    // -- Financial Management --
+    // -- Financial Management[cite: 2] --
     Q_INVOKABLE void generateReport(const QDateTime& date);
-
-    // =========================================================================
-    // TÍCH HỢP TÍNH NĂNG QUẢN LÝ FILE CSV VÀ VOUCHER CHO QML
-    // =========================================================================
-    Q_INVOKABLE double checkDiscount(const QString& code, double totalAmount);
-    Q_INVOKABLE QVariantList loadEmployees();
-    Q_INVOKABLE bool addEmployeeCSV(const QString& id, const QString& name, const QString& pos, double salary, const QString& shift);
-    Q_INVOKABLE QVariantList loadFinance();
-    Q_INVOKABLE bool addTransactionCSV(const QString& date, const QString& type, double amount, const QString& note);
-    Q_INVOKABLE bool deleteEmployeeCSV(const QString& id);
-    Q_INVOKABLE bool updateEmployeeCSV(const QString& id, const QString& name, const QString& pos, double salary, const QString& shift);
 };
 
 #endif // GIANGCOFFEESYSTEM_H

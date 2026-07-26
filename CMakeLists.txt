@@ -9,6 +9,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
+# ---> ĐÃ THÊM 'Sql' VÀO CUỐI DÒNG NÀY <---
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick Sql)
 
 qt_policy(SET QTP0001 NEW)
@@ -57,8 +58,6 @@ set(UI_FILES
     "ui/OrderPage.qml"
     "ui/LoyaltyPage.qml"
     "ui/LoginPage.qml"
-    "ui/FinancePage.qml"
-    "ui/EmployeeManagementPage.qml"
 )
 
 # =============================================================================
@@ -66,7 +65,13 @@ set(UI_FILES
 # =============================================================================
 source_group("Mục Header (Headers)" FILES ${HEADER_FILES})
 source_group("Mục Logic (Sources)" FILES ${LOGIC_FILES})
-source_group("Mục UI (QML)" FILES ${UI_FILES})
+source_group("Mục UI (QML)" FILES
+    ${UI_FILES}
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/main.qml"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/OrderPage.qml"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/LoyaltyPage.qml"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/LoginPage.qml"
+)
 
 # =============================================================================
 # CẤU HÌNH BUILD
@@ -89,13 +94,5 @@ target_link_libraries(GiangsCoffee PRIVATE
     Qt6::Gui
     Qt6::Qml
     Qt6::Quick
-    Qt6::Sql
+    Qt6::Sql  # ---> ĐÃ THÊM DÒNG NÀY ĐỂ KẾT NỐI THƯ VIỆN DATABASE <---
 )
-
-# Tự động tạo thư mục data trong build nếu chưa có
-file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/data")
-
-# Chỉ copy nếu thư mục data ở source tồn tại
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/data")
-    file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/data/" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/data")
-endif()
