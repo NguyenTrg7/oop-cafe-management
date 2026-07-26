@@ -1,0 +1,591 @@
+{
+    "formatRevision": 1,
+    "modules": [
+        {
+            "moduleFiles": [
+                {
+                    "entries": [
+                        {
+                            "codegenResult": 0,
+                            "column": 12,
+                            "durationMicroseconds": 0,
+                            "functionName": "width",
+                            "line": 6,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 0,
+                            "column": 13,
+                            "durationMicroseconds": 0,
+                            "functionName": "height",
+                            "line": 7,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 2,
+                            "column": 5,
+                            "durationMicroseconds": 0,
+                            "functionName": "doLogin",
+                            "line": 63,
+                            "message": "Cannot retrieve a non-object type by ID: loginUserInput"
+                        },
+                        {
+                            "codegenResult": 2,
+                            "column": 5,
+                            "durationMicroseconds": 0,
+                            "functionName": "doRegister",
+                            "line": 99,
+                            "message": "Cannot retrieve a non-object type by ID: registerPassInput"
+                        },
+                        {
+                            "codegenResult": 0,
+                            "column": 23,
+                            "durationMicroseconds": 0,
+                            "functionName": "fill",
+                            "line": 19,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 0,
+                            "column": 38,
+                            "durationMicroseconds": 0,
+                            "functionName": "speed",
+                            "line": 27,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 0,
+                            "column": 45,
+                            "durationMicroseconds": 0,
+                            "functionName": "initialDelay",
+                            "line": 28,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 0,
+                            "column": 24,
+                            "durationMicroseconds": 0,
+                            "functionName": "width",
+                            "line": 30,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 0,
+                            "column": 25,
+                            "durationMicroseconds": 0,
+                            "functionName": "height",
+                            "line": 31,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 0,
+                            "column": 25,
+                            "durationMicroseconds": 0,
+                            "functionName": "radius",
+                            "line": 32,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 0,
+                            "column": 26,
+                            "durationMicroseconds": 0,
+                            "functionName": "opacity",
+                            "line": 34,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 2,
+                            "column": 20,
+                            "durationMicroseconds": 0,
+                            "functionName": "x",
+                            "line": 35,
+                            "message": "Cannot access value for name root"
+                        },
+                        {
+                            "codegenResult": 0,
+                            "column": 28,
+                            "durationMicroseconds": 0,
+                            "functionName": "loops",
+                            "line": 39,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 0,
+                            "column": 48,
+                            "durationMicroseconds": 0,
+                            "functionName": "duration",
+                            "line": 42,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 2,
+                            "column": 29,
+                            "durationMicroseconds": 0,
+                            "functionName": "to",
+                            "line": 45,
+                            "message": "Cannot access value for name root"
+                        },
+                        {
+                            "codegenResult": 0,
+                            "column": 35,
+                            "durationMicroseconds": 0,
+                            "functionName": "duration",
+                            "line": 46,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 0,
+                            "column": 38,
+                            "durationMicroseconds": 0,
+                            "functionName": "type",
+                            "line": 47,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 33,
+                            "durationMicroseconds": 0,
+                            "functionName": "script",
+                            "line": 50,
+                            "message": "Skipped code generation for binding for property of type QQmlScriptString; nothing to do."
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 17,
+                            "durationMicroseconds": 0,
+                            "functionName": "height",
+                            "line": 144,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 27,
+                            "durationMicroseconds": 0,
+                            "functionName": "centerIn",
+                            "line": 145,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 30,
+                            "durationMicroseconds": 0,
+                            "functionName": "type",
+                            "line": 154,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 31,
+                            "durationMicroseconds": 0,
+                            "functionName": "centerIn",
+                            "line": 159,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 43,
+                            "durationMicroseconds": 0,
+                            "functionName": "horizontalCenter",
+                            "line": 168,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 26,
+                            "durationMicroseconds": 0,
+                            "functionName": "visible",
+                            "line": 175,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 44,
+                            "durationMicroseconds": 0,
+                            "functionName": "verticalAlignment",
+                            "line": 194,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 37,
+                            "durationMicroseconds": 0,
+                            "functionName": "onAccepted",
+                            "line": 209,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 43,
+                            "durationMicroseconds": 0,
+                            "functionName": "left",
+                            "line": 204,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 53,
+                            "durationMicroseconds": 0,
+                            "functionName": "verticalCenter",
+                            "line": 205,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 35,
+                            "durationMicroseconds": 0,
+                            "functionName": "echoMode",
+                            "line": 224,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 44,
+                            "durationMicroseconds": 0,
+                            "functionName": "verticalAlignment",
+                            "line": 230,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 37,
+                            "durationMicroseconds": 0,
+                            "functionName": "onAccepted",
+                            "line": 245,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 43,
+                            "durationMicroseconds": 0,
+                            "functionName": "left",
+                            "line": 240,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 53,
+                            "durationMicroseconds": 0,
+                            "functionName": "verticalCenter",
+                            "line": 241,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 47,
+                            "durationMicroseconds": 0,
+                            "functionName": "horizontalCenter",
+                            "line": 255,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 32,
+                            "durationMicroseconds": 0,
+                            "functionName": "onClicked",
+                            "line": 281,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 47,
+                            "durationMicroseconds": 0,
+                            "functionName": "horizontalCenter",
+                            "line": 263,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 39,
+                            "durationMicroseconds": 0,
+                            "functionName": "width",
+                            "line": 270,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 31,
+                            "durationMicroseconds": 0,
+                            "functionName": "text",
+                            "line": 274,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 46,
+                            "durationMicroseconds": 0,
+                            "functionName": "horizontalAlignment",
+                            "line": 278,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 44,
+                            "durationMicroseconds": 0,
+                            "functionName": "verticalAlignment",
+                            "line": 279,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 47,
+                            "durationMicroseconds": 0,
+                            "functionName": "horizontalCenter",
+                            "line": 288,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 38,
+                            "durationMicroseconds": 0,
+                            "functionName": "cursorShape",
+                            "line": 291,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 36,
+                            "durationMicroseconds": 0,
+                            "functionName": "onClicked",
+                            "line": 292,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 39,
+                            "durationMicroseconds": 0,
+                            "functionName": "fill",
+                            "line": 290,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 26,
+                            "durationMicroseconds": 0,
+                            "functionName": "visible",
+                            "line": 305,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 44,
+                            "durationMicroseconds": 0,
+                            "functionName": "verticalAlignment",
+                            "line": 323,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 37,
+                            "durationMicroseconds": 0,
+                            "functionName": "onAccepted",
+                            "line": 338,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 43,
+                            "durationMicroseconds": 0,
+                            "functionName": "left",
+                            "line": 333,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 53,
+                            "durationMicroseconds": 0,
+                            "functionName": "verticalCenter",
+                            "line": 334,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 35,
+                            "durationMicroseconds": 0,
+                            "functionName": "echoMode",
+                            "line": 353,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 44,
+                            "durationMicroseconds": 0,
+                            "functionName": "verticalAlignment",
+                            "line": 359,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 37,
+                            "durationMicroseconds": 0,
+                            "functionName": "onAccepted",
+                            "line": 374,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 43,
+                            "durationMicroseconds": 0,
+                            "functionName": "left",
+                            "line": 369,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 53,
+                            "durationMicroseconds": 0,
+                            "functionName": "verticalCenter",
+                            "line": 370,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 35,
+                            "durationMicroseconds": 0,
+                            "functionName": "echoMode",
+                            "line": 389,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 44,
+                            "durationMicroseconds": 0,
+                            "functionName": "verticalAlignment",
+                            "line": 395,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 37,
+                            "durationMicroseconds": 0,
+                            "functionName": "onAccepted",
+                            "line": 410,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 43,
+                            "durationMicroseconds": 0,
+                            "functionName": "left",
+                            "line": 405,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 53,
+                            "durationMicroseconds": 0,
+                            "functionName": "verticalCenter",
+                            "line": 406,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 47,
+                            "durationMicroseconds": 0,
+                            "functionName": "horizontalCenter",
+                            "line": 420,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 32,
+                            "durationMicroseconds": 0,
+                            "functionName": "onClicked",
+                            "line": 446,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 47,
+                            "durationMicroseconds": 0,
+                            "functionName": "horizontalCenter",
+                            "line": 428,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 39,
+                            "durationMicroseconds": 0,
+                            "functionName": "width",
+                            "line": 435,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 31,
+                            "durationMicroseconds": 0,
+                            "functionName": "text",
+                            "line": 439,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 46,
+                            "durationMicroseconds": 0,
+                            "functionName": "horizontalAlignment",
+                            "line": 443,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 44,
+                            "durationMicroseconds": 0,
+                            "functionName": "verticalAlignment",
+                            "line": 444,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 47,
+                            "durationMicroseconds": 0,
+                            "functionName": "horizontalCenter",
+                            "line": 453,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 38,
+                            "durationMicroseconds": 0,
+                            "functionName": "cursorShape",
+                            "line": 456,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 36,
+                            "durationMicroseconds": 0,
+                            "functionName": "onClicked",
+                            "line": 457,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 39,
+                            "durationMicroseconds": 0,
+                            "functionName": "fill",
+                            "line": 455,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 39,
+                            "durationMicroseconds": 0,
+                            "functionName": "target",
+                            "line": 476,
+                            "message": ""
+                        },
+                        {
+                            "codegenResult": 1,
+                            "column": 39,
+                            "durationMicroseconds": 0,
+                            "functionName": "target",
+                            "line": 472,
+                            "message": ""
+                        }
+                    ],
+                    "filePath": "E:/code/Project/OOP Coffee/oop-cafe-management/ui/LoginPage.qml"
+                }
+            ],
+            "moduleId": "GiangsCoffee(GiangsCoffee)"
+        }
+    ]
+}

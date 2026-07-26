@@ -1,0 +1,23 @@
+--bare
+-I
+E:/code/Project/OOP Coffee/oop-cafe-management/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug
+-I
+E:/code/Project/OOP Coffee/oop-cafe-management/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee
+-I
+E:/code/Project/OOP Coffee/oop-cafe-management/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug
+-I
+C:/Qt/6.11.1/mingw_64/qml
+--resource
+E:/code/Project/OOP Coffee/oop-cafe-management/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/qmake_GiangsCoffee.qrc
+--resource
+E:/code/Project/OOP Coffee/oop-cafe-management/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/GiangsCoffee_raw_qml_0.qrc
+--resource
+E:/code/Project/OOP Coffee/oop-cafe-management/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/.qt/rcc/GiangsCoffee_raw_qml_0_extra_qmldirs.qrc
+E:/code/Project/OOP Coffee/oop-cafe-management/ui/main.qml
+E:/code/Project/OOP Coffee/oop-cafe-management/ui/OrderPage.qml
+E:/code/Project/OOP Coffee/oop-cafe-management/ui/LoyaltyPage.qml
+E:/code/Project/OOP Coffee/oop-cafe-management/ui/LoginPage.qml
+E:/code/Project/OOP Coffee/oop-cafe-management/ui/FinancePage.qml
+E:/code/Project/OOP Coffee/oop-cafe-management/ui/EmployeeManagementPage.qml
+--json
+E:/code/Project/OOP Coffee/oop-cafe-management/build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug/GiangsCoffee_qmllint.json
