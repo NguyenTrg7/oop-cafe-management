@@ -149,4 +149,32 @@ Page {
             }
         }
     }
+    // Thêm vào cuối phần giao diện của OrderPage.qml
+    Button {
+        text: "Xem trạng thái bàn"
+        font.family: "Georgia"
+        font.pixelSize: 16
+        Layout.alignment: Qt.AlignHCenter
+        Layout.preferredWidth: 220
+        Layout.preferredHeight: 45
+
+        background: Rectangle {
+            color: "#4E3629"
+            radius: 6
+            border.color: "#B68D40"
+            border.width: 1
+        }
+        contentItem: Text {
+            text: parent.text
+            color: "#F4EBD0"
+            font.bold: true
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+        }
+
+        onClicked: {
+            // Chuyển sang trang SeatingPage
+            stackView.push("SeatingPage.qml")
+        }
+    }
 }

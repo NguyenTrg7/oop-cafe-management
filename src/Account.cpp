@@ -1,10 +1,11 @@
 #include "Account.h"
-#include <fstream>  // Thư viện đọc/ghi file chuẩn C++
-#include <sstream>  // Thư viện cắt chuỗi chuẩn C++
-#include <iostream> // Thư viện in ra màn hình (cout)
 #include <QCoreApplication> // 🌟 Thêm thư viện Qt để lấy đường dẫn app
+#include <fstream>          // Thư viện đọc/ghi file chuẩn C++
+#include <iostream>         // Thư viện in ra màn hình (cout)
+#include <sstream>          // Thư viện cắt chuỗi chuẩn C++
 
-Account::Account(QObject *parent) : QObject(parent)
+Account::Account(QObject *parent)
+    : QObject(parent)
 {
     // Lấy đường dẫn thư mục chứa file chạy (.exe) và ghép với "/accounts.csv"
     QString absolutePath = QCoreApplication::applicationDirPath() + "/accounts.csv";
@@ -50,7 +51,8 @@ bool Account::authenticate(const QString &username, const QString &password)
     // 3. Đọc từng dòng cho đến hết file
     while (std::getline(file, line)) {
         // Bỏ qua nếu gặp dòng trống
-        if (line.empty()) continue;
+        if (line.empty())
+            continue;
 
         // 🌟 Xóa ký tự \r ở cuối dòng (nếu chạy trên hệ điều hành Windows)
         if (!line.empty() && line.back() == '\r') {
@@ -90,7 +92,8 @@ bool Account::registerAccount(const QString &username, const QString &password)
     if (inFile.is_open()) {
         std::string line;
         while (std::getline(inFile, line)) {
-            if (line.empty()) continue;
+            if (line.empty())
+                continue;
 
             // 🌟 Xóa ký tự \r trước khi cắt chuỗi
             if (!line.empty() && line.back() == '\r') {

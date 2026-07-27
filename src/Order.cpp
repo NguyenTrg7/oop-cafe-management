@@ -1,8 +1,8 @@
 #include "Order.h"
 
-
 // Khởi tạo constructor mặc định
-Order::Order(const QString& id, Customer* customer) {
+Order::Order(const QString &id, Customer *customer)
+{
     // TODO: Khởi tạo các giá trị mặc định cho đơn hàng (ví dụ: trạng thái, mã đơn, v.v.)
 }
 

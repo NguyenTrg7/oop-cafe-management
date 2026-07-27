@@ -71,6 +71,7 @@ source_group("Mục UI (QML)" FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/ui/OrderPage.qml"
     "${CMAKE_CURRENT_SOURCE_DIR}/ui/LoyaltyPage.qml"
     "${CMAKE_CURRENT_SOURCE_DIR}/ui/LoginPage.qml"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/SeatingPage.qml"
 )
 
 # =============================================================================
@@ -85,6 +86,7 @@ qt_add_qml_module(GiangsCoffee
     URI GiangsCoffee
     VERSION 1.0
     QML_FILES ${UI_FILES}
+    QML_FILES ui/SeatingPage.qml
 )
 
 target_include_directories(GiangsCoffee PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
