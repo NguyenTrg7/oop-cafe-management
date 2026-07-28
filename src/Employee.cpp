@@ -21,6 +21,10 @@ void Employee::setShift(const QString& newShift) {
     m_shifft = newShift;
 }
 
+QString Employee::getID(){
+    return this->m_id;
+}
+
 void Employee::displayInfo() const {
     std::cout << "ID: " << m_empID.toStdString()
     << " | Chuc vu: " << m_position.toStdString()

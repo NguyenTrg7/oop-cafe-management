@@ -1,0 +1,14 @@
+﻿ID, Name, Category, BasePrice, Sizes, Status
+D001,Cà phê đen đá,Cà phê,25000, S|M|L, Available
+D002,Cà phê sữa đá,Cà phê,29000, S|M|L, Available
+D003,Bạc xỉu,Cà phê,32000, S|M|L, Available
+D004,Espresso,Cà phê pha máy,35000, S|M|L, Available
+D005,Latte,Cà phê pha máy,45000, S|M|L, Available
+D006,Trà đào cam sả,Trà trái cây,45000, M|L, Available
+D007,Trà vải thiều,Trà trái cây,45000, M|L, Available
+D008,Trà ô long hạt sen,Trà trái cây,49000, M|L, Available
+D009,Hồng trà macchiato,Trà sữa,42000, M|L, Available
+D0010,Trà xanh matcha,Trà sữa,45000, M|L, Available
+D0011,Matcha đá xay,Đá xay,55000, M|L, Available
+D0012,Socola đá xay,Đá xay,55000, M|L, Available
+D0013,Nước ép dưa hấu,Nước ép,40000, M|L, Available

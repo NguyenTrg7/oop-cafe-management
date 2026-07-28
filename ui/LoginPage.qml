@@ -12,7 +12,7 @@ Rectangle {
     }
 
     // ==========================================
-    // HIỆU ỨNG TUYẾT RƠI PURE QML (CHỐNG CRASH 100%)
+    // HIỆU ỨNG TUYẾT RƠI PURE QML
     // ==========================================
     Item {
         id: snowContainer
@@ -58,16 +58,36 @@ Rectangle {
     }
 
     // ==========================================
-    // LOGIC XỬ LÝ
+    // LOGIC XỬ LÝ (ĐÃ CẬP NHẬT CHỜ ROLE)
     // ==========================================
     function doLogin() {
-        var user = loginUserInput.text
-        var pass = loginPassInput.text
-        var isSuccess = accountHandler.authenticate(user, pass)
+        var user = loginUserInput.text.trim()
+        var pass = loginPassInput.text.trim()
 
-        if (isSuccess) {
+        if (user === "" || pass === "") {
+            loginErrorText.text = qsTr("Vui lòng nhập đầy đủ thông tin!")
+            loginErrorText.color = "#E53935"
+            loginErrorText.visible = true
+            return
+        }
+
+        // 1. Gọi hàm C++ kiểm tra thông tin và lấy chuỗi Vai trò (Role)
+        var role = accountHandler.loginAndGetRole(user, pass)
+
+        if (role !== "") {
             loginErrorText.visible = false
-            stackView.push("qrc:/qt/qml/GiangsCoffee/ui/OrderPage.qml")
+
+            // 2. Lưu vai trò vào biến toàn cục của main.qml
+            currentUserRole = role
+
+            // 3. Điều hướng trang khởi đầu theo từng Vai trò
+            if (role === "Khách hàng") {
+                stackView.push("qrc:/qt/qml/GiangsCoffee/ui/LoyaltyPage.qml")
+            } else if (role === "Nhân viên") {
+                stackView.push("qrc:/qt/qml/GiangsCoffee/ui/OrderPage.qml")
+            } else if (role === "Quản lý") {
+                stackView.push("qrc:/qt/qml/GiangsCoffee/ui/FinancePage.qml")
+            }
         } else {
             loginErrorText.text = qsTr("Sai tài khoản hoặc mật khẩu!")
             loginErrorText.color = "#E53935"
@@ -435,7 +455,7 @@ Rectangle {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
-                            root.state = "register"
+                            root.state = "login" // Đã sửa lỗi chuyển trạng thái về login
                             registerErrorText.visible = false
                             loginUserInput.forceActiveFocus()
                         }

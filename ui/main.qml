@@ -3,26 +3,33 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 ApplicationWindow {
+    id: window
     visible: true
     width: 1024
     height: 768
     title: qsTr("Giang's Coffee - Management System")
 
-    // Bảng màu Băng giá Sáng (Bright Ice Theme)
-    property color colorBackground: "#F0F9FF" // Trắng pha xanh nhạt
-    property color colorPrimary: "#FFFFFF"    // Trắng tinh (Cho Header)
-    property color colorSecondary: "#0369A1"  // Xanh dương đậm (Cho chữ tiêu đề)
-    property color colorText: "#333333"       // Xám đậm cho chữ thường
+    // =========================================================================
+    // BIẾN LƯU VAI TRÒ NGƯỜI DÙNG ("Quản lý", "Nhân viên", "Khách hàng")
+    // =========================================================================
+    property string currentUserRole: ""
+
+    // Bảng màu giao diện
+    property color colorBackground: "#F0F9FF"
+    property color colorPrimary: "#FFFFFF"
+    property color colorSecondary: "#0369A1"
+    property color colorText: "#333333"
 
     background: Rectangle {
         color: colorBackground
     }
 
-    // Header chung của ứng dụng
+    // =========================================================================
+    // HEADER CHUNG & THANH MENU CHUYỂN TRANG
+    // =========================================================================
     header: ToolBar {
         background: Rectangle {
             color: colorPrimary
-            // Viền mỏng màu xanh nhạt phân cách header với nội dung
             Rectangle {
                 width: parent.width
                 height: 1
@@ -30,25 +37,73 @@ ApplicationWindow {
                 anchors.bottom: parent.bottom
             }
         }
+
         RowLayout {
             anchors.fill: parent
+            anchors.leftMargin: 15
+            anchors.rightMargin: 15
+            spacing: 10
+
+            // Nút Đăng xuất (Chỉ hiện khi đã vào trong các trang chức năng)
             ToolButton {
-                text: qsTr("◀ Trở lại")
+                text: qsTr("🚪 Đăng xuất")
                 font.family: "Segoe UI"
-                font.pixelSize: 16
+                font.pixelSize: 13
                 font.bold: true
-                palette.buttonText: colorSecondary
+                palette.buttonText: "#C62828"
                 visible: stackView.depth > 1
-                onClicked: stackView.pop()
+                onClicked: {
+                    window.currentUserRole = "" // Reset vai trò về rỗng
+                    stackView.pop(null)         // Quay lại trang Login
+                }
             }
+
+            // Tên thương hiệu
             Label {
                 text: "Giang's Coffee"
                 font.family: "Segoe UI"
-                font.pixelSize: 24
+                font.pixelSize: 20
                 font.bold: true
-                color: colorSecondary // Chữ tiêu đề màu xanh dương cho nổi bật trên nền trắng
-                horizontalAlignment: Qt.AlignHCenter
-                Layout.fillWidth: true
+                color: colorSecondary
+                Layout.fillWidth: stackView.depth <= 1
+            }
+
+            Item { Layout.fillWidth: true; visible: stackView.depth > 1 }
+
+            // -----------------------------------------------------------------
+            // DÃY NÚT CHUYỂN TRANG (ẨN/HIỆN THEO QUYỀN TRUY CẬP)
+            // -----------------------------------------------------------------
+            RowLayout {
+                visible: stackView.depth > 1
+                spacing: 8
+
+                // 1. Đặt Hàng: Dành cho Nhân viên & Quản lý
+                Button {
+                    text: "☕ Đặt Hàng"
+                    visible: window.currentUserRole === "Nhân viên" || window.currentUserRole === "Quản lý"
+                    onClicked: stackView.replace("qrc:/qt/qml/GiangsCoffee/ui/OrderPage.qml")
+                }
+
+                // 2. Tài Chính: Chỉ dành cho Quản lý
+                Button {
+                    text: "📊 Tài Chính"
+                    visible: window.currentUserRole === "Quản lý"
+                    onClicked: stackView.replace("qrc:/qt/qml/GiangsCoffee/ui/FinancePage.qml")
+                }
+
+                // 3. Nhân Sự: Chỉ dành cho Quản lý
+                Button {
+                    text: "👥 Nhân Sự"
+                    visible: window.currentUserRole === "Quản lý"
+                    onClicked: stackView.replace("qrc:/qt/qml/GiangsCoffee/ui/EmployeeManagementPage.qml")
+                }
+
+                // 4. Tích Điểm: Cho cả Khách hàng, Nhân viên & Quản lý
+                Button {
+                    text: "🎁 Tích Điểm"
+                    visible: window.currentUserRole === "Khách hàng" || window.currentUserRole === "Nhân viên" || window.currentUserRole === "Quản lý"
+                    onClicked: stackView.replace("qrc:/qt/qml/GiangsCoffee/ui/LoyaltyPage.qml")
+                }
             }
         }
     }
@@ -58,24 +113,5 @@ ApplicationWindow {
         id: stackView
         anchors.fill: parent
         initialItem: "qrc:/qt/qml/GiangsCoffee/ui/LoginPage.qml"
-    }
-
-    // Component Trang chủ tạm thời
-    Component {
-        id: homePage
-        Page {
-            background: Rectangle { color: colorBackground }
-            ColumnLayout {
-                anchors.centerIn: parent
-                spacing: 20
-
-                Label {
-                    text: "Chào mừng đến với không gian sáng sủa!"
-                    font.family: "Segoe UI"
-                    font.pixelSize: 28
-                    color: colorText
-                }
-            }
-        }
     }
 }
