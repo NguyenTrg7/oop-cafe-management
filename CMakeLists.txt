@@ -32,6 +32,7 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/include/Supplier.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/Seating.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/Account.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/MenuManager.h"
 )
 
 set(LOGIC_FILES
@@ -49,6 +50,7 @@ set(LOGIC_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/src/Supplier.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/Seating.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/Account.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/MenuManager.cpp"
 )
 
 set(UI_FILES
@@ -94,3 +96,4 @@ target_link_libraries(GiangsCoffee PRIVATE
     Qt6::Qml
     Qt6::Quick
 )
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/data DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
