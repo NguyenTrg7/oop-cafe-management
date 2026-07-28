@@ -3,79 +3,83 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 ApplicationWindow {
+    id: appWindow
     visible: true
-    width: 1024
-    height: 768
+    width: 1150
+    height: 750
     title: qsTr("Giang's Coffee - Management System")
 
-    // Bảng màu Băng giá Sáng (Bright Ice Theme)
-    property color colorBackground: "#F0F9FF" // Trắng pha xanh nhạt
-    property color colorPrimary: "#FFFFFF"    // Trắng tinh (Cho Header)
-    property color colorSecondary: "#0369A1"  // Xanh dương đậm (Cho chữ tiêu đề)
-    property color colorText: "#333333"       // Xám đậm cho chữ thường
+    property color colorBackground: "#F8FAFC"
+    property color colorPrimary: "#FFFFFF"
+    property color colorSecondary: "#0284C7"
+    property color colorText: "#1E293B"
 
-    background: Rectangle {
-        color: colorBackground
-    }
+    background: Rectangle { color: colorBackground }
 
-    // Header chung của ứng dụng
+    // Header hiển thị khi depth > 1 (đã vào bên trong app)
     header: ToolBar {
+        visible: stackView.depth > 1
+        implicitHeight: 50
         background: Rectangle {
             color: colorPrimary
-            // Viền mỏng màu xanh nhạt phân cách header với nội dung
             Rectangle {
                 width: parent.width
                 height: 1
-                color: "#E0F2FE"
+                color: "#E2E8F0"
                 anchors.bottom: parent.bottom
             }
         }
-        RowLayout {
+
+        Item {
             anchors.fill: parent
+
+            // Nút Trở lại nằm bên trái
             ToolButton {
                 text: qsTr("◀ Trở lại")
                 font.family: "Segoe UI"
-                font.pixelSize: 16
+                font.pixelSize: 15
                 font.bold: true
                 palette.buttonText: colorSecondary
                 visible: stackView.depth > 1
-                onClicked: stackView.pop()
+                anchors.left: parent.left
+                anchors.leftMargin: 15
+                anchors.verticalCenter: parent.verticalCenter
+                onClicked: {
+                    stackView.pop()
+                    if (stackView.depth === 1) {
+                        accountHandler.setCurrentUserPhone("")
+                    }
+                }
             }
+
+            // Tiêu đề chính giữa Header
             Label {
                 text: "Giang's Coffee"
                 font.family: "Segoe UI"
-                font.pixelSize: 24
+                font.pixelSize: 20
                 font.bold: true
-                color: colorSecondary // Chữ tiêu đề màu xanh dương cho nổi bật trên nền trắng
-                horizontalAlignment: Qt.AlignHCenter
-                Layout.fillWidth: true
+                color: colorSecondary
+                anchors.centerIn: parent
+            }
+
+            // Hiển thị SĐT bên phải
+            Label {
+                text: "📱 SĐT: " + accountHandler.currentUserPhone
+                font.family: "Segoe UI"
+                font.pixelSize: 14
+                font.bold: true
+                color: "#0369A1"
+                anchors.right: parent.right
+                anchors.rightMargin: 15
+                anchors.verticalCenter: parent.verticalCenter
+                visible: accountHandler.currentUserPhone !== "" && accountHandler.currentUserPhone !== "admin" && stackView.depth > 1
             }
         }
     }
 
-    // Trình quản lý luồng các trang
     StackView {
         id: stackView
         anchors.fill: parent
-        initialItem: "qrc:/qt/qml/GiangsCoffee/ui/LoginPage.qml"
-    }
-
-    // Component Trang chủ tạm thời
-    Component {
-        id: homePage
-        Page {
-            background: Rectangle { color: colorBackground }
-            ColumnLayout {
-                anchors.centerIn: parent
-                spacing: 20
-
-                Label {
-                    text: "Chào mừng đến với không gian sáng sủa!"
-                    font.family: "Segoe UI"
-                    font.pixelSize: 28
-                    color: colorText
-                }
-            }
-        }
+        initialItem: "LoginPage.qml"
     }
 }

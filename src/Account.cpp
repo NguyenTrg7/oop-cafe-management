@@ -6,49 +6,66 @@
 
 Account::Account(QObject *parent)
     : QObject(parent)
+#include <fstream>
+#include <sstream>
+#include <iostream>
+#include <vector>
+#include <QCoreApplication>
+
+Account::Account(QObject *parent) : QObject(parent), m_currentUserPhone("")
 {
-    // Lấy đường dẫn thư mục chứa file chạy (.exe) và ghép với "/accounts.csv"
     QString absolutePath = QCoreApplication::applicationDirPath() + "/accounts.csv";
-
-    // Ép kiểu về std::string để sử dụng với C++ chuẩn
     m_csvFilePath = absolutePath.toStdString();
-
     initFile();
 }
 
 Account::~Account() {}
 
-// ========================================================
-// 🛠️ KHỞI TẠO FILE
-// ========================================================
 void Account::initFile()
 {
-    // Mở file ở chế độ ios::app (Ghi tiếp). Nếu file chưa có, C++ sẽ tự động tạo mới.
-    std::ofstream file(m_csvFilePath, std::ios::app);
-    if (file.is_open()) {
-        file.close();
-    } else {
-        std::cout << "Loi: Khong the tao file CSV tai: " << m_csvFilePath << "\n";
+    std::ifstream checkFile(m_csvFilePath);
+    bool hasAdmin = false;
+
+    if (checkFile.is_open()) {
+        std::string line;
+        while (std::getline(checkFile, line)) {
+            if (line.empty()) continue;
+            if (line.back() == '\r') line.pop_back();
+
+            std::stringstream ss(line);
+            std::string dbUser;
+            if (std::getline(ss, dbUser, ',')) {
+                if (dbUser == "admin") {
+                    hasAdmin = true;
+                    break;
+                }
+            }
+        }
+        checkFile.close();
+    }
+
+    if (!hasAdmin) {
+        std::ofstream outFile(m_csvFilePath, std::ios::app);
+        if (outFile.is_open()) {
+            // Mặc định luôn cấp quyền manager với pass chuquanlatoi
+            outFile << "admin,chuquanlatoi,manager\n";
+            outFile.close();
+            std::cout << ">> Da tu dong tao/bo sung tai khoan Admin: admin / chuquanlatoi\n";
+        }
     }
 }
 
-// ========================================================
-// 🔐 LOGIC ĐĂNG NHẬP (C++ Chuẩn)
-// ========================================================
-bool Account::authenticate(const QString &username, const QString &password)
+QString Account::authenticate(const QString &username, const QString &password)
 {
-    // 1. Dịch dữ liệu từ QML (QString) sang C++ (std::string)
     std::string inputUser = username.toStdString();
     std::string inputPass = password.toStdString();
 
-    // 2. Mở file để ĐỌC (ifstream)
     std::ifstream file(m_csvFilePath);
-    if (!file.is_open()) {
-        return false;
-    }
+    if (!file.is_open()) return "FILE_ERROR";
 
     std::string line;
-    // 3. Đọc từng dòng cho đến hết file
+    bool userExists = false;
+
     while (std::getline(file, line)) {
         // Bỏ qua nếu gặp dòng trống
         if (line.empty())
@@ -58,36 +75,42 @@ bool Account::authenticate(const QString &username, const QString &password)
         if (!line.empty() && line.back() == '\r') {
             line.pop_back();
         }
+        if (line.empty()) continue;
+        if (line.back() == '\r') line.pop_back();
 
         std::stringstream ss(line);
-        std::string dbUser, dbPass;
+        std::string dbUser, dbPass, dbRole;
 
-        // 4. Cắt chuỗi bằng dấu phẩy ','
-        if (std::getline(ss, dbUser, ',') && std::getline(ss, dbPass)) {
-            // 5. So sánh dữ liệu trong file với dữ liệu người dùng gõ
-            if (dbUser == inputUser && dbPass == inputPass) {
-                file.close();
-                return true; // Khớp 100% -> Đăng nhập thành công!
+        if (std::getline(ss, dbUser, ',') &&
+            std::getline(ss, dbPass, ',') &&
+            std::getline(ss, dbRole)) {
+
+            if (dbUser == inputUser) {
+                userExists = true;
+                if (dbPass == inputPass) {
+                    file.close();
+                    setCurrentUserPhone(username);
+                    return QString::fromStdString(dbRole);
+                }
             }
         }
     }
 
     file.close();
-    return false; // Chạy hết vòng lặp mà không thấy -> Báo sai!
+
+    if (!userExists) {
+        return "NOT_REGISTERED";
+    } else {
+        return "WRONG_PASSWORD";
+    }
 }
 
-// ========================================================
-// ❄️ LOGIC ĐĂNG KÝ (C++ Chuẩn)
-// ========================================================
-bool Account::registerAccount(const QString &username, const QString &password)
+bool Account::registerAccount(const QString &username, const QString &password, const QString &role)
 {
-    // 1. Dịch dữ liệu
     std::string inputUser = username.toStdString();
     std::string inputPass = password.toStdString();
+    std::string inputRole = role.toStdString();
 
-    // =======================================
-    // BƯỚC 1: Đọc file để kiểm tra tài khoản trùng
-    // =======================================
     std::ifstream inFile(m_csvFilePath);
     if (inFile.is_open()) {
         std::string line;
@@ -99,32 +122,128 @@ bool Account::registerAccount(const QString &username, const QString &password)
             if (!line.empty() && line.back() == '\r') {
                 line.pop_back();
             }
+            if (line.empty()) continue;
+            if (line.back() == '\r') line.pop_back();
 
             std::stringstream ss(line);
             std::string dbUser;
-
-            // Chỉ cần lấy phần chữ trước dấu phẩy (tên tài khoản) để kiểm tra
             if (std::getline(ss, dbUser, ',')) {
                 if (dbUser == inputUser) {
                     inFile.close();
-                    return false; // ❌ Thất bại: Tài khoản đã bị trùng!
+                    return false;
                 }
             }
         }
         inFile.close();
     }
 
-    // =======================================
-    // BƯỚC 2: Ghi tài khoản mới vào cuối file
-    // =======================================
-    // Mở file ở chế độ ios::app (Append - Ghi nối tiếp vào đuôi file)
     std::ofstream outFile(m_csvFilePath, std::ios::app);
     if (outFile.is_open()) {
-        // Ghi theo định dạng: user,pass rồi xuống dòng (\n)
-        outFile << inputUser << "," << inputPass << "\n";
+        outFile << inputUser << "," << inputPass << "," << inputRole << "\n";
         outFile.close();
-        return true; // ✅ Đăng ký thành công!
+        return true;
     }
 
-    return false; // Lỗi không mở được file
+    return false;
+}
+
+// LOGIC CẤP QUYỀN NHÂN VIÊN MỚI
+bool Account::grantEmployeeRole(const QString &phoneNumber)
+{
+    std::string targetPhone = phoneNumber.toStdString();
+    std::ifstream inFile(m_csvFilePath);
+
+    std::vector<std::string> lines;
+    std::string line;
+    bool found = false;
+
+    if (inFile.is_open()) {
+        while (std::getline(inFile, line)) {
+            if (line.empty()) continue;
+            std::string tempLine = line;
+            if (!tempLine.empty() && tempLine.back() == '\r') tempLine.pop_back();
+
+            std::stringstream ss(tempLine);
+            std::string dbUser, dbPass, dbRole;
+
+            if (std::getline(ss, dbUser, ',') &&
+                std::getline(ss, dbPass, ',') &&
+                std::getline(ss, dbRole)) {
+
+                if (dbUser == targetPhone) {
+                    // Nếu đã đăng ký: Đổi role thành staff và giữ nguyên mật khẩu (dbPass)
+                    lines.push_back(dbUser + "," + dbPass + ",staff");
+                    found = true;
+                } else {
+                    lines.push_back(tempLine);
+                }
+            }
+        }
+        inFile.close();
+    }
+
+    // Nếu chưa đăng ký hoặc bị xóa: Tạo mới tài khoản với mật khẩu "toilanhanvien"
+    if (!found) {
+        std::ofstream outFile(m_csvFilePath, std::ios::app);
+        if (outFile.is_open()) {
+            outFile << targetPhone << ",toilanhanvien,staff\n";
+            outFile.close();
+            return true;
+        }
+        return false;
+    }
+
+    // Nếu có thay đổi ở tài khoản cũ, cập nhật lại tệp
+    std::ofstream outFile(m_csvFilePath, std::ios::trunc);
+    if (outFile.is_open()) {
+        for (const auto &l : lines) {
+            outFile << l << "\n";
+        }
+        outFile.close();
+        return true;
+    }
+
+    return false;
+}
+
+bool Account::removeAccount(const QString &username)
+{
+    std::string targetUser = username.toStdString();
+    std::ifstream inFile(m_csvFilePath);
+    if (!inFile.is_open()) return false;
+
+    std::vector<std::string> lines;
+    std::string line;
+    bool found = false;
+
+    while (std::getline(inFile, line)) {
+        if (line.empty()) continue;
+        std::string tempLine = line;
+        if (!tempLine.empty() && tempLine.back() == '\r') tempLine.pop_back();
+
+        std::stringstream ss(tempLine);
+        std::string dbUser;
+
+        if (std::getline(ss, dbUser, ',')) {
+            if (dbUser == targetUser) {
+                found = true;
+            } else {
+                lines.push_back(tempLine);
+            }
+        }
+    }
+    inFile.close();
+
+    if (!found) return false;
+
+    std::ofstream outFile(m_csvFilePath, std::ios::trunc);
+    if (outFile.is_open()) {
+        for (const auto &l : lines) {
+            outFile << l << "\n";
+        }
+        outFile.close();
+        return true;
+    }
+
+    return false;
 }
