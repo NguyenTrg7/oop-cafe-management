@@ -68,7 +68,11 @@ public:
     // -- Table & Order Management --
     Q_INVOKABLE void placeOrder(Order* order);
     Q_INVOKABLE void reserveTable(int tableNum);
+    Q_INVOKABLE void clearTable(int tableNum);
     Q_INVOKABLE void mergeTable(int num1, int num2);
+    Q_INVOKABLE bool undoMerge(int tableNumber);
+    Q_INVOKABLE void editTable(int tableNumber, const QString& shape, int capacity);
+    Q_INVOKABLE QVariantList getSeatingList() const;
 
     // -- Financial Management --
     Q_INVOKABLE void generateReport(const QDateTime& date);
