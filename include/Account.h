@@ -3,44 +3,37 @@
 
 #include <QObject>
 #include <QString>
-#include <QHash>
-#include <QVariantList>
-#include <QVariantMap>
+#include <string>
 
-struct UserData {
-    QString password;
-    QString role;
-};
-
-class Account : public QObject {
+class Account : public QObject
+{
     Q_OBJECT
-    // 🔑 Khai báo Property kết nối với hàm getter currentUser()
-    Q_PROPERTY(QString currentUser READ currentUser NOTIFY currentUserChanged)
+    Q_PROPERTY(QString currentUserPhone READ currentUserPhone WRITE setCurrentUserPhone NOTIFY currentUserPhoneChanged)
 
 public:
     explicit Account(QObject *parent = nullptr);
+    ~Account();
 
-    // 🔑 HÀM GETTER (phải có dấu ngoặc tròn () và trả về QString)
-    QString currentUser() const { return m_currentUser; }
+    QString currentUserPhone() const { return m_currentUserPhone; }
+    void setCurrentUserPhone(const QString &phone) {
+        if (m_currentUserPhone != phone) {
+            m_currentUserPhone = phone;
+            emit currentUserPhoneChanged();
+        }
+    }
 
-    Q_INVOKABLE bool loadFromFile(const QString& filePath);
-    Q_INVOKABLE bool saveToFile(const QString& filePath = "");
-    Q_INVOKABLE QString loginAndGetRole(const QString& username, const QString& password);
-    Q_INVOKABLE bool registerAccount(const QString& username, const QString& password, const QString& role);
-    Q_INVOKABLE QVariantList getAccountList();
-    Q_INVOKABLE bool addAccount(const QString& username, const QString& password, const QString& role);
-    Q_INVOKABLE bool updateAccount(const QString& username, const QString& newPassword, const QString& newRole);
-    Q_INVOKABLE bool deleteAccount(const QString& username);
+    Q_INVOKABLE QString authenticate(const QString &username, const QString &password);
+    Q_INVOKABLE bool registerAccount(const QString &username, const QString &password, const QString &role);
+    Q_INVOKABLE bool grantEmployeeRole(const QString &phoneNumber);
+    Q_INVOKABLE bool removeAccount(const QString &username); // Bổ sung hàm xóa tài khoản
 
 signals:
-    void currentUserChanged();
+    void currentUserPhoneChanged();
 
 private:
-    QHash<QString, UserData> m_accounts;
-    QString m_filePath;
-
-    // 🔑 BIẾN LƯU TÊN (Thêm tiền tố m_ để KHÔNG bị trùng với hàm getter currentUser فوق)
-    QString m_currentUser;
+    std::string m_csvFilePath;
+    QString m_currentUserPhone;
+    void initFile();
 };
 
 #endif // ACCOUNT_H
