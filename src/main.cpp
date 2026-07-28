@@ -1,8 +1,5 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-#include <QQmlContext> // <-- THÊM: Thư viện kết nối C++ với QML
-#include "Account.h"   // <-- THÊM: Class quản lý tài khoản
-#include "GiangCoffeeSystem.h"
 #include <QQmlContext>
 #include <QCoreApplication>
 #include <QDir>
@@ -41,12 +38,6 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
-    GiangCoffeeSystem* coffeeSystem = GiangCoffeeSystem::getInstance();
-    engine.rootContext()->setContextProperty("coffeeSystem", coffeeSystem);
-
-    // =======================================================
-    // KHỞI TẠO VÀ CHUYỂN ACCOUNT HANDLER SANG QML
-    // =======================================================
     // ==========================================
     // 1. XỬ LÝ ACCOUNT (Giữ nguyên của main.cpp)
     // ==========================================
@@ -75,15 +66,11 @@ int main(int argc, char *argv[])
     // 4. Load file QML chính
     const QUrl url(QStringLiteral("qrc:/qt/qml/GiangsCoffee/ui/main.qml"));
 
-    QObject::connect(
-        &engine,
-        &QQmlApplicationEngine::objectCreated,
-        &app,
-        [url](QObject *obj, const QUrl &objUrl) {
-            if (!obj && url == objUrl)
-                QCoreApplication::exit(-1);
-        },
-        Qt::QueuedConnection);
+    QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
+                     &app, [url](QObject *obj, const QUrl &objUrl) {
+                         if (!obj && url == objUrl)
+                             QCoreApplication::exit(-1);
+                     }, Qt::QueuedConnection);
 
     engine.load(url);
 
