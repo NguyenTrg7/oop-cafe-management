@@ -37,6 +37,7 @@ public:
     QString getAvatar() const { return m_avatar; }
     QString getCccdFront() const { return m_cccdFront; }
     QString getCccdBack() const { return m_cccdBack; }
+    double calculateSalary() {return 0;}
 
     // Setters
     void setPhone(const QString& phone) { m_phone = phone; }
