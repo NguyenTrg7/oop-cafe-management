@@ -1,8 +1,8 @@
 #include "Ingredient.h"
 
-Ingredient::Ingredient() {
+Ingredient::Ingredient()
+{
     // Khởi tạo mặc định
 }
 
-Ingredient::~Ingredient() {
-}
+Ingredient::~Ingredient() {}

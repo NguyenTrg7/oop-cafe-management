@@ -1,11 +1,13 @@
 #include "Account.h"
-#include <fstream>
-#include <sstream>
-#include <iostream>
-#include <vector>
 #include <QCoreApplication>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <vector>
 
-Account::Account(QObject *parent) : QObject(parent), m_currentUserPhone("")
+Account::Account(QObject *parent)
+    : QObject(parent)
+    , m_currentUserPhone("")
 {
     QString absolutePath = QCoreApplication::applicationDirPath() + "/accounts.csv";
     m_csvFilePath = absolutePath.toStdString();
@@ -22,8 +24,10 @@ void Account::initFile()
     if (checkFile.is_open()) {
         std::string line;
         while (std::getline(checkFile, line)) {
-            if (line.empty()) continue;
-            if (line.back() == '\r') line.pop_back();
+            if (line.empty())
+                continue;
+            if (line.back() == '\r')
+                line.pop_back();
 
             std::stringstream ss(line);
             std::string dbUser;
@@ -54,22 +58,23 @@ QString Account::authenticate(const QString &username, const QString &password)
     std::string inputPass = password.toStdString();
 
     std::ifstream file(m_csvFilePath);
-    if (!file.is_open()) return "FILE_ERROR";
+    if (!file.is_open())
+        return "FILE_ERROR";
 
     std::string line;
     bool userExists = false;
 
     while (std::getline(file, line)) {
-        if (line.empty()) continue;
-        if (line.back() == '\r') line.pop_back();
+        if (line.empty())
+            continue;
+        if (line.back() == '\r')
+            line.pop_back();
 
         std::stringstream ss(line);
         std::string dbUser, dbPass, dbRole;
 
-        if (std::getline(ss, dbUser, ',') &&
-            std::getline(ss, dbPass, ',') &&
-            std::getline(ss, dbRole)) {
-
+        if (std::getline(ss, dbUser, ',') && std::getline(ss, dbPass, ',')
+            && std::getline(ss, dbRole)) {
             if (dbUser == inputUser) {
                 userExists = true;
                 if (dbPass == inputPass) {
@@ -100,8 +105,10 @@ bool Account::registerAccount(const QString &username, const QString &password, 
     if (inFile.is_open()) {
         std::string line;
         while (std::getline(inFile, line)) {
-            if (line.empty()) continue;
-            if (line.back() == '\r') line.pop_back();
+            if (line.empty())
+                continue;
+            if (line.back() == '\r')
+                line.pop_back();
 
             std::stringstream ss(line);
             std::string dbUser;
@@ -137,17 +144,17 @@ bool Account::grantEmployeeRole(const QString &phoneNumber)
 
     if (inFile.is_open()) {
         while (std::getline(inFile, line)) {
-            if (line.empty()) continue;
+            if (line.empty())
+                continue;
             std::string tempLine = line;
-            if (!tempLine.empty() && tempLine.back() == '\r') tempLine.pop_back();
+            if (!tempLine.empty() && tempLine.back() == '\r')
+                tempLine.pop_back();
 
             std::stringstream ss(tempLine);
             std::string dbUser, dbPass, dbRole;
 
-            if (std::getline(ss, dbUser, ',') &&
-                std::getline(ss, dbPass, ',') &&
-                std::getline(ss, dbRole)) {
-
+            if (std::getline(ss, dbUser, ',') && std::getline(ss, dbPass, ',')
+                && std::getline(ss, dbRole)) {
                 if (dbUser == targetPhone) {
                     // Nếu đã đăng ký: Đổi role thành staff và giữ nguyên mật khẩu (dbPass)
                     lines.push_back(dbUser + "," + dbPass + ",staff");
@@ -188,16 +195,19 @@ bool Account::removeAccount(const QString &username)
 {
     std::string targetUser = username.toStdString();
     std::ifstream inFile(m_csvFilePath);
-    if (!inFile.is_open()) return false;
+    if (!inFile.is_open())
+        return false;
 
     std::vector<std::string> lines;
     std::string line;
     bool found = false;
 
     while (std::getline(inFile, line)) {
-        if (line.empty()) continue;
+        if (line.empty())
+            continue;
         std::string tempLine = line;
-        if (!tempLine.empty() && tempLine.back() == '\r') tempLine.pop_back();
+        if (!tempLine.empty() && tempLine.back() == '\r')
+            tempLine.pop_back();
 
         std::stringstream ss(tempLine);
         std::string dbUser;
@@ -212,7 +222,8 @@ bool Account::removeAccount(const QString &username)
     }
     inFile.close();
 
-    if (!found) return false;
+    if (!found)
+        return false;
 
     std::ofstream outFile(m_csvFilePath, std::ios::trunc);
     if (outFile.is_open()) {

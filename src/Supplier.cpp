@@ -1,8 +1,8 @@
 #include "Supplier.h"
 
-Supplier::Supplier() {
+Supplier::Supplier()
+{
     // Khởi tạo mặc định
 }
 
-Supplier::~Supplier() {
-}
+Supplier::~Supplier() {}

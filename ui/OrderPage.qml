@@ -245,6 +245,18 @@ Item {
                         cartModel.clear(); // Xóa giỏ hàng sau khi hoàn tất
                     }
                 }
+
+                Button {
+                    text: "🪑 Xem trạng thái bàn"
+                    Layout.fillWidth: true
+                    implicitHeight: 40
+                    onClicked: {
+                        if (StackView.view)
+                            StackView.view.push("SeatingPage.qml")
+                        else if (typeof stackView !== "undefined")
+                            stackView.push("SeatingPage.qml")
+                    }
+                }
             }
         }
     }
