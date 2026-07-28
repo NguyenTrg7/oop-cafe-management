@@ -5,14 +5,21 @@ Rectangle {
     id: root
     width: parent.width
     height: parent.height
-
     gradient: Gradient {
         GradientStop { position: 0.0; color: "#BAE6FD" }
         GradientStop { position: 1.0; color: "#F0F9FF" }
     }
 
+    // Tự động xoá dữ liệu các ô nhập khi trang được active lại (Back từ trang khác về)
+    StackView.onActivating: {
+        clearFields()
+        if (typeof accountHandler !== "undefined") {
+            accountHandler.setCurrentUserPhone("")
+        }
+    }
+
     // ==========================================
-    // HIỆU ỨNG TUYẾT RƠI PURE QML
+    // HIỆU ỨNG TUYẾT RƠI
     // ==========================================
     Item {
         id: snowContainer
@@ -20,7 +27,7 @@ Rectangle {
         clip: true
 
         Repeater {
-            model: 40 // Số lượng hạt tuyết
+            model: 40
 
             Rectangle {
                 id: flake
@@ -40,12 +47,14 @@ Rectangle {
                     running: true
 
                     PauseAnimation { duration: flake.initialDelay }
+
                     NumberAnimation {
                         from: -20
                         to: root.height + 20
                         duration: flake.speed
                         easing.type: Easing.Linear
                     }
+
                     ScriptAction {
                         script: {
                             flake.initialDelay = 0;
@@ -58,38 +67,75 @@ Rectangle {
     }
 
     // ==========================================
-    // LOGIC XỬ LÝ (ĐÃ CẬP NHẬT CHỜ ROLE)
+    // LOGIC XỬ LÝ - PHÂN QUYỀN 3 CẤP ĐỘ
     // ==========================================
+    function clearFields() {
+        loginUserInput.text = ""
+        loginPassInput.text = ""
+        registerUserInput.text = ""
+        registerPassInput.text = ""
+        registerConfirmInput.text = ""
+
+        loginErrorText.text = ""
+        loginErrorText.visible = false
+        registerErrorText.text = ""
+        registerErrorText.visible = false
+    }
+
     function doLogin() {
         var user = loginUserInput.text.trim()
-        var pass = loginPassInput.text.trim()
+        var pass = loginPassInput.text
 
+        // 1. Kiểm tra rỗng
         if (user === "" || pass === "") {
-            loginErrorText.text = qsTr("Vui lòng nhập đầy đủ thông tin!")
-            loginErrorText.color = "#E53935"
+            loginErrorText.text = qsTr("Vui lòng nhập đủ số điện thoại và mật khẩu!")
             loginErrorText.visible = true
             return
         }
 
-        // 1. Gọi hàm C++ kiểm tra thông tin và lấy chuỗi Vai trò (Role)
-        var role = accountHandler.loginAndGetRole(user, pass)
+        // 2. Kiểm tra format số điện thoại (chỉ bỏ qua nếu là admin)
+        if (user !== "admin" && !/^\d{10}$/.test(user)) {
+            loginErrorText.text = qsTr("Số điện thoại không hợp lệ (phải đủ 10 số)!")
+            loginErrorText.visible = true
+            return
+        }
 
-        if (role !== "") {
+        // 3. Lấy kết quả từ C++
+        var result = accountHandler.authenticate(user, pass)
+        var role = String(result).toLowerCase() // Chuẩn hóa chữ thường
+
+        // 4. KIỂM TRA LỖI VÀ CHUYỂN TRANG
+        if (result === "NOT_REGISTERED") {
+            loginErrorText.text = qsTr("Tài khoản chưa được đăng ký!")
+            loginErrorText.color = "#E53935"
+            loginErrorText.visible = true
+        } else if (result === "WRONG_PASSWORD") {
+            loginErrorText.text = qsTr("Sai mật khẩu!")
+            loginErrorText.color = "#E53935"
+            loginErrorText.visible = true
+            loginPassInput.text = ""
+        } else if (role === "manager" || role === "staff" || role === "customer") {
             loginErrorText.visible = false
 
-            // 2. Lưu vai trò vào biến toàn cục của main.qml
-            currentUserRole = role
+            var targetPage = ""
+            if (role === "manager") {
+                targetPage = "ManagerPage.qml" // <-- Đã sửa thành ManagerPage.qml
+            } else if (role === "staff") {
+                targetPage = "EmployeePage.qml"
+            } else {
+                targetPage = "OrderPage.qml"
+            }
 
-            // 3. Điều hướng trang khởi đầu theo từng Vai trò
-            if (role === "Khách hàng") {
-                stackView.push("qrc:/qt/qml/GiangsCoffee/ui/LoyaltyPage.qml")
-            } else if (role === "Nhân viên") {
-                stackView.push("qrc:/qt/qml/GiangsCoffee/ui/OrderPage.qml")
-            } else if (role === "Quản lý") {
-                stackView.push("qrc:/qt/qml/GiangsCoffee/ui/FinancePage.qml")
+            // Gọi đúng StackView đang chứa trang này để push
+            if (StackView.view) {
+                StackView.view.push(targetPage)
+            } else {
+                loginErrorText.text = qsTr("Lỗi: Không tìm thấy hệ thống điều hướng!")
+                loginErrorText.color = "#E53935"
+                loginErrorText.visible = true
             }
         } else {
-            loginErrorText.text = qsTr("Sai tài khoản hoặc mật khẩu!")
+            loginErrorText.text = qsTr("Lỗi kết nối tệp tin tài khoản!")
             loginErrorText.color = "#E53935"
             loginErrorText.visible = true
             loginPassInput.text = ""
@@ -97,16 +143,33 @@ Rectangle {
     }
 
     function doRegister() {
+        var user = registerUserInput.text.trim()
         var pass = registerPassInput.text
         var confirmPass = registerConfirmInput.text
-        var user = registerUserInput.text
 
-        if (user === "" || pass === "") {
+        // 1. Kiểm tra rỗng
+        if (user === "" || pass === "" || confirmPass === "") {
             registerErrorText.text = qsTr("Vui lòng nhập đủ thông tin!")
             registerErrorText.visible = true
             return
         }
 
+        // 2. Kiểm tra đúng 10 số
+        if (!/^\d{10}$/.test(user)) {
+            registerErrorText.text = qsTr("Số điện thoại phải bao gồm đúng 10 chữ số!")
+            registerErrorText.visible = true
+            return
+        }
+
+        // 3. Kiểm tra mật khẩu mạnh (>= 8 ký tự, có chữ và số)
+        var strongRegex = new RegExp("^(?=.*[a-zA-Z])(?=.*[0-9])(?=.{8,})")
+        if (!strongRegex.test(pass)) {
+            registerErrorText.text = qsTr("Mật khẩu từ 8 ký tự, gồm cả chữ và số!")
+            registerErrorText.visible = true
+            return
+        }
+
+        // 4. Kiểm tra mật khẩu khớp
         if (pass !== confirmPass) {
             registerErrorText.text = qsTr("Mật khẩu không khớp!")
             registerErrorText.visible = true
@@ -115,14 +178,11 @@ Rectangle {
             return
         }
 
-        var isSuccess = accountHandler.registerAccount(user, pass)
+        // Mặc định đăng ký mới sẽ là tài khoản Khách hàng ("customer")
+        var isSuccess = accountHandler.registerAccount(user, pass, "customer")
 
         if (isSuccess) {
-            registerErrorText.visible = false
-            registerUserInput.text = ""
-            registerPassInput.text = ""
-            registerConfirmInput.text = ""
-
+            clearFields()
             root.state = "login"
             loginErrorText.text = qsTr("Đăng ký thành công! Hãy đăng nhập.")
             loginErrorText.color = "#43A047"
@@ -176,72 +236,30 @@ Rectangle {
 
                 Column {
                     spacing: 5
-                    Text {
-                        text: qsTr("Tên đăng nhập")
-                        font.pixelSize: 14
-                        font.bold: true
-                        color: "#0284C7"
-                    }
+                    Text { text: qsTr("Tên đăng nhập (SĐT)"); font.pixelSize: 14; font.bold: true; color: "#0284C7" }
                     TextField {
                         id: loginUserInput
                         focus: true
-                        placeholderText: qsTr("Nhập tên tài khoản...")
-                        leftPadding: 40
-                        width: 300
-                        height: 48
-                        font.pixelSize: 15
-                        color: "#333333"
+                        placeholderText: qsTr("Nhập SĐT của bạn...")
+                        leftPadding: 40; width: 300; height: 48; font.pixelSize: 15; color: "#333333"
                         verticalAlignment: TextInput.AlignVCenter
-                        background: Rectangle {
-                            radius: 12
-                            color: "#FFFFFF"
-                            border.color: "#BAE6FD"
-                            border.width: 1
-                        }
-                        Text {
-                            text: "👤"
-                            font.pixelSize: 18
-                            anchors.left: parent.left
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.leftMargin: 12
-                            opacity: 0.7
-                        }
+                        background: Rectangle { radius: 12; color: "#FFFFFF"; border.color: "#BAE6FD"; border.width: 1 }
+                        Text { text: "👤"; font.pixelSize: 18; anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter; anchors.leftMargin: 12; opacity: 0.7 }
                         onAccepted: loginPassInput.forceActiveFocus()
                     }
                 }
 
                 Column {
                     spacing: 5
-                    Text {
-                        text: qsTr("Mật khẩu")
-                        font.pixelSize: 14
-                        font.bold: true
-                        color: "#0284C7"
-                    }
+                    Text { text: qsTr("Mật khẩu"); font.pixelSize: 14; font.bold: true; color: "#0284C7" }
                     TextField {
                         id: loginPassInput
                         placeholderText: qsTr("Nhập mật khẩu...")
                         echoMode: TextInput.Password
-                        leftPadding: 40
-                        width: 300
-                        height: 48
-                        font.pixelSize: 15
-                        color: "#333333"
+                        leftPadding: 40; width: 300; height: 48; font.pixelSize: 15; color: "#333333"
                         verticalAlignment: TextInput.AlignVCenter
-                        background: Rectangle {
-                            radius: 12
-                            color: "#FFFFFF"
-                            border.color: "#BAE6FD"
-                            border.width: 1
-                        }
-                        Text {
-                            text: "🔒"
-                            font.pixelSize: 18
-                            anchors.left: parent.left
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.leftMargin: 12
-                            opacity: 0.7
-                        }
+                        background: Rectangle { radius: 12; color: "#FFFFFF"; border.color: "#BAE6FD"; border.width: 1 }
+                        Text { text: "🔒"; font.pixelSize: 18; anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter; anchors.leftMargin: 12; opacity: 0.7 }
                         onAccepted: doLogin()
                     }
                 }
@@ -258,42 +276,28 @@ Rectangle {
                 Button {
                     id: loginBtn
                     text: qsTr("ĐĂNG NHẬP")
-                    width: 300
-                    height: 52
-                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: 300; height: 52; anchors.horizontalCenter: parent.horizontalCenter
                     background: Rectangle {
                         radius: 12
                         gradient: Gradient {
                             GradientStop { position: 0.0; color: "#38BDF8" }
                             GradientStop { position: 1.0; color: "#0284C7" }
                         }
-                        border.width: parent.pressed ? 2 : 0
-                        border.color: "#FFFFFF"
+                        border.width: parent.pressed ? 2 : 0; border.color: "#FFFFFF"
                     }
                     contentItem: Text {
-                        text: parent.text
-                        color: "white"
-                        font.bold: true
-                        font.pixelSize: 17
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
+                        text: parent.text; color: "white"; font.bold: true; font.pixelSize: 17
+                        horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
                     }
                     onClicked: doLogin()
                 }
 
                 Text {
                     text: qsTr("Chưa có tài khoản? Đăng ký ngay.")
-                    color: "#0369A1"
-                    font.pixelSize: 14
-                    anchors.horizontalCenter: parent.horizontalCenter
+                    color: "#0369A1"; font.pixelSize: 14; anchors.horizontalCenter: parent.horizontalCenter
                     MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: {
-                            root.state = "register"
-                            loginErrorText.visible = false
-                            registerUserInput.forceActiveFocus()
-                        }
+                        anchors.fill: parent; cursorShape: Qt.PointingHandCursor
+                        onClicked: { clearFields(); root.state = "register"; registerUserInput.forceActiveFocus() }
                     }
                 }
             }
@@ -306,107 +310,44 @@ Rectangle {
 
                 Column {
                     spacing: 5
-                    Text {
-                        text: qsTr("Tên đăng nhập")
-                        font.pixelSize: 14
-                        font.bold: true
-                        color: "#0284C7"
-                    }
+                    Text { text: qsTr("Số điện thoại"); font.pixelSize: 14; font.bold: true; color: "#0284C7" }
                     TextField {
                         id: registerUserInput
-                        placeholderText: qsTr("Tạo tên tài khoản...")
-                        leftPadding: 40
-                        width: 300
-                        height: 48
-                        font.pixelSize: 15
-                        color: "#333333"
+                        placeholderText: qsTr("Nhập 10 số điện thoại...")
+                        leftPadding: 40; width: 300; height: 48; font.pixelSize: 15; color: "#333333"
                         verticalAlignment: TextInput.AlignVCenter
-                        background: Rectangle {
-                            radius: 12
-                            color: "#FFFFFF"
-                            border.color: "#BAE6FD"
-                            border.width: 1
-                        }
-                        Text {
-                            text: "👤"
-                            font.pixelSize: 18
-                            anchors.left: parent.left
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.leftMargin: 12
-                            opacity: 0.7
-                        }
+                        background: Rectangle { radius: 12; color: "#FFFFFF"; border.color: "#BAE6FD"; border.width: 1 }
+                        Text { text: "📱"; font.pixelSize: 18; anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter; anchors.leftMargin: 12; opacity: 0.7 }
                         onAccepted: registerPassInput.forceActiveFocus()
                     }
                 }
 
                 Column {
                     spacing: 5
-                    Text {
-                        text: qsTr("Mật khẩu")
-                        font.pixelSize: 14
-                        font.bold: true
-                        color: "#0284C7"
-                    }
+                    Text { text: qsTr("Mật khẩu"); font.pixelSize: 14; font.bold: true; color: "#0284C7" }
                     TextField {
                         id: registerPassInput
                         placeholderText: qsTr("Tạo mật khẩu...")
                         echoMode: TextInput.Password
-                        leftPadding: 40
-                        width: 300
-                        height: 48
-                        font.pixelSize: 15
-                        color: "#333333"
+                        leftPadding: 40; width: 300; height: 48; font.pixelSize: 15; color: "#333333"
                         verticalAlignment: TextInput.AlignVCenter
-                        background: Rectangle {
-                            radius: 12
-                            color: "#FFFFFF"
-                            border.color: "#BAE6FD"
-                            border.width: 1
-                        }
-                        Text {
-                            text: "🔒"
-                            font.pixelSize: 18
-                            anchors.left: parent.left
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.leftMargin: 12
-                            opacity: 0.7
-                        }
+                        background: Rectangle { radius: 12; color: "#FFFFFF"; border.color: "#BAE6FD"; border.width: 1 }
+                        Text { text: "🔒"; font.pixelSize: 18; anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter; anchors.leftMargin: 12; opacity: 0.7 }
                         onAccepted: registerConfirmInput.forceActiveFocus()
                     }
                 }
 
                 Column {
                     spacing: 5
-                    Text {
-                        text: qsTr("Xác nhận mật khẩu")
-                        font.pixelSize: 14
-                        font.bold: true
-                        color: "#0284C7"
-                    }
+                    Text { text: qsTr("Xác nhận mật khẩu"); font.pixelSize: 14; font.bold: true; color: "#0284C7" }
                     TextField {
                         id: registerConfirmInput
                         placeholderText: qsTr("Nhập lại mật khẩu...")
                         echoMode: TextInput.Password
-                        leftPadding: 40
-                        width: 300
-                        height: 48
-                        font.pixelSize: 15
-                        color: "#333333"
+                        leftPadding: 40; width: 300; height: 48; font.pixelSize: 15; color: "#333333"
                         verticalAlignment: TextInput.AlignVCenter
-                        background: Rectangle {
-                            radius: 12
-                            color: "#FFFFFF"
-                            border.color: "#BAE6FD"
-                            border.width: 1
-                        }
-                        Text {
-                            text: "🔐"
-                            font.pixelSize: 18
-                            anchors.left: parent.left
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.leftMargin: 12
-                            opacity: 0.7
-                        }
+                        background: Rectangle { radius: 12; color: "#FFFFFF"; border.color: "#BAE6FD"; border.width: 1 }
+                        Text { text: "🔐"; font.pixelSize: 18; anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter; anchors.leftMargin: 12; opacity: 0.7 }
                         onAccepted: doRegister()
                     }
                 }
@@ -423,42 +364,28 @@ Rectangle {
                 Button {
                     id: registerBtn
                     text: qsTr("ĐĂNG KÝ")
-                    width: 300
-                    height: 52
-                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: 300; height: 52; anchors.horizontalCenter: parent.horizontalCenter
                     background: Rectangle {
                         radius: 12
                         gradient: Gradient {
                             GradientStop { position: 0.0; color: "#38BDF8" }
                             GradientStop { position: 1.0; color: "#0284C7" }
                         }
-                        border.width: parent.pressed ? 2 : 0
-                        border.color: "#FFFFFF"
+                        border.width: parent.pressed ? 2 : 0; border.color: "#FFFFFF"
                     }
                     contentItem: Text {
-                        text: parent.text
-                        color: "white"
-                        font.bold: true
-                        font.pixelSize: 17
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
+                        text: parent.text; color: "white"; font.bold: true; font.pixelSize: 17
+                        horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
                     }
                     onClicked: doRegister()
                 }
 
                 Text {
                     text: qsTr("Đã có tài khoản? Đăng nhập ngay.")
-                    color: "#0369A1"
-                    font.pixelSize: 14
-                    anchors.horizontalCenter: parent.horizontalCenter
+                    color: "#0369A1"; font.pixelSize: 14; anchors.horizontalCenter: parent.horizontalCenter
                     MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: {
-                            root.state = "login" // Đã sửa lỗi chuyển trạng thái về login
-                            registerErrorText.visible = false
-                            loginUserInput.forceActiveFocus()
-                        }
+                        anchors.fill: parent; cursorShape: Qt.PointingHandCursor
+                        onClicked: { clearFields(); root.state = "login"; loginUserInput.forceActiveFocus() }
                     }
                 }
             }
@@ -466,14 +393,9 @@ Rectangle {
     }
 
     state: "login"
+
     states: [
-        State {
-            name: "login"
-            PropertyChanges { target: titleText; text: qsTr("☕ GIANG'S COFFEE") }
-        },
-        State {
-            name: "register"
-            PropertyChanges { target: titleText; text: qsTr("❄ ĐĂNG KÝ") }
-        }
+        State { name: "login"; PropertyChanges { target: titleText; text: qsTr("☕ GIANG'S COFFEE") } },
+        State { name: "register"; PropertyChanges { target: titleText; text: qsTr("❄ ĐĂNG KÝ TÀI KHOẢN") } }
     ]
 }

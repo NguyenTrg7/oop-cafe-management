@@ -1,61 +1,31 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
-#include <QCoreApplication>
-#include <QDir>
-#include <QFile>
-#include <QDebug>
-
 #include "Account.h"
-#include "GiangCoffeeSystem.h" // Import Header Singleton của bạn
-
-
-QString findDataFile(const QString &relativePath) {
-    QString path = QCoreApplication::applicationDirPath() + "/" + relativePath;
-    if (!QFile::exists(path)) {
-        QDir sourceDir(QCoreApplication::applicationDirPath());
-        sourceDir.cdUp();
-        sourceDir.cdUp();
-        QString altPath = sourceDir.filePath(relativePath);
-        if (QFile::exists(altPath)) return altPath;
-    }
-    return path;
-}
+#include "EmployeeModel.h"
+#include <iostream>
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-
-    QDir::setCurrent(QCoreApplication::applicationDirPath());
+    std::cout << "========================================================\n";
+    std::cout << "            HE THONG QUAN LY GIANG COFFEE v1.0            \n";
+    std::cout << "   Du an phat trien boi Nhom 3: Nguyen, Quang, Thanh, Giang, Khuong\n";
+    std::cout << "========================================================\n";
 
     QQmlApplicationEngine engine;
 
-    Account account;
-    QString accountPath = QCoreApplication::applicationDirPath() + "/data/accounts.csv";
-    if (!QFile::exists(accountPath)) {
-        QDir sourceDir(QCoreApplication::applicationDirPath());
-        sourceDir.cdUp();
-        sourceDir.cdUp();
-        QString altPath = sourceDir.filePath("data/accounts.csv");
-        if (QFile::exists(altPath)) accountPath = altPath;
-    }
-    account.loadFromFile(accountPath);
-    engine.rootContext()->setContextProperty("accountHandler", &account);
+    // Khởi tạo Account Handler trước
+    Account accountHandler;
 
-    // 3. ĐĂNG KÝ SINGLETON GIANGCOFFEESYSTEM VÀO QML
-    // Kết nối instance với tên "coffeeSystem" đúng như các file QML đang gọi
-    GiangCoffeeSystem* systemInstance = GiangCoffeeSystem::getInstance();
+    // Khởi tạo EmployeeModel và truyền accountHandler vào để liên kết tự động
+    EmployeeModel employeeModel(&accountHandler);
 
-    QString drinkPath = findDataFile("data/drink.csv");
-    QString foodPath = findDataFile("data/food.csv");
-    systemInstance->getMenuManager()->loadDrinksCSV(drinkPath);
-    systemInstance->getMenuManager()->loadFoodsCSV(foodPath);
+    // Chuyển đối tượng sang QML Context Properties
+    engine.rootContext()->setContextProperty("accountHandler", &accountHandler);
+    engine.rootContext()->setContextProperty("cppEmployeeModel", &employeeModel);
 
-
-    engine.rootContext()->setContextProperty("coffeeSystem", systemInstance);
-
-    // 4. Load file QML chính
     const QUrl url(QStringLiteral("qrc:/qt/qml/GiangsCoffee/ui/main.qml"));
 
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,

@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.15
 
 Page {
     id: loyaltyPage
-    background: Rectangle { color: "#F4EBD0" } // Tông kem nền
+    background: Rectangle { color: "#F4EBD0" }
 
     ColumnLayout {
         anchors.centerIn: parent
@@ -20,16 +20,14 @@ Page {
             Layout.alignment: Qt.AlignHCenter
         }
 
-        // Thiết kế Thẻ Thành Viên (Member Card)
+        // Thẻ Thành Viên (Member Card)
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 200
-            color: "#2C1E16" // Màu nâu đen sang trọng
-            border.color: "#B68D40" // Viền thẻ vàng đồng
+            color: "#2C1E16"
+            border.color: "#B68D40"
             border.width: 4
             radius: 15
-
-            // Họa tiết mờ trên thẻ (có thể dùng Image nếu có ảnh hoa văn)
 
             ColumnLayout {
                 anchors.fill: parent
@@ -42,18 +40,18 @@ Page {
                         font.family: "Georgia"
                         font.pixelSize: 24
                         font.bold: true
-                        color: "#B68D40" // Chữ vàng đồng
+                        color: "#B68D40"
                     }
                     Item { Layout.fillWidth: true }
                     Label {
-                        text: "Hạng: BẠC (SILVER)" // Kết nối: customer.rank
+                        text: "Hạng: " + customerHandler.rank
                         font.family: "Times New Roman"
                         font.pixelSize: 18
                         color: "#E0E0E0"
                     }
                 }
 
-                Item { Layout.fillHeight: true } // Spacer
+                Item { Layout.fillHeight: true }
 
                 RowLayout {
                     Layout.fillWidth: true
@@ -65,7 +63,7 @@ Page {
                             color: "#A1887F"
                         }
                         Label {
-                            text: "Doãn Lê Thành" // Kết nối: customer.name
+                            text: customerHandler.name
                             font.family: "Georgia"
                             font.pixelSize: 22
                             color: "white"
@@ -83,7 +81,7 @@ Page {
                             Layout.alignment: Qt.AlignRight
                         }
                         Label {
-                            text: "150 Pts" // Kết nối: customer.loyaltyPoints
+                            text: customerHandler.loyaltyPoints + " Pts"
                             font.family: "Georgia"
                             font.pixelSize: 26
                             font.bold: true
@@ -102,21 +100,21 @@ Page {
 
             RowLayout {
                 Layout.fillWidth: true
-                Label { text: "Bạc"; font.family: "Times New Roman"; color: "#4E3629"}
+                Label { text: "Hiện tại: " + customerHandler.loyaltyPoints + " Pts"; font.family: "Times New Roman"; color: "#4E3629"}
                 Item { Layout.fillWidth: true }
-                Label { text: "Vàng (Cần thêm 50 Pts)"; font.family: "Times New Roman"; color: "#4E3629" }
+                Label { text: "Mục tiêu: 500 Pts (Kim Cương)"; font.family: "Times New Roman"; color: "#4E3629" }
             }
 
             ProgressBar {
                 Layout.fillWidth: true
-                value: 0.75 // 150/200 điểm
+                value: Math.min(customerHandler.loyaltyPoints / 500.0, 1.0)
                 background: Rectangle {
                     color: "#D4C49A"
                     radius: 4
                 }
                 contentItem: Item {
                     Rectangle {
-                        width: parent.width * 0.75
+                        width: parent.width * parent.parent.value
                         height: parent.height
                         color: "#B68D40"
                         radius: 4
@@ -125,23 +123,40 @@ Page {
             }
         }
 
-        // Nút quy đổi điểm (Redeem)
+        // Nút quy đổi điểm
         Button {
-            text: "Quy đổi điểm lấy Voucher"
+            text: "Quy đổi 50 Pts lấy Voucher"
             font.family: "Georgia"
-            font.pixelSize: 18
+            font.pixelSize: 16
             Layout.alignment: Qt.AlignHCenter
-            Layout.preferredWidth: 250
+            Layout.preferredWidth: 260
             Layout.preferredHeight: 45
             background: Rectangle {
-                color: "#4E3629"
+                color: customerHandler.loyaltyPoints >= 50 ? "#4E3629" : "#8D6E63"
                 radius: 5
                 border.color: "#B68D40"
                 border.width: 1
             }
             palette.buttonText: "#F4EBD0"
 
-            // Logic C++: Sẽ gọi hàm customer->redeemPoints(pointsToRedeem)[cite: 2]
+            onClicked: {
+                if (customerHandler.redeemPoints(50)) {
+                    msgDialog.text = "Đổi Voucher 20.000đ thành công!"
+                } else {
+                    msgDialog.text = "Bạn không đủ điểm để quy đổi!"
+                }
+                msgDialog.open()
+            }
         }
+    }
+
+    Dialog {
+        id: msgDialog
+        property alias text: msgText.text
+        title: "Thông báo"
+        modal: true
+        anchors.centerIn: parent
+        standardButtons: Dialog.Ok
+        Label { id: msgText; font.pixelSize: 15 }
     }
 }
