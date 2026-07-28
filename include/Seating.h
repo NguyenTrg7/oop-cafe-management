@@ -2,6 +2,7 @@
 #define SEATING_H
 
 #include <QString>
+#include <QList>
 
 class Seating
 {
@@ -9,13 +10,12 @@ private:
     int tableNumber;        // Số bàn
     int capacity;           // Số ghế
     bool isOccupied;        // Đang có khách hay không
-    QString position;       // Vị trí (ví dụ: "Khu A", "Gần cửa sổ")
     QString shape;          // "Tròn" hoặc "Vuông"
+    QList<int> m_originalCapacities; // Lưu sức chứa gốc khi gộp bàn (để tách đúng số ghế)
 
 public:
     Seating();
-    Seating(int tableNumber, int capacity, bool isOccupied = false,
-            const QString& position = "", const QString& shape = "Vuông");
+    Seating(int tableNumber, int capacity, bool isOccupied = false, const QString& shape = "Vuông");
 
     ~Seating() = default;
 
@@ -38,6 +38,10 @@ public:
     void occupyTable();
     void clearTable();
     bool canSeat(int guestCount) const;
+
+    void setOriginalCapacities(const QList<int>& caps) { m_originalCapacities = caps; }
+    QList<int> getOriginalCapacities() const { return m_originalCapacities; }
+    void clearOriginalCapacities() { m_originalCapacities.clear(); }
 };
 
 #endif // SEATING_H

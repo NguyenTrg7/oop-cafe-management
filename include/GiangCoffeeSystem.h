@@ -59,7 +59,7 @@ public:
     Q_INVOKABLE QVariantList getSeatingList() const;
 
     // Sửa thông tin bàn (vị trí + hình dạng)
-    Q_INVOKABLE void editTable(int tableNumber, const QString& position, const QString& shape);
+   Q_INVOKABLE void editTable(int tableNumber, const QString& shape, int capacity);
 
     Q_INVOKABLE void clearTable(int tableNum);   // Hủy đặt bàn
     // Đổi số bàn
@@ -67,6 +67,7 @@ public:
 
     // Hủy gộp bàn (tách bàn có sức chứa > 4 thành 2 bàn 4 ghế)
     Q_INVOKABLE bool undoMerge(int tableNumber);
+
 
     // -- Financial Management[cite: 2] --
     Q_INVOKABLE void generateReport(const QDateTime& date);

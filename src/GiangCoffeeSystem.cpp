@@ -5,17 +5,19 @@ GiangCoffeeSystem* GiangCoffeeSystem::m_instance = nullptr;
 GiangCoffeeSystem::GiangCoffeeSystem(QObject *parent)
     : QObject(parent)
 {
-    // 10 bàn với vị trí cố định
-    m_tables.append(Seating(1,  4, false, "Khu A - Cửa sổ",   "Vuông"));
-    m_tables.append(Seating(2,  4, false, "Khu A - Cửa sổ",   "Vuông"));
-    m_tables.append(Seating(3,  4, false, "Khu A - Giữa",     "Tròn"));
-    m_tables.append(Seating(4,  4, false, "Khu A - Giữa",     "Tròn"));
-    m_tables.append(Seating(5,  4, false, "Khu B - Quầy bar", "Vuông"));
-    m_tables.append(Seating(6,  4, false, "Khu B - Quầy bar", "Vuông"));
-    m_tables.append(Seating(7,  4, false, "Khu B - Góc",      "Tròn"));
-    m_tables.append(Seating(8,  4, false, "Khu C - Sân vườn", "Vuông"));
-    m_tables.append(Seating(9,  4, false, "Khu C - Sân vườn", "Vuông"));
-    m_tables.append(Seating(10, 4, false, "Khu C - Sân vườn", "Tròn"));
+    // 12 bàn với vị trí cố định
+    m_tables.append(Seating(1,  4, false, "Vuông"));
+    m_tables.append(Seating(2,  4, false, "Vuông"));
+    m_tables.append(Seating(3,  4, false, "Tròn"));
+    m_tables.append(Seating(4,  4, false, "Tròn"));
+    m_tables.append(Seating(5,  4, false, "Vuông"));
+    m_tables.append(Seating(6,  4, false, "Vuông"));
+    m_tables.append(Seating(7,  4, false, "Tròn"));
+    m_tables.append(Seating(8,  4, false, "Vuông"));
+    m_tables.append(Seating(9,  4, false, "Vuông"));
+    m_tables.append(Seating(10, 4, false, "Tròn"));
+    m_tables.append(Seating(11, 4, false, "Tròn"));
+    m_tables.append(Seating(12, 4, false, "Tròn"));
 }
 
 GiangCoffeeSystem::~GiangCoffeeSystem()
@@ -128,34 +130,53 @@ void GiangCoffeeSystem::mergeTable(int tableNum1, int tableNum2)
         return;   // Không tìm thấy một trong hai bàn
     }
 
+    // Thu thập sức chứa gốc (nếu bàn đã từng được gộp thì lấy danh sách gốc, ngược lại lấy capacity hiện tại)
+    QList<int> orig1 = firstIt->getOriginalCapacities();
+    if (orig1.isEmpty())
+        orig1 << firstIt->getCapacity();
+
+    QList<int> orig2 = secondIt->getOriginalCapacities();
+    if (orig2.isEmpty())
+        orig2 << secondIt->getCapacity();
+
+    QList<int> mergedOrig = orig1 + orig2;
+
     // Thông tin bàn sau khi gộp
     const int mergedNumber    = std::min(tableNum1, tableNum2);
     const int mergedCapacity  = firstIt->getCapacity() + secondIt->getCapacity();
     const bool mergedOccupied = firstIt->isTableOccupied() || secondIt->isTableOccupied();
 
     // Giữ vị trí + hình dạng của bàn có số nhỏ hơn
-    const QString mergedPosition = (tableNum1 < tableNum2) ? firstIt->getPosition()
-                                                           : secondIt->getPosition();
     const QString mergedShape    = (tableNum1 < tableNum2) ? firstIt->getShape()
                                                         : secondIt->getShape();
 
-    // Tạo bàn mới
-    Seating mergedTable(mergedNumber, mergedCapacity, mergedOccupied,
-                        mergedPosition, mergedShape);
+    // Tạo bàn mới và lưu danh sách sức chứa gốc
+    Seating mergedTable(mergedNumber, mergedCapacity, mergedOccupied, mergedShape);
+    mergedTable.setOriginalCapacities(mergedOrig);
 
-    // Ghi đè bàn thứ nhất
-    *firstIt = mergedTable;
+    // Dùng chỉ số để tránh invalidate iterator khi xóa
+    int idx1 = static_cast<int>(firstIt - m_tables.begin());
+    int idx2 = static_cast<int>(secondIt - m_tables.begin());
 
-    // Xóa bàn thứ hai
-    m_tables.erase(secondIt);
+    if (tableNum1 < tableNum2) {
+        // Giữ bàn số nhỏ hơn (idx1), xóa bàn số lớn hơn (idx2)
+        m_tables[idx1] = mergedTable;
+        m_tables.erase(m_tables.begin() + idx2);
+    } else {
+        // Giữ bàn số nhỏ hơn (idx2), xóa bàn số lớn hơn (idx1)
+        m_tables[idx2] = mergedTable;
+        m_tables.erase(m_tables.begin() + idx1);
+    }
 }
 
-void GiangCoffeeSystem::editTable(int tableNumber, const QString& /*position*/, const QString& shape)
+void GiangCoffeeSystem::editTable(int tableNumber, const QString& shape, int capacity)
 {
     for (int i = 0; i < m_tables.size(); ++i) {
         if (m_tables[i].getTableNumber() == tableNumber) {
-            // Không cho sửa vị trí nữa
             m_tables[i].setShape(shape);
+            if (capacity >= 1 && capacity <= 20) {   // giới hạn hợp lý
+                m_tables[i].setCapacity(capacity);
+            }
             return;
         }
     }
@@ -186,7 +207,7 @@ bool GiangCoffeeSystem::renameTable(int oldNumber, int newNumber)
 }
 
 // =========================================================
-// HỦY GỘP BÀN (tách bàn)
+// HỦY GỘP BÀN (tách bàn) – khôi phục đúng số ghế gốc
 // =========================================================
 bool GiangCoffeeSystem::undoMerge(int tableNumber)
 {
@@ -199,20 +220,22 @@ bool GiangCoffeeSystem::undoMerge(int tableNumber)
     if (it == m_tables.end())
         return false;
 
-    int currentCapacity = it->getCapacity();
+    QList<int> origCaps = it->getOriginalCapacities();
 
-    // Chỉ tách được khi sức chứa > 4
-    if (currentCapacity <= 4)
+    // Nếu không có thông tin gốc (bàn chưa từng gộp) → không làm gì
+    if (origCaps.size() <= 1) {
         return false;
+    }
 
-    // Số bàn cần tạo thêm (mỗi bàn 4 ghế)
-    int tablesToCreate = (currentCapacity / 4) - 1;
+    // Giữ bàn hiện tại với sức chứa gốc đầu tiên, xóa danh sách gốc
+    it->setCapacity(origCaps[0]);
+    it->clearOriginalCapacities();
+    // Giữ nguyên trạng thái occupied của bàn chính
 
-    // Giảm bàn hiện tại về 4 ghế
-    it->setCapacity(4);
+    QString shp = it->getShape();
 
-    // Tạo các bàn mới
-    for (int i = 0; i < tablesToCreate; ++i) {
+    // Tạo lại các bàn còn lại với đúng sức chứa gốc
+    for (int i = 1; i < origCaps.size(); ++i) {
         // Tìm số bàn còn trống
         int newNumber = -1;
         for (int candidate = 1; candidate <= 30; ++candidate) {
@@ -232,8 +255,8 @@ bool GiangCoffeeSystem::undoMerge(int tableNumber)
         if (newNumber == -1)
             break; // không còn số trống thì dừng
 
-        // Tạo bàn mới 4 ghế, trạng thái trống
-        Seating newTable(newNumber, 4, false, it->getPosition(), it->getShape());
+        // Tạo bàn mới với đúng số ghế gốc, trạng thái trống
+        Seating newTable(newNumber, origCaps[i], false, shp);
         m_tables.append(newTable);
     }
 
@@ -250,7 +273,6 @@ QVariantList GiangCoffeeSystem::getSeatingList() const
         map["occupied"]    = table.isTableOccupied();
         map["available"]   = table.isAvailable();
         map["status"]      = table.isTableOccupied() ? "Đã có khách" : "Trống";
-        map["position"]    = table.getPosition();
         map["shape"]       = table.getShape();
         list.append(map);
     }
