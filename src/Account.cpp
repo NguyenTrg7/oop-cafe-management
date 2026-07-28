@@ -1,4 +1,11 @@
 #include "Account.h"
+#include <QCoreApplication> // 🌟 Thêm thư viện Qt để lấy đường dẫn app
+#include <fstream>          // Thư viện đọc/ghi file chuẩn C++
+#include <iostream>         // Thư viện in ra màn hình (cout)
+#include <sstream>          // Thư viện cắt chuỗi chuẩn C++
+
+Account::Account(QObject *parent)
+    : QObject(parent)
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -60,6 +67,14 @@ QString Account::authenticate(const QString &username, const QString &password)
     bool userExists = false;
 
     while (std::getline(file, line)) {
+        // Bỏ qua nếu gặp dòng trống
+        if (line.empty())
+            continue;
+
+        // 🌟 Xóa ký tự \r ở cuối dòng (nếu chạy trên hệ điều hành Windows)
+        if (!line.empty() && line.back() == '\r') {
+            line.pop_back();
+        }
         if (line.empty()) continue;
         if (line.back() == '\r') line.pop_back();
 
@@ -100,6 +115,13 @@ bool Account::registerAccount(const QString &username, const QString &password, 
     if (inFile.is_open()) {
         std::string line;
         while (std::getline(inFile, line)) {
+            if (line.empty())
+                continue;
+
+            // 🌟 Xóa ký tự \r trước khi cắt chuỗi
+            if (!line.empty() && line.back() == '\r') {
+                line.pop_back();
+            }
             if (line.empty()) continue;
             if (line.back() == '\r') line.pop_back();
 

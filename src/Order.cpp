@@ -2,6 +2,10 @@
 #include <iostream>
 #include <iomanip>
 
+// Khởi tạo constructor mặc định
+Order::Order(const QString &id, Customer *customer)
+{
+    // TODO: Khởi tạo các giá trị mặc định cho đơn hàng (ví dụ: trạng thái, mã đơn, v.v.)
 // Constructor khởi tạo đầy đủ thuộc tính ban đầu
 Order::Order(const QString& id, Customer* customer)
     : m_ID(id), m_customer(customer), m_totalPrice(0.0), m_status("Pending")
