@@ -79,6 +79,12 @@ int main(int argc, char *argv[])
         },
         Qt::QueuedConnection);
 
+    engine.rootContext()->setContextProperty(
+        "applicationDir",
+        QCoreApplication::applicationDirPath());
+
+    engine.load(QUrl(QStringLiteral("qrc:/main.qml"))); // hoặc load từ file
+
     engine.load(url);
 
     return app.exec();
