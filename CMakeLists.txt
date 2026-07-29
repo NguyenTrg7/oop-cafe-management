@@ -99,4 +99,9 @@ target_link_libraries(GiangsCoffee PRIVATE
     Qt6::Qml
     Qt6::Quick
 )
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/data DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+# Tự động copy nguyên thư mục data sang thư mục build MỖI LẦN BUILD
+add_custom_command(TARGET GiangsCoffee POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_CURRENT_SOURCE_DIR}/data"
+        "${CMAKE_CURRENT_BINARY_DIR}/data"
+)

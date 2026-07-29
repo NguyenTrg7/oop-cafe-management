@@ -7,20 +7,19 @@ D005,Americano,Cà phê pha máy,39000,S|M|L,Available
 D006,Cappuccino,Cà phê pha máy,45000,S|M|L,Available
 D007,Latte,Cà phê pha máy,45000,S|M|L,Available
 D008,Mocha,Cà phê pha máy,49000,S|M|L,Available
-D009,Cacao nóng,Cacao,45000,S|M|L,Available
-D010,Cacao đá,Cacao,45000,S|M|L,Available
-D011,Trà đào cam sả,Trà trái cây,45000,M|L,Available
-D012,Trà vải thiều,Trà trái cây,45000,M|L,Available
-D013,Trà ô long hạt sen,Trà trái cây,49000,M|L,Available
-D014,Trà chanh mật ong,Trà trái cây,39000,M|L,Available
-D015,Hồng trà macchiato,Trà sữa,42000,M|L,Available
-D016,Trà xanh matcha,Trà sữa,45000,M|L,Available
-D017,Trà sữa truyền thống,Trà sữa,39000,M|L,Available
-D018,Matcha đá xay,Đá xay,55000,M|L,Available
-D019,Socola đá xay,Đá xay,55000,M|L,Available
-D020,Oreo đá xay,Đá xay,59000,M|L,Available
-D021,Nước ép dưa hấu,Nước ép,40000,M|L,Available
-D022,Nước ép cam,Nước ép,45000,M|L,Available
-D023,Nước ép táo,Nước ép,45000,M|L,Available
-D024,Nước ép thơm,Nước ép,42000,M|L,Available
-D025,Chanh dây đá xay,Đá xay,52000,M|L,Available
+D009,Cacao,Cacao,45000,S|M|L,Available
+D010,Trà đào cam sả,Trà trái cây,45000,M|L,Available
+D011,Trà vải thiều,Trà trái cây,45000,M|L,Available
+D012,Trà ô long sen vàng,Trà trái cây,49000,M|L,Available
+D013,Trà chanh mật ong,Trà trái cây,39000,M|L,Available
+D014,Hồng trà macchiato,Trà sữa,42000,M|L,Available
+D015,Trà sữa matcha,Trà sữa,45000,M|L,Available
+D016,Trà sữa truyền thống,Trà sữa,39000,M|L,Available
+D017,Matcha đá xay,Đá xay,55000,M|L,Available
+D018,Socola đá xay,Đá xay,55000,M|L,Available
+D019,Oreo đá xay,Đá xay,59000,M|L,Available
+D020,Nước ép dưa hấu,Nước ép,40000,M|L,Available
+D021,Nước ép cam,Nước ép,45000,M|L,Available
+D022,Nước ép táo,Nước ép,45000,M|L,Available
+D023,Nước ép thơm,Nước ép,42000,M|L,Available
+D024,Chanh dây đá xay,Đá xay,52000,M|L,Available
