@@ -44,7 +44,13 @@ int main(int argc, char *argv[])
     // 1. XỬ LÝ ACCOUNT (Giữ nguyên của main.cpp)
     // ==========================================
     Account accountHandler;
+    Customer customerHandler;
+
+    accountHandler.setCustomerHandler(&customerHandler);
     EmployeeModel employeeModel(&accountHandler);
+
+    engine.rootContext()->setContextProperty("accountHandler", &accountHandler);
+    engine.rootContext()->setContextProperty("customerHandler", &customerHandler);  // ← THIẾU DÒNG NÀY SẼ LỖI
 
     // ==========================================
     // 2. XỬ LÝ MENU (Thêm từ main1.cpp)
@@ -79,9 +85,8 @@ int main(int argc, char *argv[])
         },
         Qt::QueuedConnection);
 
-    engine.rootContext()->setContextProperty(
-        "applicationDir",
-        QCoreApplication::applicationDirPath());
+    engine.rootContext()->setContextProperty("applicationDir",
+                                             QCoreApplication::applicationDirPath());
 
     engine.load(QUrl(QStringLiteral("qrc:/main.qml"))); // hoặc load từ file
 

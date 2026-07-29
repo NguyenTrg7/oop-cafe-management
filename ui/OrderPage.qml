@@ -45,6 +45,25 @@ Item {
         return total;
     }
 
+    // hàm tính điểm của giỏ hàng
+    function calculateLoyaltyPoints() {
+        var pts = 0
+        for (var i = 0; i < cartModel.count; i++) {
+            var item = cartModel.get(i)
+            var qty = item.quantity || 1
+            if (item.category === "Drink") {
+                var size = (item.size || "M").toUpperCase()
+                var per = 2
+                if (size === "S") per = 1
+                else if (size === "L") per = 3
+                pts += per * qty
+            } else {
+                pts += 2 * qty
+            }
+        }
+        return pts
+    }
+
     // 1. Lấy dữ liệu từ MenuManager
     function getMenuData(type) {
         if (typeof coffeeSystem !== "undefined" && coffeeSystem && coffeeSystem.menuManager) {
@@ -294,7 +313,28 @@ Item {
 
                     onClicked: {
                         console.log("Thanh toán tổng tiền: " + calculateGrandTotal());
-                        cartModel.clear();
+                        var total = calculateGrandTotal()
+                        var earned = calculateLoyaltyPoints()
+
+                        if (typeof customerHandler !== "undefined" && earned > 0) {
+                            customerHandler.addPoints(earned)
+                            if (typeof accountHandler !== "undefined")
+                                accountHandler.saveCustomerLoyalty()
+                            console.log("Tich +" + earned + " diem")
+                        }
+                        cartModel.clear()
+                    }
+                }
+
+                Button {
+                    text: "⭐ Xem điểm Loyalty"
+                    Layout.fillWidth: true
+                    implicitHeight: 40
+                    onClicked: {
+                        if (StackView.view)
+                            StackView.view.push("LoyaltyPage.qml")
+                        else if (typeof stackView !== "undefined")
+                            stackView.push("LoyaltyPage.qml")
                     }
                 }
 
@@ -436,7 +476,8 @@ Item {
                 "size": sizeRow.visible ? sizeCombo.currentText : "",
                 "quantity": spinQuantity.value,
                 "note": tfNote.text,
-                "totalPrice": itemDialog.calculatedPrice
+                "totalPrice": itemDialog.calculatedPrice,
+                "category": itemDialog.category
             });
         }
     }
