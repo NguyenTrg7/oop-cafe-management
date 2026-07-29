@@ -6,157 +6,117 @@ Page {
     id: loyaltyPage
     background: Rectangle { color: "#F4EBD0" }
 
+    property var customer: typeof customerHandler !== "undefined" ? customerHandler : null
+
     ColumnLayout {
         anchors.centerIn: parent
-        spacing: 30
-        width: parent.width * 0.7
+        spacing: 24
+        width: Math.min(parent.width * 0.75, 480)
 
         Label {
-            text: "Quyền Lợi Khách Hàng"
+            text: "Tich diem & Voucher"
             font.family: "Georgia"
-            font.pixelSize: 28
+            font.pixelSize: 26
             font.bold: true
             color: "#4E3629"
             Layout.alignment: Qt.AlignHCenter
         }
 
-        // Thẻ Thành Viên (Member Card)
         Rectangle {
             Layout.fillWidth: true
-            Layout.preferredHeight: 200
+            Layout.preferredHeight: 130
             color: "#2C1E16"
             border.color: "#B68D40"
-            border.width: 4
-            radius: 15
+            border.width: 3
+            radius: 12
 
             ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: 20
+                anchors.margins: 16
+                spacing: 6
 
-                RowLayout {
-                    Layout.fillWidth: true
-                    Label {
-                        text: "Giang's Coffee"
-                        font.family: "Georgia"
-                        font.pixelSize: 24
-                        font.bold: true
-                        color: "#B68D40"
-                    }
-                    Item { Layout.fillWidth: true }
-                    Label {
-                        text: "Hạng: " + customerHandler.rank
-                        font.family: "Times New Roman"
-                        font.pixelSize: 18
-                        color: "#E0E0E0"
-                    }
+                Label {
+                    text: customer ? customer.name : "Chua dang nhap"
+                    font.pixelSize: 18
+                    color: "white"
                 }
-
-                Item { Layout.fillHeight: true }
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    ColumnLayout {
-                        Label {
-                            text: "Khách hàng"
-                            font.family: "Times New Roman"
-                            font.pixelSize: 14
-                            color: "#A1887F"
-                        }
-                        Label {
-                            text: customerHandler.name
-                            font.family: "Georgia"
-                            font.pixelSize: 22
-                            color: "white"
-                        }
-                    }
-
-                    Item { Layout.fillWidth: true }
-
-                    ColumnLayout {
-                        Label {
-                            text: "Điểm Tích Lũy"
-                            font.family: "Times New Roman"
-                            font.pixelSize: 14
-                            color: "#A1887F"
-                            Layout.alignment: Qt.AlignRight
-                        }
-                        Label {
-                            text: customerHandler.loyaltyPoints + " Pts"
-                            font.family: "Georgia"
-                            font.pixelSize: 26
-                            font.bold: true
-                            color: "#B68D40"
-                            Layout.alignment: Qt.AlignRight
-                        }
-                    }
+                Label {
+                    text: (customer ? customer.loyaltyPoints : 0) + " diem"
+                    font.pixelSize: 28
+                    font.bold: true
+                    color: "#B68D40"
+                }
+                Label {
+                    text: "Do uong: S=1 M=2 L=3 | Do an: 2 diem/mon"
+                    font.pixelSize: 12
+                    color: "#A1887F"
                 }
             }
         }
 
-        // Thanh tiến trình thăng hạng
-        ColumnLayout {
-            Layout.fillWidth: true
-            spacing: 5
-
-            RowLayout {
-                Layout.fillWidth: true
-                Label { text: "Hiện tại: " + customerHandler.loyaltyPoints + " Pts"; font.family: "Times New Roman"; color: "#4E3629"}
-                Item { Layout.fillWidth: true }
-                Label { text: "Mục tiêu: 500 Pts (Kim Cương)"; font.family: "Times New Roman"; color: "#4E3629" }
-            }
-
-            ProgressBar {
-                Layout.fillWidth: true
-                value: Math.min(customerHandler.loyaltyPoints / 500.0, 1.0)
-                background: Rectangle {
-                    color: "#D4C49A"
-                    radius: 4
-                }
-                contentItem: Item {
-                    Rectangle {
-                        width: parent.width * parent.parent.value
-                        height: parent.height
-                        color: "#B68D40"
-                        radius: 4
-                    }
-                }
-            }
-        }
-
-        // Nút quy đổi điểm
-        Button {
-            text: "Quy đổi 50 Pts lấy Voucher"
-            font.family: "Georgia"
+        Label {
+            text: "Doi voucher"
+            font.bold: true
             font.pixelSize: 16
-            Layout.alignment: Qt.AlignHCenter
-            Layout.preferredWidth: 260
-            Layout.preferredHeight: 45
-            background: Rectangle {
-                color: customerHandler.loyaltyPoints >= 50 ? "#4E3629" : "#8D6E63"
-                radius: 5
-                border.color: "#B68D40"
-                border.width: 1
-            }
-            palette.buttonText: "#F4EBD0"
+            color: "#4E3629"
+        }
 
-            onClicked: {
-                if (customerHandler.redeemPoints(50)) {
-                    msgDialog.text = "Đổi Voucher 20.000đ thành công!"
-                } else {
-                    msgDialog.text = "Bạn không đủ điểm để quy đổi!"
+        Repeater {
+            model: customer ? customer.voucherTiers() : []
+
+            delegate: Rectangle {
+                Layout.fillWidth: true
+                height: 52
+                color: "#FFF8E7"
+                border.color: "#B68D40"
+                radius: 8
+
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.margins: 10
+
+                    Label {
+                        text: modelData.label + "  (" + modelData.points + " diem)"
+                        font.pixelSize: 14
+                        color: "#4E3629"
+                        Layout.fillWidth: true
+                    }
+
+                    Button {
+                        text: "Doi"
+                        enabled: customer && customer.loyaltyPoints >= modelData.points
+                        onClicked: {
+                            var r = customer.redeemVoucher(modelData.points)
+                            msgDialog.text = r.message || ""
+                            msgDialog.open()
+                            if (r.success && typeof accountHandler !== "undefined"
+                                    && accountHandler.saveCustomerLoyalty)
+                                accountHandler.saveCustomerLoyalty()
+                        }
+                    }
                 }
-                msgDialog.open()
             }
+        }
+
+        Label {
+            visible: !customer
+            text: "Loi: customerHandler chua duoc dang ky trong main.cpp"
+            color: "#C62828"
+            Layout.alignment: Qt.AlignHCenter
         }
     }
 
     Dialog {
         id: msgDialog
-        property alias text: msgText.text
-        title: "Thông báo"
+        property alias text: msgLabel.text
+        title: "Thong bao"
         modal: true
         anchors.centerIn: parent
         standardButtons: Dialog.Ok
-        Label { id: msgText; font.pixelSize: 15 }
+        Label {
+            id: msgLabel
+            wrapMode: Text.WordWrap
+            width: 280
+        }
     }
 }
