@@ -37,6 +37,7 @@ void Account::initFile()
 {
     std::ifstream checkFile(m_csvFilePath);
     bool hasAdmin = false;
+    bool hasEmployee = false;
 
     if (checkFile.is_open()) {
         std::string line;
@@ -46,33 +47,28 @@ void Account::initFile()
             std::stringstream ss(line);
             std::string dbUser;
             if (std::getline(ss, dbUser, ',')) {
-                if (dbUser == "admin") {
+                if (dbUser == "admin")
                     hasAdmin = true;
-                    break;
-                }
+                if (dbUser == "nhanvien" || dbUser == "staff")
+                    hasEmployee = true;
             }
         }
         checkFile.close();
     }
 
-    if (!hasAdmin) {
-        std::ofstream outFile(m_csvFilePath, std::ios::app);
-        if (outFile.is_open()) {
+    std::ofstream outFile(m_csvFilePath, std::ios::app);
+    if (outFile.is_open()) {
+        // Tự động tạo Admin
+        if (!hasAdmin) {
             outFile << "admin,chuquanlatoi,manager\n";
-            outFile.close();
+            std::cout << ">> Da tu dong tao tai khoan Admin: admin / chuquanlatoi\n";
         }
-    }
-}
-
-void Account::initCustomersFile()
-{
-    QFile file(QString::fromStdString(m_customersCsvPath));
-    if (!file.exists()) {
-        if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-            file.write("phone,name,points,vouchers\n");
-            file.close();
-            std::cout << ">> Da tao customers.csv\n";
+        // Tự động tạo tài khoản Nhân viên dùng chung
+        if (!hasEmployee) {
+            outFile << "nhanvien,adminxemduoc,staff\n";
+            std::cout << ">> Da tu dong tao tai khoan Nhan vien dung chung: nhanvien / 123456\n";
         }
+        outFile.close();
     }
 }
 

@@ -60,7 +60,10 @@ set(UI_FILES
     "ui/LoginPage.qml"
     "ui/ManagerPage.qml"
     "ui/EmployeePage.qml"
+    "ui/EmployeeManagementPage.qml"
+    "ui/FinancePage.qml"
     "ui/SeatingPage.qml"
+
 )
 
 source_group("Mục Header (Headers)" FILES ${HEADER_FILES})
@@ -73,6 +76,8 @@ source_group("Mục UI (QML)" FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/ui/LoginPage.qml"
     "${CMAKE_CURRENT_SOURCE_DIR}/ui/ManagerPage.qml"
     "${CMAKE_CURRENT_SOURCE_DIR}/ui/EmployeePage.qml"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/EmployeeManagementPage.qml"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/FinancePage.qml"
     "${CMAKE_CURRENT_SOURCE_DIR}/ui/SeatingPage.qml"
 )
 

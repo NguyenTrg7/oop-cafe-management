@@ -6,7 +6,6 @@ Page {
     id: empPage
     title: "Quản Lý Nhân Viên"
 
-    // Biến đánh dấu trạng thái đang "Thêm mới" hay "Cập nhật"
     property bool isEditing: false
 
     ListModel { id: empModel }
@@ -26,11 +25,18 @@ Page {
     function clearForm() {
         txtId.text = ""
         txtName.text = ""
-        cboPos.currentIndex = 0
+        txtPhone.text = ""
         txtSalary.text = ""
         cboShift.currentIndex = 0
         txtId.readOnly = false
         isEditing = false
+        lblError.text = ""
+    }
+
+    // Hàm xác thực số điện thoại
+    function validatePhone(phone) {
+        var phoneRegex = /^0\d{9}$/;
+        return phoneRegex.test(phone.trim());
     }
 
     ColumnLayout {
@@ -49,82 +55,108 @@ Page {
         }
 
         // ---------------------------------------------------------------------
-        // 2. KHUNG NHẬP LIỆU
+        // 2. KHUNG NHẬP LIỆU (Có thêm ô nhập SĐT)
         // ---------------------------------------------------------------------
         Rectangle {
             Layout.fillWidth: true
-            implicitHeight: 65
+            implicitHeight: 75
             color: "#F9F6F0"
             radius: 8
             border.color: "#E0E0E0"
 
-            RowLayout {
+            ColumnLayout {
                 anchors.fill: parent
                 anchors.margins: 10
-                spacing: 10
+                spacing: 5
 
-                TextField {
-                    id: txtId
-                    placeholderText: "Mã NV"
-                    Layout.preferredWidth: 90
-                }
-                TextField {
-                    id: txtName
-                    placeholderText: "Họ và tên"
+                RowLayout {
                     Layout.fillWidth: true
-                }
-                ComboBox {
-                    id: cboPos
-                    model: ["Pha chế", "Thu ngân", "Phục vụ", "Quản lý"]
-                    Layout.preferredWidth: 120
-                }
-                TextField {
-                    id: txtSalary
-                    placeholderText: "Lương/h"
-                    Layout.preferredWidth: 100
-                    inputMethodHints: Qt.ImhDigitsOnly
-                }
-                ComboBox {
-                    id: cboShift
-                    model: ["Sáng", "Chiều", "Tối"]
-                    Layout.preferredWidth: 90
-                }
+                    spacing: 10
 
-                // Nút Thêm hoặc Lưu cập nhật
-                Button {
-                    text: isEditing ? "💾 Lưu" : "➕ Thêm"
-                    highlighted: true
-                    onClicked: {
-                        if (txtId.text === "" || txtName.text === "") return;
+                    TextField {
+                        id: txtId
+                        placeholderText: "Mã NV"
+                        Layout.preferredWidth: 80
+                    }
+                    TextField {
+                        id: txtName
+                        placeholderText: "Họ và tên"
+                        Layout.fillWidth: true
+                    }
+                    TextField {
+                        id: txtPhone
+                        placeholderText: "Số điện thoại"
+                        Layout.preferredWidth: 120
+                        inputMethodHints: Qt.ImhDialableCharactersOnly
+                    }
+                    TextField {
+                        id: txtSalary
+                        placeholderText: "Lương/h"
+                        Layout.preferredWidth: 90
+                        inputMethodHints: Qt.ImhDigitsOnly
+                    }
+                    ComboBox {
+                        id: cboShift
+                        model: ["Sáng", "Chiều", "Tối"]
+                        Layout.preferredWidth: 80
+                    }
 
-                        var salaryVal = parseFloat(txtSalary.text) || 0;
-
-                        if (isEditing) {
-                            if (coffeeSystem.updateEmployeeCSV) {
-                                coffeeSystem.updateEmployeeCSV(txtId.text, txtName.text, cboPos.currentText, salaryVal, cboShift.currentText)
+                    // Nút Thêm hoặc Lưu cập nhật
+                    Button {
+                        text: isEditing ? "💾 Lưu" : "➕ Thêm"
+                        highlighted: true
+                        onClicked: {
+                            if (txtId.text.trim() === "" || txtName.text.trim() === "") {
+                                lblError.text = "⚠️ Mã NV và Họ tên không được để trống!";
+                                return;
                             }
-                        } else {
-                            if (coffeeSystem.addEmployeeCSV) {
-                                coffeeSystem.addEmployeeCSV(txtId.text, txtName.text, cboPos.currentText, salaryVal, cboShift.currentText)
+
+                            // Xác thực số điện thoại
+                            if (!validatePhone(txtPhone.text)) {
+                                lblError.text = "⚠️ Số điện thoại không hợp lệ! (Phải đủ 10 số, bắt đầu bằng 0)";
+                                return;
                             }
+
+                            lblError.text = "";
+                            var salaryVal = parseFloat(txtSalary.text) || 0;
+
+                            if (isEditing) {
+                                if (coffeeSystem.updateEmployeeCSV) {
+                                    coffeeSystem.updateEmployeeCSV(txtId.text, txtName.text, txtPhone.text.trim(), salaryVal, cboShift.currentText)
+                                }
+                            } else {
+                                if (coffeeSystem.addEmployeeCSV) {
+                                    coffeeSystem.addEmployeeCSV(txtId.text, txtName.text, txtPhone.text.trim(), salaryVal, cboShift.currentText)
+                                }
+                            }
+
+                            refreshData()
+                            clearForm()
                         }
+                    }
 
-                        refreshData()
-                        clearForm()
+                    // Nút Làm mới form
+                    Button {
+                        text: "🧹"
+                        visible: isEditing || txtId.text !== ""
+                        onClicked: clearForm()
                     }
                 }
 
-                // Nút Hủy/Làm mới form
-                Button {
-                    text: "🧹"
-                    visible: isEditing || txtId.text !== ""
-                    onClicked: clearForm()
+                // Dòng hiển thị thông báo lỗi xác thực
+                Text {
+                    id: lblError
+                    text: ""
+                    color: "#D32F2F"
+                    font.pixelSize: 12
+                    font.bold: true
+                    visible: text !== ""
                 }
             }
         }
 
         // ---------------------------------------------------------------------
-        // 3. BẢNG HIỂN THỊ DANH SÁCH
+        // 3. BẢNG HIỂN THỊ DANH SÁCH (Có thêm cột SĐT)
         // ---------------------------------------------------------------------
         ListView {
             Layout.fillWidth: true
@@ -143,33 +175,30 @@ Page {
                     anchors.margins: 10
                     spacing: 10
 
-                    Text { text: model.id; font.bold: true; Layout.preferredWidth: 80 }
+                    Text { text: model.id; font.bold: true; Layout.preferredWidth: 70 }
                     Text { text: model.name; Layout.fillWidth: true }
-                    Text { text: model.position; Layout.preferredWidth: 110 }
+                    Text { text: model.phone ? model.phone : "Chưa có"; Layout.preferredWidth: 110; color: "#2E7D32" }
 
                     Text {
                         text: Number(model.salary).toLocaleString(Qt.locale("vi_VN")) + " VNĐ/h"
-                        Layout.preferredWidth: 110
+                        Layout.preferredWidth: 100
                     }
 
-                    Text { text: "Ca: " + model.shift; Layout.preferredWidth: 80 }
+                    Text { text: "Ca: " + model.shift; Layout.preferredWidth: 70 }
 
-                    // Cột Nút bấm Thao tác: Sửa, Cấp Tài Khoản & Xóa
+                    // Cột Nút bấm Thao tác: Chỉ còn Sửa & Xóa
                     RowLayout {
-                        Layout.preferredWidth: 130 // Mở rộng chiều rộng để chứa 3 nút
+                        Layout.preferredWidth: 80
                         spacing: 5
 
                         // Nút Sửa
                         Button {
                             text: "✏️"
-                            implicitWidth: 38
+                            implicitWidth: 36
                             onClicked: {
                                 txtId.text = model.id
                                 txtName.text = model.name
-
-                                var posIdx = cboPos.model.indexOf(model.position)
-                                cboPos.currentIndex = posIdx >= 0 ? posIdx : 0
-
+                                txtPhone.text = model.phone || ""
                                 txtSalary.text = model.salary
 
                                 var shiftIdx = cboShift.model.indexOf(model.shift)
@@ -177,24 +206,14 @@ Page {
 
                                 txtId.readOnly = true
                                 isEditing = true
-                            }
-                        }
-
-                        // 🔑 Nút Cấp Tài Khoản Mới
-                        Button {
-                            text: "🔑"
-                            implicitWidth: 38
-                            onClicked: {
-                                grantAccDialog.targetEmpId = model.id
-                                dlgPass.text = ""
-                                grantAccDialog.open()
+                                lblError.text = ""
                             }
                         }
 
                         // Nút Xóa
                         Button {
                             text: "🗑️"
-                            implicitWidth: 38
+                            implicitWidth: 36
                             onClicked: {
                                 if (coffeeSystem.deleteEmployeeCSV) {
                                     coffeeSystem.deleteEmployeeCSV(model.id)
@@ -202,64 +221,6 @@ Page {
                                 refreshData()
                                 if (txtId.text === model.id) clearForm()
                             }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // ---------------------------------------------------------------------
-    // 4. DIALOG CẤP TÀI KHOẢN (POPUP)
-    // ---------------------------------------------------------------------
-    Dialog {
-        id: grantAccDialog
-        title: "🔑 Cấp Tài Khoản Nhân Viên"
-        modal: true
-        focus: true
-        x: Math.round((parent.width - width) / 2)
-        y: Math.round((parent.height - height) / 2)
-        width: 320
-
-        property string targetEmpId: ""
-
-        ColumnLayout {
-            anchors.fill: parent
-            spacing: 12
-
-            Text {
-                text: "Mã NV nhận TK: " + grantAccDialog.targetEmpId
-                font.bold: true
-                color: "#6F4E37"
-            }
-
-            TextField {
-                id: dlgPass
-                placeholderText: "Mật khẩu cấp cho NV"
-                echoMode: TextInput.Password
-                Layout.fillWidth: true
-            }
-
-            RowLayout {
-                Layout.alignment: Qt.AlignRight
-                spacing: 10
-
-                Button {
-                    text: "Hủy"
-                    onClicked: grantAccDialog.close()
-                }
-
-                Button {
-                    text: "Cấp Tài Khoản"
-                    highlighted: true
-                    onClicked: {
-                        if (dlgPass.text !== "") {
-                            if (typeof accountHandler !== "undefined" && accountHandler.addAccount) {
-                                // Mặc định Username = Mã NV, Role = "Nhân viên"
-                                accountHandler.addAccount(grantAccDialog.targetEmpId, dlgPass.text, "Nhân viên")
-                            }
-                            grantAccDialog.close()
-                            dlgPass.text = ""
                         }
                     }
                 }

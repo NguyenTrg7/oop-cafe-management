@@ -88,13 +88,13 @@ Rectangle {
 
         // 1. Kiểm tra rỗng
         if (user === "" || pass === "") {
-            loginErrorText.text = qsTr("Vui lòng nhập đủ số điện thoại và mật khẩu!")
+            loginErrorText.text = qsTr("Vui lòng nhập đủ tên đăng nhập và mật khẩu!")
             loginErrorText.visible = true
             return
         }
 
-        // 2. Kiểm tra format số điện thoại (chỉ bỏ qua nếu là admin)
-        if (user !== "admin" && !/^\d{10}$/.test(user)) {
+        // 2. Kiểm tra format số điện thoại (cho phép tài khoản hệ thống 'admin' và 'nhanvien' bỏ qua)
+        if (user !== "admin" && user !== "nhanvien" && !/^\d{10}$/.test(user)) {
             loginErrorText.text = qsTr("Số điện thoại không hợp lệ (phải đủ 10 số)!")
             loginErrorText.visible = true
             return
@@ -119,7 +119,7 @@ Rectangle {
 
             var targetPage = ""
             if (role === "manager") {
-                targetPage = "ManagerPage.qml" // <-- Đã sửa thành ManagerPage.qml
+                targetPage = "ManagerPage.qml"
             } else if (role === "staff") {
                 targetPage = "EmployeePage.qml"
             } else {
@@ -240,7 +240,7 @@ Rectangle {
                     TextField {
                         id: loginUserInput
                         focus: true
-                        placeholderText: qsTr("Nhập SĐT của bạn...")
+                        placeholderText: qsTr("Nhập SĐT hoặc tên tài khoản...")
                         leftPadding: 40; width: 300; height: 48; font.pixelSize: 15; color: "#333333"
                         verticalAlignment: TextInput.AlignVCenter
                         background: Rectangle { radius: 12; color: "#FFFFFF"; border.color: "#BAE6FD"; border.width: 1 }
