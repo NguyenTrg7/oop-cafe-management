@@ -6,157 +6,165 @@ Page {
     id: loyaltyPage
     background: Rectangle { color: "#F4EBD0" }
 
-    ColumnLayout {
-        anchors.centerIn: parent
-        spacing: 30
-        width: parent.width * 0.7
+    property var customer: typeof customerHandler !== "undefined" ? customerHandler : null
 
-        Label {
-            text: "Quyền Lợi Khách Hàng"
-            font.family: "Georgia"
-            font.pixelSize: 28
-            font.bold: true
-            color: "#4E3629"
-            Layout.alignment: Qt.AlignHCenter
-        }
+    ScrollView {
+        id: scroll
+        anchors.fill: parent
+        anchors.margins: 16
+        clip: true
+        contentWidth: availableWidth
+        ScrollBar.vertical.policy: ScrollBar.AlwaysOff
 
-        // Thẻ Thành Viên (Member Card)
-        Rectangle {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 200
-            color: "#2C1E16"
-            border.color: "#B68D40"
-            border.width: 4
-            radius: 15
+        ColumnLayout {
+            width: Math.min(scroll.availableWidth, 520)
+            anchors.horizontalCenter: parent.horizontalCenter
+            spacing: 18
 
-            ColumnLayout {
-                anchors.fill: parent
-                anchors.margins: 20
+            Label {
+                text: "Tích điểm & Voucher"
+                font.family: "Georgia"
+                font.pixelSize: 26
+                font.bold: true
+                color: "#4E3629"
+                Layout.alignment: Qt.AlignHCenter
+            }
 
-                RowLayout {
-                    Layout.fillWidth: true
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 120
+                color: "#2C1E16"
+                border.color: "#B68D40"
+                border.width: 3
+                radius: 12
+
+                ColumnLayout {
+                    anchors.fill: parent
+                    anchors.margins: 14
+                    spacing: 4
+
                     Label {
-                        text: "Giang's Coffee"
-                        font.family: "Georgia"
-                        font.pixelSize: 24
+                        text: customer ? customer.name : "Chưa đăng nhập"
+                        font.pixelSize: 17
+                        color: "white"
+                    }
+                    Label {
+                        text: (customer ? customer.loyaltyPoints : 0) + " điểm"
+                        font.pixelSize: 26
                         font.bold: true
                         color: "#B68D40"
                     }
-                    Item { Layout.fillWidth: true }
                     Label {
-                        text: "Hạng: " + customerHandler.rank
-                        font.family: "Times New Roman"
-                        font.pixelSize: 18
-                        color: "#E0E0E0"
+                        text: "Đồ uống: S=1 M=2 L=3 | Đồ ăn: 2 điểm/món"
+                        font.pixelSize: 11
+                        color: "#A1887F"
                     }
                 }
+            }
 
-                Item { Layout.fillHeight: true }
+            Label {
+                text: "Đổi điểm lấy voucher"
+                font.bold: true
+                font.pixelSize: 15
+                color: "#4E3629"
+            }
 
-                RowLayout {
+            Repeater {
+                model: customer ? customer.voucherTiers() : []
+
+                delegate: Rectangle {
                     Layout.fillWidth: true
-                    ColumnLayout {
+                    height: 48
+                    color: "#FFF8E7"
+                    border.color: "#B68D40"
+                    radius: 8
+
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.margins: 8
+
                         Label {
-                            text: "Khách hàng"
-                            font.family: "Times New Roman"
-                            font.pixelSize: 14
-                            color: "#A1887F"
+                            text: modelData.label + " (" + modelData.points + " điểm)"
+                            font.pixelSize: 13
+                            color: "#4E3629"
+                            Layout.fillWidth: true
                         }
-                        Label {
-                            text: customerHandler.name
-                            font.family: "Georgia"
-                            font.pixelSize: 22
-                            color: "white"
+
+                        Button {
+                            text: "Đổi"
+                            enabled: customer && customer.loyaltyPoints >= modelData.points
+                            onClicked: {
+                                var r = customer.redeemVoucher(modelData.points)
+                                msgDialog.text = r.message || ""
+                                msgDialog.open()
+                                if (r.success && typeof accountHandler !== "undefined")
+                                    accountHandler.saveCustomerLoyalty()
+                            }
                         }
                     }
+                }
+            }
 
-                    Item { Layout.fillWidth: true }
+            Label {
+                text: "Voucher đang có"
+                font.bold: true
+                font.pixelSize: 15
+                color: "#4E3629"
+                Layout.topMargin: 8
+            }
 
-                    ColumnLayout {
+            Repeater {
+                model: customer ? customer.activeVouchers : []
+
+                delegate: Rectangle {
+                    Layout.fillWidth: true
+                    height: 44
+                    color: "#E8F5E9"
+                    border.color: "#2E7D32"
+                    radius: 8
+
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.margins: 8
                         Label {
-                            text: "Điểm Tích Lũy"
-                            font.family: "Times New Roman"
-                            font.pixelSize: 14
-                            color: "#A1887F"
-                            Layout.alignment: Qt.AlignRight
-                        }
-                        Label {
-                            text: customerHandler.loyaltyPoints + " Pts"
-                            font.family: "Georgia"
-                            font.pixelSize: 26
+                            text: modelData.code + "  —  " + modelData.label
+                            font.pixelSize: 13
                             font.bold: true
-                            color: "#B68D40"
-                            Layout.alignment: Qt.AlignRight
+                            color: "#1B5E20"
+                            Layout.fillWidth: true
+                        }
+                        Label {
+                            text: "Chưa dùng"
+                            font.pixelSize: 11
+                            color: "#558B2F"
                         }
                     }
                 }
             }
-        }
 
-        // Thanh tiến trình thăng hạng
-        ColumnLayout {
-            Layout.fillWidth: true
-            spacing: 5
-
-            RowLayout {
-                Layout.fillWidth: true
-                Label { text: "Hiện tại: " + customerHandler.loyaltyPoints + " Pts"; font.family: "Times New Roman"; color: "#4E3629"}
-                Item { Layout.fillWidth: true }
-                Label { text: "Mục tiêu: 500 Pts (Kim Cương)"; font.family: "Times New Roman"; color: "#4E3629" }
+            Label {
+                visible: customer && customer.activeVouchers.length === 0
+                text: "Chưa có voucher nào. Hãy đổi điểm ở trên."
+                font.pixelSize: 12
+                color: "#8D6E63"
             }
 
-            ProgressBar {
-                Layout.fillWidth: true
-                value: Math.min(customerHandler.loyaltyPoints / 500.0, 1.0)
-                background: Rectangle {
-                    color: "#D4C49A"
-                    radius: 4
-                }
-                contentItem: Item {
-                    Rectangle {
-                        width: parent.width * parent.parent.value
-                        height: parent.height
-                        color: "#B68D40"
-                        radius: 4
-                    }
-                }
-            }
-        }
-
-        // Nút quy đổi điểm
-        Button {
-            text: "Quy đổi 50 Pts lấy Voucher"
-            font.family: "Georgia"
-            font.pixelSize: 16
-            Layout.alignment: Qt.AlignHCenter
-            Layout.preferredWidth: 260
-            Layout.preferredHeight: 45
-            background: Rectangle {
-                color: customerHandler.loyaltyPoints >= 50 ? "#4E3629" : "#8D6E63"
-                radius: 5
-                border.color: "#B68D40"
-                border.width: 1
-            }
-            palette.buttonText: "#F4EBD0"
-
-            onClicked: {
-                if (customerHandler.redeemPoints(50)) {
-                    msgDialog.text = "Đổi Voucher 20.000đ thành công!"
-                } else {
-                    msgDialog.text = "Bạn không đủ điểm để quy đổi!"
-                }
-                msgDialog.open()
-            }
+            // Khoang trong cuoi de cuon thoai mai
+            Item { Layout.preferredHeight: 24 }
         }
     }
 
     Dialog {
         id: msgDialog
-        property alias text: msgText.text
+        property alias text: msgLabel.text
         title: "Thông báo"
         modal: true
         anchors.centerIn: parent
         standardButtons: Dialog.Ok
-        Label { id: msgText; font.pixelSize: 15 }
+        Label {
+            id: msgLabel
+            wrapMode: Text.WordWrap
+            width: 300
+        }
     }
 }

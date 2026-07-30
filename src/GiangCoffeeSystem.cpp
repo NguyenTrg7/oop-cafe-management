@@ -23,15 +23,15 @@ GiangCoffeeSystem::GiangCoffeeSystem(QObject *parent)
     m_menuManager = new MenuManager(this);
 
     // 12 ban mac dinh (4 cot x 3 hang)
-    m_tables.append(Seating(1,  4, false, QStringLiteral("Vuông")));
-    m_tables.append(Seating(2,  4, false, QStringLiteral("Vuông")));
-    m_tables.append(Seating(3,  4, false, QStringLiteral("Tròn")));
-    m_tables.append(Seating(4,  4, false, QStringLiteral("Tròn")));
-    m_tables.append(Seating(5,  4, false, QStringLiteral("Vuông")));
-    m_tables.append(Seating(6,  4, false, QStringLiteral("Vuông")));
-    m_tables.append(Seating(7,  4, false, QStringLiteral("Tròn")));
-    m_tables.append(Seating(8,  4, false, QStringLiteral("Vuông")));
-    m_tables.append(Seating(9,  4, false, QStringLiteral("Vuông")));
+    m_tables.append(Seating(1, 4, false, QStringLiteral("Vuông")));
+    m_tables.append(Seating(2, 4, false, QStringLiteral("Vuông")));
+    m_tables.append(Seating(3, 4, false, QStringLiteral("Tròn")));
+    m_tables.append(Seating(4, 4, false, QStringLiteral("Tròn")));
+    m_tables.append(Seating(5, 4, false, QStringLiteral("Vuông")));
+    m_tables.append(Seating(6, 4, false, QStringLiteral("Vuông")));
+    m_tables.append(Seating(7, 4, false, QStringLiteral("Tròn")));
+    m_tables.append(Seating(8, 4, false, QStringLiteral("Vuông")));
+    m_tables.append(Seating(9, 4, false, QStringLiteral("Vuông")));
     m_tables.append(Seating(10, 4, false, QStringLiteral("Tròn")));
     m_tables.append(Seating(11, 4, false, QStringLiteral("Vuông")));
     m_tables.append(Seating(12, 4, false, QStringLiteral("Tròn")));
@@ -279,10 +279,10 @@ void GiangCoffeeSystem::mergeTable(int tableNum1, int tableNum2)
 
     const int mergedNumber = qMin(tableNum1, tableNum2);
     const int mergedCapacity = m_tables[idx1].getCapacity() + m_tables[idx2].getCapacity();
-    const bool mergedOccupied = m_tables[idx1].isTableOccupied() || m_tables[idx2].isTableOccupied();
-    const QString mergedShape = (tableNum1 < tableNum2)
-                                    ? m_tables[idx1].getShape()
-                                    : m_tables[idx2].getShape();
+    const bool mergedOccupied = m_tables[idx1].isTableOccupied()
+                                || m_tables[idx2].isTableOccupied();
+    const QString mergedShape = (tableNum1 < tableNum2) ? m_tables[idx1].getShape()
+                                                        : m_tables[idx2].getShape();
 
     Seating mergedTable(mergedNumber, mergedCapacity, mergedOccupied, mergedShape);
     mergedTable.setOriginalCapacities(mergedOrig);
