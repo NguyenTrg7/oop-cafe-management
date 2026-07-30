@@ -1,5 +1,7 @@
 #include "Account.h"
+#include "Customer.h"
 #include <QCoreApplication>
+#include <QFile>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -8,13 +10,28 @@
 Account::Account(QObject *parent)
     : QObject(parent)
     , m_currentUserPhone("")
+    , m_customer(nullptr)
 {
-    QString absolutePath = QCoreApplication::applicationDirPath() + "/accounts.csv";
-    m_csvFilePath = absolutePath.toStdString();
+    m_csvFilePath = (QCoreApplication::applicationDirPath() + "/accounts.csv").toStdString();
+    m_customersCsvPath = (QCoreApplication::applicationDirPath() + "/customers.csv").toStdString();
     initFile();
+    initCustomersFile();   // TU TAO customers.csv neu chua co
 }
 
 Account::~Account() {}
+
+void Account::setCurrentUserPhone(const QString &phone)
+{
+    if (m_currentUserPhone != phone) {
+        m_currentUserPhone = phone;
+        emit currentUserPhoneChanged();
+    }
+}
+
+void Account::setCustomerHandler(Customer *customer)
+{
+    m_customer = customer;
+}
 
 void Account::initFile()
 {
@@ -24,18 +41,12 @@ void Account::initFile()
     if (checkFile.is_open()) {
         std::string line;
         while (std::getline(checkFile, line)) {
-            if (line.empty())
-                continue;
-            if (line.back() == '\r')
-                line.pop_back();
-
+            if (line.empty()) continue;
+            if (line.back() == '\r') line.pop_back();
             std::stringstream ss(line);
             std::string dbUser;
             if (std::getline(ss, dbUser, ',')) {
-                if (dbUser == "admin") {
-                    hasAdmin = true;
-                    break;
-                }
+                if (dbUser == "admin") { hasAdmin = true; break; }
             }
         }
         checkFile.close();
@@ -44,10 +55,20 @@ void Account::initFile()
     if (!hasAdmin) {
         std::ofstream outFile(m_csvFilePath, std::ios::app);
         if (outFile.is_open()) {
-            // Mặc định luôn cấp quyền manager với pass chuquanlatoi
             outFile << "admin,chuquanlatoi,manager\n";
             outFile.close();
-            std::cout << ">> Da tu dong tao/bo sung tai khoan Admin: admin / chuquanlatoi\n";
+        }
+    }
+}
+
+void Account::initCustomersFile()
+{
+    QFile file(QString::fromStdString(m_customersCsvPath));
+    if (!file.exists()) {
+        if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            file.write("phone,name,points\n");
+            file.close();
+            std::cout << ">> Da tao customers.csv tai: " << m_customersCsvPath << "\n";
         }
     }
 }
@@ -58,17 +79,14 @@ QString Account::authenticate(const QString &username, const QString &password)
     std::string inputPass = password.toStdString();
 
     std::ifstream file(m_csvFilePath);
-    if (!file.is_open())
-        return "FILE_ERROR";
+    if (!file.is_open()) return "FILE_ERROR";
 
     std::string line;
     bool userExists = false;
 
     while (std::getline(file, line)) {
-        if (line.empty())
-            continue;
-        if (line.back() == '\r')
-            line.pop_back();
+        if (line.empty()) continue;
+        if (line.back() == '\r') line.pop_back();
 
         std::stringstream ss(line);
         std::string dbUser, dbPass, dbRole;
@@ -80,19 +98,20 @@ QString Account::authenticate(const QString &username, const QString &password)
                 if (dbPass == inputPass) {
                     file.close();
                     setCurrentUserPhone(username);
+
+                    QString role = QString::fromStdString(dbRole).trimmed().toLower();
+                    if (role == "customer" || role == "khach hang")
+                        loadCustomerLoyalty(username);
+                    else if (m_customer)
+                        m_customer->resetToGuest();
+
                     return QString::fromStdString(dbRole);
                 }
             }
         }
     }
-
     file.close();
-
-    if (!userExists) {
-        return "NOT_REGISTERED";
-    } else {
-        return "WRONG_PASSWORD";
-    }
+    return userExists ? QString("WRONG_PASSWORD") : QString("NOT_REGISTERED");
 }
 
 bool Account::registerAccount(const QString &username, const QString &password, const QString &role)
@@ -105,134 +124,203 @@ bool Account::registerAccount(const QString &username, const QString &password, 
     if (inFile.is_open()) {
         std::string line;
         while (std::getline(inFile, line)) {
-            if (line.empty())
-                continue;
-            if (line.back() == '\r')
-                line.pop_back();
-
+            if (line.empty()) continue;
+            if (line.back() == '\r') line.pop_back();
             std::stringstream ss(line);
             std::string dbUser;
-            if (std::getline(ss, dbUser, ',')) {
-                if (dbUser == inputUser) {
-                    inFile.close();
-                    return false;
-                }
+            if (std::getline(ss, dbUser, ',') && dbUser == inputUser) {
+                inFile.close();
+                return false;
             }
         }
         inFile.close();
     }
 
     std::ofstream outFile(m_csvFilePath, std::ios::app);
-    if (outFile.is_open()) {
-        outFile << inputUser << "," << inputPass << "," << inputRole << "\n";
-        outFile.close();
-        return true;
-    }
+    if (!outFile.is_open()) return false;
 
-    return false;
+    outFile << inputUser << "," << inputPass << "," << inputRole << "\n";
+    outFile.close();
+
+    QString roleLower = role.trimmed().toLower();
+    if (roleLower == "customer" || roleLower == "khach hang")
+        upsertCustomerLoyalty(username, username, 0);
+
+    return true;
 }
 
-// LOGIC CẤP QUYỀN NHÂN VIÊN MỚI
 bool Account::grantEmployeeRole(const QString &phoneNumber)
 {
     std::string targetPhone = phoneNumber.toStdString();
     std::ifstream inFile(m_csvFilePath);
-
     std::vector<std::string> lines;
     std::string line;
     bool found = false;
 
     if (inFile.is_open()) {
         while (std::getline(inFile, line)) {
-            if (line.empty())
-                continue;
-            std::string tempLine = line;
-            if (!tempLine.empty() && tempLine.back() == '\r')
-                tempLine.pop_back();
+            if (line.empty()) continue;
+            std::string temp = line;
+            if (!temp.empty() && temp.back() == '\r') temp.pop_back();
 
-            std::stringstream ss(tempLine);
+            std::stringstream ss(temp);
             std::string dbUser, dbPass, dbRole;
-
             if (std::getline(ss, dbUser, ',') && std::getline(ss, dbPass, ',')
                 && std::getline(ss, dbRole)) {
                 if (dbUser == targetPhone) {
-                    // Nếu đã đăng ký: Đổi role thành staff và giữ nguyên mật khẩu (dbPass)
                     lines.push_back(dbUser + "," + dbPass + ",staff");
                     found = true;
                 } else {
-                    lines.push_back(tempLine);
+                    lines.push_back(temp);
                 }
             }
         }
         inFile.close();
     }
 
-    // Nếu chưa đăng ký hoặc bị xóa: Tạo mới tài khoản với mật khẩu "toilanhanvien"
     if (!found) {
         std::ofstream outFile(m_csvFilePath, std::ios::app);
-        if (outFile.is_open()) {
-            outFile << targetPhone << ",toilanhanvien,staff\n";
-            outFile.close();
-            return true;
-        }
-        return false;
-    }
-
-    // Nếu có thay đổi ở tài khoản cũ, cập nhật lại tệp
-    std::ofstream outFile(m_csvFilePath, std::ios::trunc);
-    if (outFile.is_open()) {
-        for (const auto &l : lines) {
-            outFile << l << "\n";
-        }
+        if (!outFile.is_open()) return false;
+        outFile << targetPhone << ",toilanhanvien,staff\n";
         outFile.close();
         return true;
     }
 
-    return false;
+    std::ofstream outFile(m_csvFilePath, std::ios::trunc);
+    if (!outFile.is_open()) return false;
+    for (const auto &l : lines) outFile << l << "\n";
+    outFile.close();
+    return true;
 }
 
 bool Account::removeAccount(const QString &username)
 {
     std::string targetUser = username.toStdString();
     std::ifstream inFile(m_csvFilePath);
-    if (!inFile.is_open())
-        return false;
+    if (!inFile.is_open()) return false;
 
     std::vector<std::string> lines;
     std::string line;
     bool found = false;
 
     while (std::getline(inFile, line)) {
-        if (line.empty())
-            continue;
-        std::string tempLine = line;
-        if (!tempLine.empty() && tempLine.back() == '\r')
-            tempLine.pop_back();
+        if (line.empty()) continue;
+        std::string temp = line;
+        if (!temp.empty() && temp.back() == '\r') temp.pop_back();
 
-        std::stringstream ss(tempLine);
+        std::stringstream ss(temp);
         std::string dbUser;
-
         if (std::getline(ss, dbUser, ',')) {
-            if (dbUser == targetUser) {
-                found = true;
-            } else {
-                lines.push_back(tempLine);
-            }
+            if (dbUser == targetUser) found = true;
+            else lines.push_back(temp);
         }
     }
     inFile.close();
-
-    if (!found)
-        return false;
+    if (!found) return false;
 
     std::ofstream outFile(m_csvFilePath, std::ios::trunc);
-    if (outFile.is_open()) {
-        for (const auto &l : lines) {
-            outFile << l << "\n";
-        }
-        outFile.close();
-        return true;
+    if (!outFile.is_open()) return false;
+    for (const auto &l : lines) outFile << l << "\n";
+    outFile.close();
+    return true;
+}
+
+void Account::loadCustomerLoyalty(const QString &phone)
+{
+    if (!m_customer) return;
+
+    std::ifstream file(m_customersCsvPath);
+    if (!file.is_open()) {
+        m_customer->loadFrom(phone, phone, 0);
+        upsertCustomerLoyalty(phone, phone, 0);
+        return;
     }
 
-    return false;
+    std::string line, target = phone.toStdString();
+    bool found = false;
+
+    while (std::getline(file, line)) {
+        if (line.empty()) continue;
+        if (line.back() == '\r') line.pop_back();
+        if (line.find("phone,name") == 0) continue;
+
+        std::stringstream ss(line);
+        std::string dbPhone, dbName, dbPoints;
+        if (!std::getline(ss, dbPhone, ',')) continue;
+        std::getline(ss, dbName, ',');
+        std::getline(ss, dbPoints, ',');
+
+        if (dbPhone == target) {
+            int pts = 0;
+            try { if (!dbPoints.empty()) pts = std::stoi(dbPoints); } catch (...) {}
+            m_customer->loadFrom(phone,
+                                 dbName.empty() ? phone : QString::fromStdString(dbName), pts);
+            found = true;
+            break;
+        }
+    }
+    file.close();
+
+    if (!found) {
+        m_customer->loadFrom(phone, phone, 0);
+        upsertCustomerLoyalty(phone, phone, 0);
+    }
+}
+
+void Account::saveCustomerLoyalty()
+{
+    if (!m_customer || m_customer->phoneNumber().isEmpty())
+        return;
+    upsertCustomerLoyalty(
+        m_customer->phoneNumber(),
+        m_customer->name(),
+        m_customer->loyaltyPoints());
+}
+
+bool Account::upsertCustomerLoyalty(const QString &phone, const QString &name, int points)
+{
+    initCustomersFile();
+
+    std::ifstream inFile(m_customersCsvPath);
+    std::vector<std::string> lines;
+    std::string line, target = phone.toStdString();
+    bool found = false;
+
+    if (inFile.is_open()) {
+        while (std::getline(inFile, line)) {
+            if (line.empty()) continue;
+            if (line.back() == '\r') line.pop_back();
+
+            if (line.find("phone,name") == 0) {
+                lines.push_back(line);
+                continue;
+            }
+
+            std::stringstream ss(line);
+            std::string dbPhone;
+            std::getline(ss, dbPhone, ',');
+
+            if (dbPhone == target) {
+                lines.push_back(phone.toStdString() + "," + name.toStdString()
+                                + "," + std::to_string(points));
+                found = true;
+            } else {
+                lines.push_back(line);
+            }
+        }
+        inFile.close();
+    }
+
+    if (!found) {
+        if (lines.empty())
+            lines.push_back("phone,name,points");
+        lines.push_back(phone.toStdString() + "," + name.toStdString()
+                        + "," + std::to_string(points));
+    }
+
+    std::ofstream outFile(m_customersCsvPath, std::ios::trunc);
+    if (!outFile.is_open()) return false;
+    for (const auto &l : lines) outFile << l << "\n";
+    outFile.close();
+    return true;
 }

@@ -2,37 +2,43 @@
 #define CUSTOMER_H
 
 #include "User.h"
+#include <QVariantList>
+#include <QVariantMap>
 
 class Customer : public User {
     Q_OBJECT
     Q_PROPERTY(int loyaltyPoints READ loyaltyPoints WRITE setLoyaltyPoints NOTIFY loyaltyPointsChanged)
-    Q_PROPERTY(QString phoneNumber READ phoneNumber CONSTANT)
-    Q_PROPERTY(QString rank READ rank NOTIFY rankChanged)
+    Q_PROPERTY(QString phoneNumber READ phoneNumber WRITE setPhoneNumber NOTIFY phoneNumberChanged)
+
 public:
-    explicit Customer(const QString& id, const QString& name, int points = 0, QObject *parent = nullptr);
+    explicit Customer(const QString &id = QStringLiteral("GUEST"),
+                      const QString &name = QStringLiteral("Khach vang lai"),
+                      int points = 0,
+                      QObject *parent = nullptr);
 
     int loyaltyPoints() const;
     void setLoyaltyPoints(int points);
 
     QString role() const override;
     void displayInfo() const override;
-    void updateProfile(const QString& newName, const QString& newPhone);
-    void addPoints(int points);
-    void redeemPoints(int pointsToRedeem);
-    QString phoneNumber() const { return m_phoneNumber; }
-    QString rank() const { return m_rank; }
 
+    Q_INVOKABLE void addPoints(int points);
+    Q_INVOKABLE QVariantMap redeemVoucher(int pointsRequired);
+    Q_INVOKABLE QVariantList voucherTiers() const;
+
+    QString phoneNumber() const { return m_phoneNumber; }
+    void setPhoneNumber(const QString &phone);
+
+    Q_INVOKABLE void loadFrom(const QString &phone, const QString &name, int points);
+    Q_INVOKABLE void resetToGuest();
 
 signals:
     void loyaltyPointsChanged();
     void phoneNumberChanged();
-    void rankChanged();
 
 private:
-    QString m_phoneNumber; //[cite: 2]
-    QString m_rank;        //[cite: 2]
+    QString m_phoneNumber;
     int m_loyaltyPoints;
 };
 
 #endif // CUSTOMER_H
-
