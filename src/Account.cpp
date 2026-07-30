@@ -20,6 +20,7 @@ void Account::initFile()
 {
     std::ifstream checkFile(m_csvFilePath);
     bool hasAdmin = false;
+    bool hasEmployee = false;
 
     if (checkFile.is_open()) {
         std::string line;
@@ -32,23 +33,28 @@ void Account::initFile()
             std::stringstream ss(line);
             std::string dbUser;
             if (std::getline(ss, dbUser, ',')) {
-                if (dbUser == "admin") {
+                if (dbUser == "admin")
                     hasAdmin = true;
-                    break;
-                }
+                if (dbUser == "nhanvien" || dbUser == "staff")
+                    hasEmployee = true;
             }
         }
         checkFile.close();
     }
 
-    if (!hasAdmin) {
-        std::ofstream outFile(m_csvFilePath, std::ios::app);
-        if (outFile.is_open()) {
-            // Mặc định luôn cấp quyền manager với pass chuquanlatoi
+    std::ofstream outFile(m_csvFilePath, std::ios::app);
+    if (outFile.is_open()) {
+        // Tự động tạo Admin
+        if (!hasAdmin) {
             outFile << "admin,chuquanlatoi,manager\n";
-            outFile.close();
-            std::cout << ">> Da tu dong tao/bo sung tai khoan Admin: admin / chuquanlatoi\n";
+            std::cout << ">> Da tu dong tao tai khoan Admin: admin / chuquanlatoi\n";
         }
+        // Tự động tạo tài khoản Nhân viên dùng chung
+        if (!hasEmployee) {
+            outFile << "nhanvien,adminxemduoc,staff\n";
+            std::cout << ">> Da tu dong tao tai khoan Nhan vien dung chung: nhanvien / 123456\n";
+        }
+        outFile.close();
     }
 }
 

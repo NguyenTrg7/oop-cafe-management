@@ -6,12 +6,27 @@ Page {
     id: managerPage
     background: Rectangle { color: "#F8FAFC" }
 
+    // 🔑 Hàm hỗ trợ điều hướng trang linh hoạt
+    function openPage(pageUrl) {
+        if (typeof pageStack !== "undefined" && pageStack.push) {
+            pageStack.push(pageUrl)
+        } else if (StackView.view) {
+            StackView.view.push(pageUrl)
+        } else if (typeof mainLoader !== "undefined") {
+            mainLoader.source = pageUrl
+        } else {
+            console.log("Chuyển tới trang:", pageUrl)
+        }
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 25
         spacing: 20
 
-        // Tiêu đề Quản lý
+        // ---------------------------------------------------------------------
+        // 1. TIÊU ĐỀ QUẢN LÝ
+        // ---------------------------------------------------------------------
         RowLayout {
             Layout.fillWidth: true
             Label {
@@ -28,7 +43,9 @@ Page {
             }
         }
 
-        // Khung Thống kê nhanh
+        // ---------------------------------------------------------------------
+        // 2. KHUNG THỐNG KÊ NHANH
+        // ---------------------------------------------------------------------
         RowLayout {
             Layout.fillWidth: true
             spacing: 15
@@ -64,7 +81,9 @@ Page {
             }
         }
 
-        // Danh sách các chức năng chính
+        // ---------------------------------------------------------------------
+        // 3. DANH SÁCH CÁC CHỨC NĂNG QUẢN TRỊ
+        // ---------------------------------------------------------------------
         Label {
             text: "Chức năng quản trị:"
             font.pixelSize: 16
@@ -78,32 +97,49 @@ Page {
             columnSpacing: 15
             rowSpacing: 15
 
+            // 1. Quản lý thực đơn
             Button {
                 text: "☕ Quản Lý Thực Đơn"
                 Layout.fillWidth: true; Layout.preferredHeight: 60
                 font.pixelSize: 15; font.bold: true
                 background: Rectangle { color: "#FFFFFF"; radius: 10; border.color: "#CBD5E1" }
+                onClicked: openPage("OrderPage.qml")
             }
 
+            // 2. Quản lý nhân viên
             Button {
                 text: "👥 Quản Lý Nhân Viên"
                 Layout.fillWidth: true; Layout.preferredHeight: 60
                 font.pixelSize: 15; font.bold: true
                 background: Rectangle { color: "#FFFFFF"; radius: 10; border.color: "#CBD5E1" }
+                onClicked: openPage("EmployeePage.qml")
             }
 
+            // 3. Quản lý & cấp tài khoản hệ thống
+            Button {
+                text: "🔐 Quản Lý & Cấp Tài Khoản"
+                Layout.fillWidth: true; Layout.preferredHeight: 60
+                font.pixelSize: 15; font.bold: true
+                background: Rectangle { color: "#FFFFFF"; radius: 10; border.color: "#CBD5E1" }
+                onClicked: openPage("EmployeeManagementPage.qml")
+            }
+
+            // 4. Báo cáo doanh thu
             Button {
                 text: "📈 Báo Cáo Doanh Thu"
                 Layout.fillWidth: true; Layout.preferredHeight: 60
                 font.pixelSize: 15; font.bold: true
                 background: Rectangle { color: "#FFFFFF"; radius: 10; border.color: "#CBD5E1" }
+                onClicked: openPage("FinancePage.qml")
             }
 
+            // 5. Khuyến mãi
             Button {
                 text: "🎁 Chương Trình Khuyến Mãi"
                 Layout.fillWidth: true; Layout.preferredHeight: 60
                 font.pixelSize: 15; font.bold: true
                 background: Rectangle { color: "#FFFFFF"; radius: 10; border.color: "#CBD5E1" }
+                onClicked: openPage("LoyaltyPage.qml")
             }
         }
 

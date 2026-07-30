@@ -82,11 +82,17 @@ public:
     // =========================================================================
     Q_INVOKABLE double checkDiscount(const QString& code, double totalAmount);
     Q_INVOKABLE QVariantList loadEmployees();
-    Q_INVOKABLE bool addEmployeeCSV(const QString& id, const QString& name, const QString& pos, double salary, const QString& shift);
+    Q_INVOKABLE bool addEmployeeCSV(const QString &id, const QString &name, const QString &phone, double salary, const QString &shift);
+    Q_INVOKABLE bool updateEmployeeCSV(const QString &id, const QString &name, const QString &phone, double salary, const QString &shift);
     Q_INVOKABLE QVariantList loadFinance();
     Q_INVOKABLE bool addTransactionCSV(const QString& date, const QString& type, double amount, const QString& note);
     Q_INVOKABLE bool deleteEmployeeCSV(const QString& id);
-    Q_INVOKABLE bool updateEmployeeCSV(const QString& id, const QString& name, const QString& pos, double salary, const QString& shift);
+
+    // =========================================================================
+    // KIỂM TRA SĐT VÀ ĐIỂM DANH DÙNG CHUNG TÀI KHOẢN
+    // =========================================================================
+    Q_INVOKABLE bool verifyEmployeePhone(const QString &phone);
+    Q_INVOKABLE bool recordAttendanceCSV(const QString &phone, const QString &type, const QString &timestamp);
 };
 
 #endif // GIANGCOFFEESYSTEM_H

@@ -1,6 +1,6 @@
-id,name,position,salary,shift
-NV01,Nguyễn Văn A,Pha chế,30000,Sáng
-NV02,Trần Thị B,Thu ngân,25000,Chiều
-123,Lê Văn Tin,Quản lý,36000,Tối
-NV03,Lê Văn C,Phục vụ,22000,Tối
-NV04,Doãn Lê Thành,Nhân viên,25000,Sáng
+id,name,phone,salary,shift
+NV01,Nguyễn Văn A,0123456789,30000,Sáng
+NV02,Trần Thị B,0234567891,25000,Chiều
+NV03,Lê Văn C,0345678912,22000,Tối
+NV04,Doãn Lê Thành,0456789123,25000,Sáng
+NV05,Nguyễn Thị Chill,0567891234,30000,Chiều

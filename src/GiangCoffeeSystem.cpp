@@ -2,7 +2,7 @@
 #include <QDebug>
 #include <QFile>
 #include <QTextStream>
-
+#include <utility>
 // 1. Khởi tạo con trỏ tĩnh cho Singleton
 GiangCoffeeSystem *GiangCoffeeSystem::m_instance = nullptr;
 
@@ -42,12 +42,12 @@ GiangCoffeeSystem::GiangCoffeeSystem(QObject *parent)
 // 4. Destructor
 GiangCoffeeSystem::~GiangCoffeeSystem()
 {
-    for (auto emp : m_employees_list) {
+    for (auto *emp : qAsConst(m_employees_list)) {
         delete emp;
     }
     m_employees_list.clear();
 
-    for (auto order : m_orders) {
+    for (auto *order : qAsConst(m_orders)) {
         delete order;
     }
     m_orders.clear();
@@ -113,20 +113,60 @@ bool GiangCoffeeSystem::deleteEmployeeCSV(const QString &id)
     return true;
 }
 
-bool GiangCoffeeSystem::updateEmployeeCSV(
-    const QString &id, const QString &name, const QString &pos, double salary, const QString &shift)
+QVariantList GiangCoffeeSystem::loadEmployees()
 {
-    deleteEmployeeCSV(id);                               // Xóa dòng cũ
-    return addEmployeeCSV(id, name, pos, salary, shift); // Thêm lại dòng mới đã cập nhật
+    QVariantList list;
+    QFile file("data/employees.csv");
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return list;
+
+    QTextStream in(&file);
+    in.readLine(); // Bỏ qua tiêu đề CSV
+
+    while (!in.atEnd()) {
+        QString line = in.readLine().trimmed();
+        if (line.isEmpty())
+            continue;
+
+        QStringList fields = line.split(",");
+        if (fields.size() >= 5) {
+            QVariantMap emp;
+            emp["id"] = fields[0].trimmed();
+            emp["name"] = fields[1].trimmed();
+            emp["phone"] = fields[2].trimmed();
+            emp["salary"] = fields[3].trimmed().toDouble();
+            emp["shift"] = fields[4].trimmed();
+            list.append(emp);
+        }
+    }
+    file.close();
+    return list;
 }
 
-void GiangCoffeeSystem::calculatePayroll()
+bool GiangCoffeeSystem::addEmployeeCSV(const QString &id,
+                                       const QString &name,
+                                       const QString &phone,
+                                       double salary,
+                                       const QString &shift)
 {
-    double totalSalary = 0.0;
-    for (auto emp : m_employees_list) {
-        totalSalary += emp->calculateSalary();
-    }
-    qDebug() << "Tong luong nhan vien Tròng bo nho:" << totalSalary << "VND";
+    QFile file("data/employees.csv");
+    if (!file.open(QIODevice::Append | QIODevice::Text))
+        return false;
+
+    QTextStream out(&file);
+    out << id << "," << name << "," << phone << "," << salary << "," << shift << "\n";
+    file.close();
+    return true;
+}
+
+bool GiangCoffeeSystem::updateEmployeeCSV(const QString &id,
+                                          const QString &name,
+                                          const QString &phone,
+                                          double salary,
+                                          const QString &shift)
+{
+    deleteEmployeeCSV(id);
+    return addEmployeeCSV(id, name, phone, salary, shift);
 }
 
 // =============================================================================
@@ -365,45 +405,8 @@ double GiangCoffeeSystem::checkDiscount(const QString &code, double totalAmount)
     return 0.0;
 }
 
-QVariantList GiangCoffeeSystem::loadEmployees()
-{
-    QVariantList list;
-    QFile file("data/employees.csv");
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        return list;
 
-    QTextStream in(&file);
-    in.readLine();
 
-    while (!in.atEnd()) {
-        QStringList fields = in.readLine().split(",");
-        if (fields.size() >= 5) {
-            QVariantMap emp;
-            emp["id"] = fields[0];
-            emp["name"] = fields[1];
-            emp["position"] = fields[2];
-            emp["salary"] = fields[3].toDouble();
-            emp["shift"] = fields[4];
-            list.append(emp);
-        }
-    }
-    file.close();
-    return list;
-}
-
-bool GiangCoffeeSystem::addEmployeeCSV(
-    const QString &id, const QString &name, const QString &pos, double salary, const QString &shift)
-{
-    QFile file("data/employees.csv");
-    if (!file.open(QIODevice::Append | QIODevice::Text))
-        return false;
-
-    QTextStream out(&file);
-    out << '\n';
-    out << id << "," << name << "," << pos << "," << salary << "," << shift << "\n";
-    file.close();
-    return true;
-}
 
 QVariantList GiangCoffeeSystem::loadFinance()
 {
@@ -441,6 +444,49 @@ bool GiangCoffeeSystem::addTransactionCSV(const QString &date,
 
     QTextStream out(&file);
     out << date << "," << type << "," << amount << "," << note << "\n";
+    file.close();
+    return true;
+}
+
+void GiangCoffeeSystem::calculatePayroll()
+{
+    double totalSalary = 0.0;
+    // Dùng qAsConst hoặc std::as_const để tránh detach
+    for (auto *emp : qAsConst(m_employees_list)) {
+        if (emp) {
+            totalSalary += emp->calculateSalary();
+        }
+    }
+    qDebug() << "Tong luong nhan vien Trong bo nho:" << totalSalary << "VND";
+}
+
+bool GiangCoffeeSystem::verifyEmployeePhone(const QString &phone)
+{
+    QString cleanPhone = phone.trimmed();
+    if (cleanPhone.isEmpty()) return false;
+
+    // Bỏ qua kiểm tra nếu là tài khoản quản trị hệ thống
+    if (cleanPhone == "admin") return true;
+
+    // Truy xuất danh sách nhân viên từ file employees.csv
+    QVariantList employees = loadEmployees();
+    for (const QVariant &item : employees) {
+        QVariantMap emp = item.toMap();
+        if (emp["phone"].toString().trimmed() == cleanPhone) {
+            return true; // Tìm thấy SĐT hợp lệ trong file CSV
+        }
+    }
+    return false; // Không tìm thấy
+}
+
+bool GiangCoffeeSystem::recordAttendanceCSV(const QString &phone, const QString &type, const QString &timestamp)
+{
+    QFile file("data/employees.csv");
+    if (!file.open(QIODevice::Append | QIODevice::Text))
+        return false;
+
+    QTextStream out(&file);
+    out << phone << "," << type << "," << timestamp << "\n";
     file.close();
     return true;
 }
