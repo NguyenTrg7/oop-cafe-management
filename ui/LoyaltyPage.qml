@@ -8,115 +8,163 @@ Page {
 
     property var customer: typeof customerHandler !== "undefined" ? customerHandler : null
 
-    ColumnLayout {
-        anchors.centerIn: parent
-        spacing: 24
-        width: Math.min(parent.width * 0.75, 480)
+    ScrollView {
+        id: scroll
+        anchors.fill: parent
+        anchors.margins: 16
+        clip: true
+        contentWidth: availableWidth
+        ScrollBar.vertical.policy: ScrollBar.AlwaysOff
 
-        Label {
-            text: "Tich diem & Voucher"
-            font.family: "Georgia"
-            font.pixelSize: 26
-            font.bold: true
-            color: "#4E3629"
-            Layout.alignment: Qt.AlignHCenter
-        }
+        ColumnLayout {
+            width: Math.min(scroll.availableWidth, 520)
+            anchors.horizontalCenter: parent.horizontalCenter
+            spacing: 18
 
-        Rectangle {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 130
-            color: "#2C1E16"
-            border.color: "#B68D40"
-            border.width: 3
-            radius: 12
-
-            ColumnLayout {
-                anchors.fill: parent
-                anchors.margins: 16
-                spacing: 6
-
-                Label {
-                    text: customer ? customer.name : "Chua dang nhap"
-                    font.pixelSize: 18
-                    color: "white"
-                }
-                Label {
-                    text: (customer ? customer.loyaltyPoints : 0) + " diem"
-                    font.pixelSize: 28
-                    font.bold: true
-                    color: "#B68D40"
-                }
-                Label {
-                    text: "Do uong: S=1 M=2 L=3 | Do an: 2 diem/mon"
-                    font.pixelSize: 12
-                    color: "#A1887F"
-                }
+            Label {
+                text: "Tích điểm & Voucher"
+                font.family: "Georgia"
+                font.pixelSize: 26
+                font.bold: true
+                color: "#4E3629"
+                Layout.alignment: Qt.AlignHCenter
             }
-        }
 
-        Label {
-            text: "Doi voucher"
-            font.bold: true
-            font.pixelSize: 16
-            color: "#4E3629"
-        }
-
-        Repeater {
-            model: customer ? customer.voucherTiers() : []
-
-            delegate: Rectangle {
+            Rectangle {
                 Layout.fillWidth: true
-                height: 52
-                color: "#FFF8E7"
+                Layout.preferredHeight: 120
+                color: "#2C1E16"
                 border.color: "#B68D40"
-                radius: 8
+                border.width: 3
+                radius: 12
 
-                RowLayout {
+                ColumnLayout {
                     anchors.fill: parent
-                    anchors.margins: 10
+                    anchors.margins: 14
+                    spacing: 4
 
                     Label {
-                        text: modelData.label + "  (" + modelData.points + " diem)"
-                        font.pixelSize: 14
-                        color: "#4E3629"
-                        Layout.fillWidth: true
+                        text: customer ? customer.name : "Chưa đăng nhập"
+                        font.pixelSize: 17
+                        color: "white"
                     }
+                    Label {
+                        text: (customer ? customer.loyaltyPoints : 0) + " điểm"
+                        font.pixelSize: 26
+                        font.bold: true
+                        color: "#B68D40"
+                    }
+                    Label {
+                        text: "Đồ uống: S=1 M=2 L=3 | Đồ ăn: 2 điểm/món"
+                        font.pixelSize: 11
+                        color: "#A1887F"
+                    }
+                }
+            }
 
-                    Button {
-                        text: "Doi"
-                        enabled: customer && customer.loyaltyPoints >= modelData.points
-                        onClicked: {
-                            var r = customer.redeemVoucher(modelData.points)
-                            msgDialog.text = r.message || ""
-                            msgDialog.open()
-                            if (r.success && typeof accountHandler !== "undefined"
-                                    && accountHandler.saveCustomerLoyalty)
-                                accountHandler.saveCustomerLoyalty()
+            Label {
+                text: "Đổi điểm lấy voucher"
+                font.bold: true
+                font.pixelSize: 15
+                color: "#4E3629"
+            }
+
+            Repeater {
+                model: customer ? customer.voucherTiers() : []
+
+                delegate: Rectangle {
+                    Layout.fillWidth: true
+                    height: 48
+                    color: "#FFF8E7"
+                    border.color: "#B68D40"
+                    radius: 8
+
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.margins: 8
+
+                        Label {
+                            text: modelData.label + " (" + modelData.points + " điểm)"
+                            font.pixelSize: 13
+                            color: "#4E3629"
+                            Layout.fillWidth: true
+                        }
+
+                        Button {
+                            text: "Đổi"
+                            enabled: customer && customer.loyaltyPoints >= modelData.points
+                            onClicked: {
+                                var r = customer.redeemVoucher(modelData.points)
+                                msgDialog.text = r.message || ""
+                                msgDialog.open()
+                                if (r.success && typeof accountHandler !== "undefined")
+                                    accountHandler.saveCustomerLoyalty()
+                            }
                         }
                     }
                 }
             }
-        }
 
-        Label {
-            visible: !customer
-            text: "Loi: customerHandler chua duoc dang ky trong main.cpp"
-            color: "#C62828"
-            Layout.alignment: Qt.AlignHCenter
+            Label {
+                text: "Voucher đang có"
+                font.bold: true
+                font.pixelSize: 15
+                color: "#4E3629"
+                Layout.topMargin: 8
+            }
+
+            Repeater {
+                model: customer ? customer.activeVouchers : []
+
+                delegate: Rectangle {
+                    Layout.fillWidth: true
+                    height: 44
+                    color: "#E8F5E9"
+                    border.color: "#2E7D32"
+                    radius: 8
+
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.margins: 8
+                        Label {
+                            text: modelData.code + "  —  " + modelData.label
+                            font.pixelSize: 13
+                            font.bold: true
+                            color: "#1B5E20"
+                            Layout.fillWidth: true
+                        }
+                        Label {
+                            text: "Chưa dùng"
+                            font.pixelSize: 11
+                            color: "#558B2F"
+                        }
+                    }
+                }
+            }
+
+            Label {
+                visible: customer && customer.activeVouchers.length === 0
+                text: "Chưa có voucher nào. Hãy đổi điểm ở trên."
+                font.pixelSize: 12
+                color: "#8D6E63"
+            }
+
+            // Khoang trong cuoi de cuon thoai mai
+            Item { Layout.preferredHeight: 24 }
         }
     }
 
     Dialog {
         id: msgDialog
         property alias text: msgLabel.text
-        title: "Thong bao"
+        title: "Thông báo"
         modal: true
         anchors.centerIn: parent
         standardButtons: Dialog.Ok
         Label {
             id: msgLabel
             wrapMode: Text.WordWrap
-            width: 280
+            width: 300
         }
     }
 }

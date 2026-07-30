@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "Account.h"
+#include "Customer.h"
 #include "EmployeeModel.h"
 #include "GiangCoffeeSystem.h" // Import Header Singleton xử lý Menu
 
@@ -69,8 +70,7 @@ int main(int argc, char *argv[])
     // ==========================================
     engine.rootContext()->setContextProperty("accountHandler", &accountHandler);
     engine.rootContext()->setContextProperty("cppEmployeeModel", &employeeModel);
-    engine.rootContext()->setContextProperty("coffeeSystem",
-                                             systemInstance); // Đăng ký thêm system cho menu
+    engine.rootContext()->setContextProperty("coffeeSystem", systemInstance); // Đăng ký thêm system cho menu
 
     // 4. Load file QML chính
     const QUrl url(QStringLiteral("qrc:/qt/qml/GiangsCoffee/ui/main.qml"));
@@ -85,8 +85,7 @@ int main(int argc, char *argv[])
         },
         Qt::QueuedConnection);
 
-    engine.rootContext()->setContextProperty("applicationDir",
-                                             QCoreApplication::applicationDirPath());
+    engine.rootContext()->setContextProperty("applicationDir", QCoreApplication::applicationDirPath());
 
     engine.load(QUrl(QStringLiteral("qrc:/main.qml"))); // hoặc load từ file
 

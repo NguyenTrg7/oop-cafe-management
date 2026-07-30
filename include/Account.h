@@ -39,7 +39,7 @@ private:
     void initFile();
     void initCustomersFile();
     void loadCustomerLoyalty(const QString &phone);
-    bool upsertCustomerLoyalty(const QString &phone, const QString &name, int points);
+    bool upsertCustomerLoyalty(const QString &phone, const QString &name, int points, const QString &vouchers);
 };
 
 #endif // ACCOUNT_H
