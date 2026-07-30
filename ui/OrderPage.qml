@@ -45,7 +45,6 @@ Item {
         return total;
     }
 
-    // hàm tính điểm của giỏ hàng
     function calculateLoyaltyPoints() {
         var pts = 0
         for (var i = 0; i < cartModel.count; i++) {
@@ -61,7 +60,7 @@ Item {
                 pts += 2 * qty
             }
         }
-              return pts
+            return pts
     }
 
     //Bill
@@ -102,7 +101,6 @@ Item {
                 + ("0"+d.getMinutes()).slice(-2)
                 + ":"
                 + ("0"+d.getSeconds()).slice(-2)
-        return pts
     }
 
     // 1. Lấy dữ liệu từ MenuManager
@@ -356,8 +354,6 @@ Item {
                         updateInvoiceInfo()
                         invoiceDialog.open()
 
-                        console.log("Thanh toán tổng tiền: " + calculateGrandTotal());
-                        var total = calculateGrandTotal()
                         var earned = calculateLoyaltyPoints()
 
                         if (typeof customerHandler !== "undefined" && earned > 0) {
@@ -367,7 +363,6 @@ Item {
                             console.log("Tich +" + earned + " diem")
                         }
                         // cartModel.clear()
-                        cartModel.clear()
                     }
                 }
 
@@ -887,16 +882,6 @@ Item {
                     }
                 }
             }
-        onAccepted: {
-            cartModel.append({
-                "id": itemDialog.itemData.id,
-                "name": itemDialog.itemData.name,
-                "size": sizeRow.visible ? sizeCombo.currentText : "",
-                "quantity": spinQuantity.value,
-                "note": tfNote.text,
-                "totalPrice": itemDialog.calculatedPrice,
-                "category": itemDialog.category
-            });
         }
 
         enter: Transition{
