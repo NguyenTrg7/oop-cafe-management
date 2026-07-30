@@ -6,6 +6,8 @@ Item {
     id: orderPageRoot
     anchors.fill: parent
 
+    property string selectedVoucherCode: ""
+    property double voucherDiscount: 0
     property string selectedCategory: "Drink"
 
     // Model giỏ hàng tạm thời
@@ -323,11 +325,44 @@ Item {
                 }
 
                 // HIỂN THỊ TỔNG TIỀN VÀ NÚT TÍNH TIỀN
+                ComboBox {
+                    id: voucherCombo
+                    Layout.fillWidth: true
+                    model: {
+                        var items = ["Khong dung voucher"]
+                        if (typeof customerHandler !== "undefined") {
+                            var list = customerHandler.activeVouchers
+                            for (var i = 0; i < list.length; i++)
+                                items.push(list[i].code + " (" + list[i].percent + "%)")
+                        }
+                        return items
+                    }
+                    onActivated: {
+                        if (currentIndex <= 0) {
+                            selectedVoucherCode = ""
+                            voucherDiscount = 0
+                        } else if (typeof customerHandler !== "undefined") {
+                            var list = customerHandler.activeVouchers
+                            var v = list[currentIndex - 1]
+                            selectedVoucherCode = v.code
+                            voucherDiscount = customerHandler.applyVoucher(v.code, calculateGrandTotal())
+                        }
+                    }
+                }
+
+                Text {
+                    visible: voucherDiscount > 0
+                    text: "Giam gia: " + formatVND(voucherDiscount)
+                    color: "#2E7D32"
+                    font.bold: true
+                    font.pixelSize: 13
+                }
+
                 RowLayout {
                     Layout.fillWidth: true
 
                     Text {
-                        text: "TỔNG CỘNG:"
+                        text: "TONG CONG:"
                         font.bold: true
                         font.pixelSize: 15
                         color: "#2C1D11"
@@ -337,6 +372,28 @@ Item {
 
                     Text {
                         text: formatVND(calculateGrandTotal())
+                        font.bold: true
+                        font.pixelSize: 14
+                        color: "#757575"
+                        font.strikeout: voucherDiscount > 0
+                    }
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    visible: true
+
+                    Text {
+                        text: "THANH TOÁN:"
+                        font.bold: true
+                        font.pixelSize: 15
+                        color: "#2C1D11"
+                    }
+
+                    Item { Layout.fillWidth: true }
+
+                    Text {
+                        text: formatVND(Math.max(0, calculateGrandTotal() - voucherDiscount))
                         font.bold: true
                         font.pixelSize: 18
                         color: "#C0392B"
@@ -355,14 +412,12 @@ Item {
                         invoiceDialog.open()
 
                         var earned = calculateLoyaltyPoints()
-
                         if (typeof customerHandler !== "undefined" && earned > 0) {
                             customerHandler.addPoints(earned)
                             if (typeof accountHandler !== "undefined")
                                 accountHandler.saveCustomerLoyalty()
                             console.log("Tich +" + earned + " diem")
                         }
-                        // cartModel.clear()
                     }
                 }
 
@@ -1066,88 +1121,101 @@ Item {
                                     implicitHeight: 70
                                     radius: 10
                                     color: "#FCFAF6"
-                                                    border.color: "#E7DBCF"
+                                    border.color: "#E7DBCF"
 
-                                                    RowLayout {
-                                                        anchors.fill: parent
-                                                        anchors.margins: 10
-                                                        spacing: 12
+                                    RowLayout {
+                                        anchors.fill: parent
+                                        anchors.margins: 10
+                                        spacing: 12
 
-                                                        // Hiển thị hình ảnh thật của món đã chọn
-                                                        Image {
-                                                            Layout.preferredWidth: 50
-                                                            Layout.preferredHeight: 50
-                                                            fillMode: Image.PreserveAspectCrop
-                                                            clip: true
-                                                            source: getImagePath(model.name, model.category ? model.category : orderPageRoot.selectedCategory)
+                                        // Hiển thị hình ảnh thật của món đã chọn
+                                        Image {
+                                            Layout.preferredWidth: 50
+                                            Layout.preferredHeight: 50
+                                            fillMode: Image.PreserveAspectCrop
+                                            clip: true
+                                            source: getImagePath(model.name, model.category ? model.category : orderPageRoot.selectedCategory)
 
-                                                            // Khung vuông bo tròn viền ảnh
-                                                            Rectangle {
-                                                                anchors.fill: parent
-                                                                color: "transparent"
-                                                                border.color: "#E0E0E0"
-                                                                radius: 6
-                                                            }
-
-                                                            // Ô nền thay thế nếu ảnh bị lỗi hoặc không tìm thấy
-                                                            Rectangle {
-                                                                anchors.fill: parent
-                                                                color: "#E0E0E0"
-                                                                visible: parent.status === Image.Error || parent.status === Image.Null
-                                                                radius: 6
-
-                                                                Text {
-                                                                    anchors.centerIn: parent
-                                                                    text: "📷"
-                                                                    font.pixelSize: 18
-                                                                }
-                                                            }
-                                                        }
-
-                                                        ColumnLayout {
-                                                            Layout.fillWidth: true
-                                                            spacing: 2
-
-                                                            Text {
-                                                                text: name + (size !== "" ? " (" + size + ")" : "")
-                                                                font.bold: true
-                                                                font.pixelSize: 13
-                                                                color: "#2C1D11"
-                                                                elide: Text.ElideRight
-                                                                Layout.fillWidth: true
-                                                            }
-
-                                                            Text {
-                                                                text: "SL: " + quantity
-                                                                font.pixelSize: 11
-                                                                color: "#666666"
-                                                            }
-
-                                                            Text {
-                                                                visible: note !== ""
-                                                                text: "📝 " + note
-                                                                color: "#888888"
-                                                                font.pixelSize: 10
-                                                                elide: Text.ElideRight
-                                                                Layout.fillWidth: true
-                                                            }
-                                                        }
-
-                                                        Text {
-                                                            text: formatVND(totalPrice)
-                                                            font.bold: true
-                                                            font.pixelSize: 13
-                                                            color: "#8B5A2B"
-                                                            horizontalAlignment: Text.AlignRight
-                                                        }
-                                                    }
-                                                }
+                                            // Khung vuông bo tròn viền ảnh
+                                            Rectangle {
+                                                anchors.fill: parent
+                                                color: "transparent"
+                                                border.color: "#E0E0E0"
+                                                radius: 6
                                             }
 
-                        // ---------------------------------------------------------
-                        // 4. TỔNG THANH TOÁN
-                        // ---------------------------------------------------------
-                        Rectangle {
+                                            // Ô nền thay thế nếu ảnh bị lỗi hoặc không tìm thấy
+                                            Rectangle {
+                                                anchors.fill: parent
+                                                color: "#E0E0E0"
+                                                visible: parent.status === Image.Error || parent.status === Image.Null
+                                                radius: 6
+
+                                                Text {
+                                                    anchors.centerIn: parent
+                                                    text: "📷"
+                                                    font.pixelSize: 18
+                                                }
+                                            }
+                                        }
+
+                                        ColumnLayout {
+                                            Layout.fillWidth: true
+                                            spacing: 2
+
+                                            Text {
+                                                text: name + (size !== "" ? " (" + size + ")" : "")
+                                                font.bold: true
+                                                font.pixelSize: 13
+                                                color: "#2C1D11"
+                                                elide: Text.ElideRight
+                                                Layout.fillWidth: true
+                                            }
+
+                                            Text {
+                                                text: "SL: " + quantity
+                                                font.pixelSize: 11
+                                                color: "#666666"
+                                            }
+
+                                            Text {
+                                                visible: note !== ""
+                                                text: "📝 " + note
+                                                color: "#888888"
+                                                font.pixelSize: 10
+                                                elide: Text.ElideRight
+                                                Layout.fillWidth: true
+                                            }
+                                        }
+
+                                        Text {
+                                            text: formatVND(totalPrice)
+                                            font.bold: true
+                                            font.pixelSize: 13
+                                            color: "#8B5A2B"
+                                            horizontalAlignment: Text.AlignRight
+                                        }
+                                    }
+                                }
+                            }
+
+
+                         // Dong voucher rieng (chi hien khi co giam)
+                         Text {
+                             Layout.fillWidth: true
+                             Layout.leftMargin: 20
+                             Layout.rightMargin: 20
+                             visible: voucherDiscount > 0
+                             text: "Voucher " + selectedVoucherCode + ":  -" + formatVND(voucherDiscount)
+                             font.pixelSize: 13
+                             font.bold: true
+                             color: "#2E7D32"
+                         }
+
+                         // ---------------------------------------------------------
+                         // 4. TỔNG THANH TOÁN
+                         // ---------------------------------------------------------
+                         Rectangle {
                             Layout.fillWidth: true
                             Layout.leftMargin: 20
                             Layout.rightMargin: 20
@@ -1156,26 +1224,26 @@ Item {
                             border.color: "#F2D9B6"
                             implicitHeight: 55
 
-                            RowLayout {
-                                anchors.fill: parent
-                                anchors.margins: 12
+                                RowLayout {
+                                    anchors.fill: parent
+                                    anchors.margins: 12
 
-                                Text {
-                                    text: "💰 Tổng thanh toán"
-                                    font.bold: true
-                                    font.pixelSize: 15
-                                    color: "#6F4E37"
+                                    Text {
+                                        text: "💰 Tổng thanh toán"
+                                        font.bold: true
+                                        font.pixelSize: 15
+                                        color: "#6F4E37"
+                                    }
+
+                                    Item { Layout.fillWidth: true }
+
+                                    Text {
+                                        text: formatVND(Math.max(0, calculateGrandTotal() - voucherDiscount))
+                                        font.bold: true
+                                        font.pixelSize: 20
+                                        color: "#B45309"
+                                    }
                                 }
-
-                                Item { Layout.fillWidth: true }
-
-                                Text {
-                                    text: formatVND(calculateGrandTotal())
-                                    font.bold: true
-                                    font.pixelSize: 20
-                                    color: "#B45309"
-                                }
-                            }
                         }
 
                         // ---------------------------------------------------------
@@ -1265,6 +1333,18 @@ Item {
 
                                 onClicked: {
                                     console.log("Đã thanh toán hóa đơn " + invoiceNumber)
+
+                                    if (selectedVoucherCode !== "" && typeof customerHandler !== "undefined") {
+                                        customerHandler.useVoucher(selectedVoucherCode)
+                                        if (typeof accountHandler !== "undefined")
+                                            accountHandler.saveCustomerLoyalty()
+                                    }
+
+                                    selectedVoucherCode = ""
+                                    voucherDiscount = 0
+                                    if (typeof voucherCombo !== "undefined")
+                                        voucherCombo.currentIndex = 0
+
                                     cartModel.clear()
                                     invoiceDialog.close()
                                 }
