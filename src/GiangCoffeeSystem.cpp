@@ -42,12 +42,12 @@ GiangCoffeeSystem::GiangCoffeeSystem(QObject *parent)
 // 4. Destructor
 GiangCoffeeSystem::~GiangCoffeeSystem()
 {
-    for (auto *emp : qAsConst(m_employees_list)) {
+    for (auto *emp : std::as_const(m_employees_list)) {
         delete emp;
     }
     m_employees_list.clear();
 
-    for (auto *order : qAsConst(m_orders)) {
+    for (auto *order : std::as_const(m_orders)) {
         delete order;
     }
     m_orders.clear();
