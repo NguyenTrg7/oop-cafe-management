@@ -19,6 +19,7 @@
 class GiangCoffeeSystem : public QObject {
     Q_OBJECT
     Q_PROPERTY(MenuManager* menuManager READ getMenuManager CONSTANT)
+
 private:
     explicit GiangCoffeeSystem(QObject *parent = nullptr);
     static GiangCoffeeSystem* m_instance;
@@ -34,13 +35,13 @@ private:
     QList<Account> m_accounts;
     QList<QString> m_receipts;
 
-    // THÊM MỚI: Helper functions để đồng bộ ca làm việc
+    // Helper functions để đồng bộ ca làm việc
     void updateEmployeeInShifts(const QString &id, const QString &newName, const QString &newPhone);
     void deleteEmployeeShifts(const QString &id);
 
 public:
     static GiangCoffeeSystem* getInstance();
-    MenuManager* getMenuManager() const{ return m_menuManager; }
+    MenuManager* getMenuManager() const { return m_menuManager; }
     ~GiangCoffeeSystem();
 
     Q_INVOKABLE void addEmployee(Employee* emp);
@@ -76,7 +77,6 @@ public:
     Q_INVOKABLE QVariantList loadShifts(const QString &dateStr);
 
     Q_INVOKABLE bool addShift(const QString &id, const QString &name, const QString &phone, const QString &dateStr, const QString &time, int repeatMonths);
-
     Q_INVOKABLE bool removeShift(const QString &id, const QString &dateStr, const QString &time);
 
     Q_INVOKABLE QVariantMap importEmployeesNoDuplicate(const QString &filePath);
@@ -84,6 +84,10 @@ public:
 
     Q_INVOKABLE bool verifyEmployeePhone(const QString &phone);
     Q_INVOKABLE bool recordAttendanceCSV(const QString &identifier, const QString &type, const QString &timestamp);
+
+    // ĐÃ SỬA: Bỏ "GiangCoffeeSystem::" và thêm Q_INVOKABLE để QML có thể gọi được
+    Q_INVOKABLE bool recordOrderRevenue(double totalAmount, const QString &orderInfo);
+
     Q_INVOKABLE bool verifyEmployeeID(const QString &id);
     Q_INVOKABLE QVariantList loadAttendance();
 };
