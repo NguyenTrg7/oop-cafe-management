@@ -109,9 +109,20 @@ target_link_libraries(GiangsCoffee PRIVATE
     Qt6::Quick
 )
 
-# Tự động copy nguyên thư mục data sang thư mục build MỖI LẦN BUILD
+
+# =============================================================================
+# ĐỒNG BỘ 2 CHIỀU THƯ MỤC DATA (TẠO SYMLINK / JUNCTION NGUYÊN BẢN)
+# =============================================================================
+
+# 1. Tự động tạo folder data nguồn nếu chưa có
+file(MAKE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/data")
+
+# 2. Xóa folder data cũ trong build (nếu có) và tạo liên kết trực tiếp
 add_custom_command(TARGET GiangsCoffee POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    COMMAND ${CMAKE_COMMAND} -E remove_directory "${CMAKE_CURRENT_BINARY_DIR}/data"
+    COMMAND ${CMAKE_COMMAND} -E create_symlink
         "${CMAKE_CURRENT_SOURCE_DIR}/data"
         "${CMAKE_CURRENT_BINARY_DIR}/data"
+    COMMENT "Dang tao lien ket 2 chieu cho thu muc data..."
+    VERBATIM
 )

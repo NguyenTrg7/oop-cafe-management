@@ -17,6 +17,9 @@ ApplicationWindow {
 
     property string currentActivePage: ""
 
+    // [THÊM MỚI] Biến lưu trạng thái ghim Sidebar
+    property bool sidebarPinned: false
+
     // BỘ NHỚ ĐỆM (CACHE): Giữ trạng thái các trang để chuyển đổi tức thì, không bị giật lag
     property var pageCache: ({})
 
@@ -77,11 +80,11 @@ ApplicationWindow {
     }
 
     // ---------------------------------------------------
-    // KHU VỰC BẮT SỰ KIỆN RÊ CHUỘT
+    // KHU VỰC BẮT SỰ KIỆN RÊ CHUỘT MEP TRÁI
     // ---------------------------------------------------
     MouseArea {
         id: edgeHoverArea
-        width: 30 // Mở rộng vùng bắt chuột lên 30px để rê mượt hơn, không bị chớp tắt
+        width: 30
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.bottom: parent.bottom
@@ -103,14 +106,57 @@ ApplicationWindow {
             id: sideBarHover
         }
 
-        x: (edgeHoverArea.containsMouse || sideBarHover.hovered) && (isAdmin || isStaff) ? 0 : -width
+        // Mở khi: Đã ghim OR Rê mép trái OR Rê vào Sidebar OR Rê vào nút mũi tên
+        x: (sidebarPinned || edgeHoverArea.containsMouse || sideBarHover.hovered || toggleBtnHover.hovered) && (isAdmin || isStaff) ? 0 : -width
         color: colorPrimary
         visible: (isAdmin || isStaff)
         z: 100
 
         Behavior on x {
-            // Sử dụng OutQuart để thanh menu trượt nhanh ở đầu và giảm tốc mềm mại ở cuối
             NumberAnimation { duration: 250; easing.type: Easing.OutQuart }
+        }
+
+        // =========================================================
+        // [THÊM MỚI] NÚT MŨI TÊN NHÔ RA Ở MẾP SIDEBAR
+        // =========================================================
+        Rectangle {
+            id: toggleHandle
+            width: 32
+            height: 60
+            color: colorPrimary
+            radius: 8
+            anchors.left: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            visible: (isAdmin || isStaff)
+
+            // Vuông góc bên trái để liền khối với Sidebar
+            Rectangle {
+                width: 16
+                height: 60
+                color: colorPrimary
+                anchors.left: parent.left
+            }
+
+            HoverHandler {
+                id: toggleBtnHover
+                cursorShape: Qt.PointingHandCursor
+            }
+
+            Text {
+                anchors.centerIn: parent
+                text: sideBar.x === 0 ? "◀" : "▶"
+                color: "#FFFFFF"
+                font.bold: true
+                font.pixelSize: 14
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                onClicked: {
+                    sidebarPinned = !sidebarPinned // Nhấp để Ghim / Bỏ ghim
+                }
+            }
         }
 
         ColumnLayout {
@@ -176,7 +222,7 @@ ApplicationWindow {
 
                         onClicked: {
                             if (targetPage !== "") {
-                                appWindow.switchPage(targetPage) // Sử dụng hàm chuyển trang có Cache
+                                appWindow.switchPage(targetPage)
                             }
                         }
                     }

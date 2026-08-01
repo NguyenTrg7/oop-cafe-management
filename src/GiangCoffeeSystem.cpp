@@ -6,6 +6,7 @@
 #include <QUrl>
 #include <QSet>
 #include <QDate>
+#include <QDir>
 #include <QCoreApplication>
 
 GiangCoffeeSystem *GiangCoffeeSystem::m_instance = nullptr;
@@ -69,7 +70,6 @@ void GiangCoffeeSystem::removeEmployee(const QString &empID)
     }
 }
 
-// THÊM MỚI: Cập nhật Tên/SĐT của Nhân viên bên trong file Ca Làm (Shift.csv)
 void GiangCoffeeSystem::updateEmployeeInShifts(const QString &id, const QString &newName, const QString &newPhone)
 {
     QString path = QCoreApplication::applicationDirPath() + "/data/Shift.csv";
@@ -98,7 +98,6 @@ void GiangCoffeeSystem::updateEmployeeInShifts(const QString &id, const QString 
     file.close();
 }
 
-// THÊM MỚI: Xóa toàn bộ ca làm của nhân viên khi Hồ sơ bị xóa
 void GiangCoffeeSystem::deleteEmployeeShifts(const QString &id)
 {
     QString path = QCoreApplication::applicationDirPath() + "/data/Shift.csv";
@@ -111,7 +110,7 @@ void GiangCoffeeSystem::deleteEmployeeShifts(const QString &id)
         QString line = in.readLine();
         QStringList fields = line.split(",");
         if (fields.size() >= 5 && fields[0] == id) {
-            continue; // Bỏ qua dòng này (Xóa)
+            continue;
         }
         lines.append(line);
     }
@@ -152,9 +151,7 @@ bool GiangCoffeeSystem::deleteEmployeeCSV(const QString &id)
     }
     file.close();
 
-    // ĐỒNG BỘ: Xóa luôn lịch làm việc của người này
     deleteEmployeeShifts(id);
-
     return true;
 }
 
@@ -205,7 +202,6 @@ bool GiangCoffeeSystem::addEmployeeCSV(const QString &id, const QString &name, c
 
 bool GiangCoffeeSystem::updateEmployeeCSV(const QString &id, const QString &name, const QString &phone, double salary, const QString &shiftDate, const QString &shiftTime)
 {
-    // ĐÃ SỬA: Thay vì gọi delete -> gọi add. Ta tự quét và thay đổi, vì hàm delete hiện tại sẽ xóa mất ca làm việc (Shifts)
     QString path = QCoreApplication::applicationDirPath() + "/data/Employee.csv";
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return false;
@@ -229,9 +225,7 @@ bool GiangCoffeeSystem::updateEmployeeCSV(const QString &id, const QString &name
     }
     file.close();
 
-    // ĐỒNG BỘ: Cập nhật ca làm việc với Tên/SĐT mới!
     updateEmployeeInShifts(id, name, phone);
-
     return true;
 }
 
@@ -446,13 +440,22 @@ QVariantList GiangCoffeeSystem::loadFinance()
 
 bool GiangCoffeeSystem::addTransactionCSV(const QString &date, const QString &type, double amount, const QString &note)
 {
-    QString path = QCoreApplication::applicationDirPath() + "/data/finance.csv";
+    QString dirPath = QCoreApplication::applicationDirPath() + "/data";
+    QDir().mkpath(dirPath);
+
+    QString path = dirPath + "/finance.csv";
+    bool fileExists = QFile::exists(path);
+
     QFile file(path);
     if (!file.open(QIODevice::Append | QIODevice::Text))
         return false;
 
     QTextStream out(&file);
-    out << date << "," << type << "," << amount << "," << note << "\n";
+    if (!fileExists) {
+        out << "Date,Type,Amount,Note\n";
+    }
+
+    out << date << "," << type << "," << QString::number(amount, 'f', 0) << "," << note << "\n";
     file.close();
     return true;
 }
@@ -486,6 +489,12 @@ bool GiangCoffeeSystem::recordAttendanceCSV(const QString &identifier, const QSt
     out << identifier << "," << type << "," << timestamp << "\n";
     file.close();
     return true;
+}
+
+bool GiangCoffeeSystem::recordOrderRevenue(double totalAmount, const QString &orderInfo)
+{
+    QString today = QDate::currentDate().toString("dd/MM/yyyy");
+    return addTransactionCSV(today, "Thu", totalAmount, QString("Doanh thu đơn hàng: %1").arg(orderInfo));
 }
 
 bool GiangCoffeeSystem::verifyEmployeeID(const QString &id)
