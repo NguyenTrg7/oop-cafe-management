@@ -3,6 +3,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <utility>
+
 // 1. Khởi tạo con trỏ tĩnh cho Singleton
 GiangCoffeeSystem *GiangCoffeeSystem::m_instance = nullptr;
 
@@ -22,7 +23,7 @@ GiangCoffeeSystem::GiangCoffeeSystem(QObject *parent)
     m_address = "VNU-HCM University of Science";
     m_menuManager = new MenuManager(this);
 
-    // 12 ban mac dinh (4 cot x 3 hang)
+    // 12 bàn mặc định (4 cột x 3 hàng)
     m_tables.append(Seating(1, 4, false, QStringLiteral("Vuông")));
     m_tables.append(Seating(2, 4, false, QStringLiteral("Vuông")));
     m_tables.append(Seating(3, 4, false, QStringLiteral("Tròn")));
@@ -61,17 +62,17 @@ void GiangCoffeeSystem::addEmployee(Employee *emp)
 {
     if (emp) {
         m_employees_list.append(emp);
-        qDebug() << "Da them nhan vien moi vao memory list.";
+        qDebug() << "Đã thêm nhân viên mới vào memory list.";
     }
 }
 
 void GiangCoffeeSystem::removeEmployee(const QString &empID)
 {
     for (int i = 0; i < m_employees_list.size(); ++i) {
-        if (m_employees_list[i]->getID() == empID) { // Giả sử class Employee có getId()
+        if (m_employees_list[i]->getID() == empID) {
             delete m_employees_list[i];
             m_employees_list.removeAt(i);
-            qDebug() << "Da xoa nhan vien:" << empID;
+            qDebug() << "Đã xóa nhân viên:" << empID;
             break;
         }
     }
@@ -79,10 +80,12 @@ void GiangCoffeeSystem::removeEmployee(const QString &empID)
 
 void GiangCoffeeSystem::updateEmployeeShift(const QString &id, const QString &shift)
 {
-    for (auto emp : m_employees_list) {
-        emp->setShift(shift);
-        qDebug() << "Cập nhật ca làm việc cho NV:" << id << "thành:" << shift;
-        break;
+    for (auto *emp : std::as_const(m_employees_list)) {
+        if (emp && emp->getID() == id) {
+            emp->setShift(shift);
+            qDebug() << "Cập nhật ca làm việc cho NV:" << id << "thành:" << shift;
+            break;
+        }
     }
 }
 
@@ -101,8 +104,9 @@ bool GiangCoffeeSystem::deleteEmployeeCSV(const QString &id)
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
         return false;
+
     QTextStream out(&file);
-    for (const QString &line : lines) {
+    for (const QString &line : std::as_const(lines)) {
         QStringList fields = line.split(",");
         if (!fields.isEmpty() && fields[0].trimmed() == id) {
             continue; // Bỏ qua dòng có ID cần xóa
@@ -176,26 +180,30 @@ bool GiangCoffeeSystem::updateEmployeeCSV(const QString &id,
 void GiangCoffeeSystem::addItem(const Menu &item)
 {
     m_menuItems.append(item);
-    qDebug() << "Da them Menu item vao danh sach.";
+    qDebug() << "Đã thêm Menu item vào danh sách.";
 }
 
 void GiangCoffeeSystem::removeItem(const QString &itemId)
 {
-    // Logic xoa item khoi QList<Menu>
-    qDebug() << "Da xoa item khoi menu:" << itemId;
+    Q_UNUSED(itemId); // Đánh dấu chưa sử dụng để tránh warning compiler
+    qDebug() << "Đã xóa item khỏi menu:" << itemId;
 }
 
 Menu GiangCoffeeSystem::searchMenu(const QString &name)
 {
-    Menu emptyMenu;
-    qDebug() << "Tim kiem mon:" << name;
-    return emptyMenu;
+    qDebug() << "Tìm kiếm món:" << name;
+    for (const auto &menu : std::as_const(m_menuItems)) {
+        if (menu.getName() == name) { // Giả sử class Menu có getName()
+            return menu;
+        }
+    }
+    return Menu();
 }
 
 void GiangCoffeeSystem::printMenu()
 {
-    qDebug() << "--- DANH SACH MENU GIANG COFFEE ---";
-    for (const auto &menu : m_menuItems) {
+    qDebug() << "--- DANH SÁCH MENU GIANG COFFEE ---";
+    for (const auto &menu : std::as_const(m_menuItems)) {
         menu.displayMenu();
     }
 }
@@ -216,7 +224,7 @@ void GiangCoffeeSystem::addSup(const Supplier &sup)
 
 void GiangCoffeeSystem::createInventory()
 {
-    qDebug() << "Kiem ke va tao phieu nhap/hoan hang Tròng kho.";
+    qDebug() << "Kiểm kê và tạo phiếu nhập/hoàn hàng trong kho.";
 }
 
 // =============================================================================
@@ -227,16 +235,16 @@ void GiangCoffeeSystem::placeOrder(Order *order)
 {
     if (order) {
         m_orders.append(order);
-        qDebug() << "Da tao don hang moi va luu vao he thong.";
+        qDebug() << "Đã tạo đơn hàng mới và lưu vào hệ thống.";
     }
 }
 
 void GiangCoffeeSystem::reserveTable(int tableNum)
 {
-    for (int i = 0; i < m_tables.size(); ++i) {
-        if (m_tables[i].getTableNumber() == tableNum) {
-            if (m_tables[i].isAvailable())
-                m_tables[i].occupyTable();
+    for (auto &table : m_tables) {
+        if (table.getTableNumber() == tableNum) {
+            if (table.isAvailable())
+                table.occupyTable();
             return;
         }
     }
@@ -244,9 +252,9 @@ void GiangCoffeeSystem::reserveTable(int tableNum)
 
 void GiangCoffeeSystem::clearTable(int tableNum)
 {
-    for (int i = 0; i < m_tables.size(); ++i) {
-        if (m_tables[i].getTableNumber() == tableNum) {
-            m_tables[i].clearTable();
+    for (auto &table : m_tables) {
+        if (table.getTableNumber() == tableNum) {
+            table.clearTable();
             return;
         }
     }
@@ -320,7 +328,7 @@ bool GiangCoffeeSystem::undoMerge(int tableNumber)
         int newNumber = -1;
         for (int candidate = 1; candidate <= 30; ++candidate) {
             bool exists = false;
-            for (const Seating &t : m_tables) {
+            for (const Seating &t : std::as_const(m_tables)) {
                 if (t.getTableNumber() == candidate) {
                     exists = true;
                     break;
@@ -341,11 +349,11 @@ bool GiangCoffeeSystem::undoMerge(int tableNumber)
 
 void GiangCoffeeSystem::editTable(int tableNumber, const QString &shape, int capacity)
 {
-    for (int i = 0; i < m_tables.size(); ++i) {
-        if (m_tables[i].getTableNumber() == tableNumber) {
-            m_tables[i].setShape(shape);
+    for (auto &table : m_tables) {
+        if (table.getTableNumber() == tableNumber) {
+            table.setShape(shape);
             if (capacity >= 1 && capacity <= 20)
-                m_tables[i].setCapacity(capacity);
+                table.setCapacity(capacity);
             return;
         }
     }
@@ -354,14 +362,14 @@ void GiangCoffeeSystem::editTable(int tableNumber, const QString &shape, int cap
 QVariantList GiangCoffeeSystem::getSeatingList() const
 {
     QVariantList list;
-    for (const Seating &table : m_tables) {
+    for (const Seating &table : std::as_const(m_tables)) {
         QVariantMap map;
         map["tableNumber"] = table.getTableNumber();
         map["capacity"] = table.getCapacity();
         map["occupied"] = table.isTableOccupied();
         map["available"] = table.isAvailable();
-        map["status"] = table.isTableOccupied() ? QStringLiteral("Da co khach")
-                                                : QStringLiteral("Tròng");
+        map["status"] = table.isTableOccupied() ? QStringLiteral("Đã có khách")
+                                                : QStringLiteral("Trống");
         map["shape"] = table.getShape();
         list.append(map);
     }
@@ -370,7 +378,7 @@ QVariantList GiangCoffeeSystem::getSeatingList() const
 
 void GiangCoffeeSystem::generateReport(const QDateTime &date)
 {
-    qDebug() << "Xuat bao cao doanh thu cho ngay:" << date.toString("yyyy-MM-dd hh:mm:ss");
+    qDebug() << "Xuất báo cáo doanh thu cho ngày:" << date.toString("yyyy-MM-dd hh:mm:ss");
 }
 
 double GiangCoffeeSystem::checkDiscount(const QString &code, double totalAmount)
@@ -404,9 +412,6 @@ double GiangCoffeeSystem::checkDiscount(const QString &code, double totalAmount)
     file.close();
     return 0.0;
 }
-
-
-
 
 QVariantList GiangCoffeeSystem::loadFinance()
 {
@@ -451,13 +456,12 @@ bool GiangCoffeeSystem::addTransactionCSV(const QString &date,
 void GiangCoffeeSystem::calculatePayroll()
 {
     double totalSalary = 0.0;
-    // Dùng qAsConst hoặc std::as_const để tránh detach
-    for (auto *emp : qAsConst(m_employees_list)) {
+    for (auto *emp : std::as_const(m_employees_list)) {
         if (emp) {
             totalSalary += emp->calculateSalary();
         }
     }
-    qDebug() << "Tong luong nhan vien Trong bo nho:" << totalSalary << "VND";
+    qDebug() << "Tổng lương nhân viên trong bộ nhớ:" << totalSalary << "VND";
 }
 
 bool GiangCoffeeSystem::verifyEmployeePhone(const QString &phone)
@@ -465,23 +469,21 @@ bool GiangCoffeeSystem::verifyEmployeePhone(const QString &phone)
     QString cleanPhone = phone.trimmed();
     if (cleanPhone.isEmpty()) return false;
 
-    // Bỏ qua kiểm tra nếu là tài khoản quản trị hệ thống
     if (cleanPhone == "admin") return true;
 
-    // Truy xuất danh sách nhân viên từ file employees.csv
     QVariantList employees = loadEmployees();
-    for (const QVariant &item : employees) {
+    for (const QVariant &item : std::as_const(employees)) {
         QVariantMap emp = item.toMap();
         if (emp["phone"].toString().trimmed() == cleanPhone) {
-            return true; // Tìm thấy SĐT hợp lệ trong file CSV
+            return true;
         }
     }
-    return false; // Không tìm thấy
+    return false;
 }
 
 bool GiangCoffeeSystem::recordAttendanceCSV(const QString &phone, const QString &type, const QString &timestamp)
 {
-    QFile file("data/employees.csv");
+    QFile file("data/attendance.csv"); // Đổi sang attendance.csv thay vì ghi đè lên employees.csv
     if (!file.open(QIODevice::Append | QIODevice::Text))
         return false;
 

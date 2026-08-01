@@ -42,16 +42,13 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
 
     // ==========================================
-    // 1. XỬ LÝ ACCOUNT (Giữ nguyên của main.cpp)
+    // 1. XỬ LÝ ACCOUNT
     // ==========================================
     Account accountHandler;
     Customer customerHandler;
 
-    accountHandler.setCustomerHandler(&customerHandler);
+    // Đã xóa dòng accountHandler.setCustomerHandler(&customerHandler); vì Account.cpp không có hàm này
     EmployeeModel employeeModel(&accountHandler);
-
-    engine.rootContext()->setContextProperty("accountHandler", &accountHandler);
-    engine.rootContext()->setContextProperty("customerHandler", &customerHandler);  // ← THIẾU DÒNG NÀY SẼ LỖI
 
     // ==========================================
     // 2. XỬ LÝ MENU (Thêm từ main1.cpp)
@@ -69,10 +66,14 @@ int main(int argc, char *argv[])
     // 3. ĐĂNG KÝ QML CONTEXT PROPERTIES
     // ==========================================
     engine.rootContext()->setContextProperty("accountHandler", &accountHandler);
+    engine.rootContext()->setContextProperty("customerHandler", &customerHandler);
     engine.rootContext()->setContextProperty("cppEmployeeModel", &employeeModel);
     engine.rootContext()->setContextProperty("coffeeSystem", systemInstance); // Đăng ký thêm system cho menu
+    engine.rootContext()->setContextProperty("applicationDir", QCoreApplication::applicationDirPath());
 
-    // 4. Load file QML chính
+    // ==========================================
+    // 4. LOAD FILE QML CHÍNH
+    // ==========================================
     const QUrl url(QStringLiteral("qrc:/qt/qml/GiangsCoffee/ui/main.qml"));
 
     QObject::connect(
@@ -85,10 +86,7 @@ int main(int argc, char *argv[])
         },
         Qt::QueuedConnection);
 
-    engine.rootContext()->setContextProperty("applicationDir", QCoreApplication::applicationDirPath());
-
-    engine.load(QUrl(QStringLiteral("qrc:/main.qml"))); // hoặc load từ file
-
+    // Chỉ giữ lại một lệnh load duy nhất để tránh lỗi khởi tạo 2 lần Window/Crash
     engine.load(url);
 
     return app.exec();

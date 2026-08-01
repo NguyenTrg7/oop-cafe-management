@@ -82,12 +82,9 @@ void EmployeeModel::addEmployee(const QString &phone,
     m_employees.append(new Employee(phone, name, dob, cccd, shift, avatar, cccdFront, cccdBack));
     endInsertRows();
 
-    // 1. Tự động tạo tài khoản đăng nhập với mật khẩu mặc định "123456" và role "staff"
-    if (m_accountHandler) {
-        m_accountHandler->registerAccount(phone, "123456", "staff");
-    }
+    // LƯU Ý: Đã xóa phần gọi m_accountHandler->registerAccount do Account.cpp không hỗ trợ hàm này.
 
-    // 2. Tự động lưu ngay lập tức ra CSV
+    // Tự động lưu ngay lập tức ra CSV
     QString defaultPath = QCoreApplication::applicationDirPath() + "/employees.csv";
     exportCSV(defaultPath);
 }
@@ -131,12 +128,9 @@ void EmployeeModel::removeEmployee(int index)
     delete emp;
     endRemoveRows();
 
-    // 1. Tự động thu hồi tài khoản đăng nhập tương ứng
-    if (m_accountHandler) {
-        m_accountHandler->removeAccount(empPhone);
-    }
+    // LƯU Ý: Đã xóa phần gọi m_accountHandler->removeAccount do Account.cpp không hỗ trợ hàm này.
 
-    // 2. Tự động cập nhật file CSV
+    // Tự động cập nhật file CSV
     QString defaultPath = QCoreApplication::applicationDirPath() + "/employees.csv";
     exportCSV(defaultPath);
 }
