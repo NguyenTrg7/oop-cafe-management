@@ -11,11 +11,14 @@ class EmployeeModel : public QAbstractListModel {
 
 public:
     enum EmployeeRoles {
-        PhoneRole = Qt::UserRole + 1,
+        IdRole = Qt::UserRole + 1,
+        PhoneRole,
         NameRole,
+        SalaryRole,
         DobRole,
         CccdRole,
-        ShiftRole,
+        ShiftDateRole,
+        ShiftTimeRole,
         AvatarRole,
         CccdFrontRole,
         CccdBackRole
@@ -30,10 +33,10 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     QHash<int, QByteArray> roleNames() const override;
 
-    Q_INVOKABLE void addEmployee(const QString& phone, const QString& name, const QString& dob, const QString& cccd, const QString& shift, const QString& avatar, const QString& cccdFront, const QString& cccdBack);
-    Q_INVOKABLE void updateEmployee(int index, const QString& phone, const QString& name, const QString& dob, const QString& cccd, const QString& shift, const QString& avatar, const QString& cccdFront, const QString& cccdBack);
+    Q_INVOKABLE void addEmployee(const QString& id, const QString& phone, const QString& name, double salary, const QString& dob, const QString& cccd, const QString& shiftDate, const QString& shiftTime, const QString& avatar, const QString& cccdFront, const QString& cccdBack);
+    Q_INVOKABLE void updateEmployee(int index, const QString& id, const QString& phone, const QString& name, double salary, const QString& dob, const QString& cccd, const QString& shiftDate, const QString& shiftTime, const QString& avatar, const QString& cccdFront, const QString& cccdBack);
     Q_INVOKABLE void removeEmployee(int index);
-    Q_INVOKABLE bool checkInCheckOut(const QString& phone, const QString& shiftStatus);
+    Q_INVOKABLE bool checkInCheckOut(const QString& phone, const QString& shiftDate, const QString& shiftTime);
 
     Q_INVOKABLE void importCSV(const QString& filePath);
     Q_INVOKABLE void exportCSV(const QString& filePath);
