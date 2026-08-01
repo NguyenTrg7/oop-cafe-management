@@ -8,13 +8,14 @@ EmployeeModel::EmployeeModel(Account *accountHandler, QObject *parent)
     : QAbstractListModel(parent)
     , m_accountHandler(accountHandler)
 {
-    QString defaultPath = QCoreApplication::applicationDirPath() + "/employees.csv";
+    // Đồng bộ đường dẫn với GiangCoffeeSystem
+    QString defaultPath = QCoreApplication::applicationDirPath() + "/data/Employee.csv";
     importCSV(defaultPath);
 }
 
 EmployeeModel::~EmployeeModel()
 {
-    QString defaultPath = QCoreApplication::applicationDirPath() + "/employees.csv";
+    QString defaultPath = QCoreApplication::applicationDirPath() + "/data/Employee.csv";
     exportCSV(defaultPath);
     qDeleteAll(m_employees);
     m_employees.clear();
@@ -22,8 +23,7 @@ EmployeeModel::~EmployeeModel()
 
 int EmployeeModel::rowCount(const QModelIndex &parent) const
 {
-    if (parent.isValid())
-        return 0;
+    if (parent.isValid()) return 0;
     return m_employees.count();
 }
 
@@ -34,116 +34,89 @@ QVariant EmployeeModel::data(const QModelIndex &index, int role) const
 
     Employee *emp = m_employees[index.row()];
     switch (role) {
-    case PhoneRole:
-        return emp->getPhone();
-    case NameRole:
-        return emp->getName();
-    case DobRole:
-        return emp->getDob();
-    case CccdRole:
-        return emp->getCccd();
-    case ShiftRole:
-        return emp->getShift();
-    case AvatarRole:
-        return emp->getAvatar();
-    case CccdFrontRole:
-        return emp->getCccdFront();
-    case CccdBackRole:
-        return emp->getCccdBack();
-    default:
-        return QVariant();
+    case IdRole: return emp->getId();
+    case PhoneRole: return emp->getPhone();
+    case NameRole: return emp->getName();
+    case SalaryRole: return emp->getSalary();
+    case DobRole: return emp->getDob();
+    case CccdRole: return emp->getCccd();
+    case ShiftDateRole: return emp->getShiftDate();
+    case ShiftTimeRole: return emp->getShiftTime();
+    case AvatarRole: return emp->getAvatar();
+    case CccdFrontRole: return emp->getCccdFront();
+    case CccdBackRole: return emp->getCccdBack();
+    default: return QVariant();
     }
 }
 
 QHash<int, QByteArray> EmployeeModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
+    roles[IdRole] = "id";
     roles[PhoneRole] = "phone";
     roles[NameRole] = "name";
+    roles[SalaryRole] = "salary";
     roles[DobRole] = "dob";
     roles[CccdRole] = "cccd";
-    roles[ShiftRole] = "shift";
+    roles[ShiftDateRole] = "shiftDate";
+    roles[ShiftTimeRole] = "shiftTime";
     roles[AvatarRole] = "avatar";
     roles[CccdFrontRole] = "cccdFront";
     roles[CccdBackRole] = "cccdBack";
     return roles;
 }
 
-void EmployeeModel::addEmployee(const QString &phone,
-                                const QString &name,
-                                const QString &dob,
-                                const QString &cccd,
-                                const QString &shift,
-                                const QString &avatar,
-                                const QString &cccdFront,
-                                const QString &cccdBack)
+void EmployeeModel::addEmployee(const QString &id, const QString &phone, const QString &name, double salary, const QString &dob, const QString &cccd, const QString &shiftDate, const QString &shiftTime, const QString &avatar, const QString &cccdFront, const QString &cccdBack)
 {
     beginInsertRows(QModelIndex(), m_employees.count(), m_employees.count());
-    m_employees.append(new Employee(phone, name, dob, cccd, shift, avatar, cccdFront, cccdBack));
+    m_employees.append(new Employee(id, phone, name, salary, dob, cccd, shiftDate, shiftTime, avatar, cccdFront, cccdBack));
     endInsertRows();
 
-    // LƯU Ý: Đã xóa phần gọi m_accountHandler->registerAccount do Account.cpp không hỗ trợ hàm này.
-
-    // Tự động lưu ngay lập tức ra CSV
-    QString defaultPath = QCoreApplication::applicationDirPath() + "/employees.csv";
+    QString defaultPath = QCoreApplication::applicationDirPath() + "/data/Employee.csv";
     exportCSV(defaultPath);
 }
 
-void EmployeeModel::updateEmployee(int index,
-                                   const QString &phone,
-                                   const QString &name,
-                                   const QString &dob,
-                                   const QString &cccd,
-                                   const QString &shift,
-                                   const QString &avatar,
-                                   const QString &cccdFront,
-                                   const QString &cccdBack)
+void EmployeeModel::updateEmployee(int index, const QString &id, const QString &phone, const QString &name, double salary, const QString &dob, const QString &cccd, const QString &shiftDate, const QString &shiftTime, const QString &avatar, const QString &cccdFront, const QString &cccdBack)
 {
-    if (index < 0 || index >= m_employees.size())
-        return;
+    if (index < 0 || index >= m_employees.size()) return;
     Employee *emp = m_employees[index];
+    emp->setId(id);
     emp->setPhone(phone);
     emp->setName(name);
+    emp->setSalary(salary);
     emp->setDob(dob);
     emp->setCccd(cccd);
-    emp->setShift(shift);
+    emp->setShiftDate(shiftDate);
+    emp->setShiftTime(shiftTime);
     emp->setAvatar(avatar);
     emp->setCccdFront(cccdFront);
     emp->setCccdBack(cccdBack);
     emit dataChanged(createIndex(index, 0), createIndex(index, 0));
 
-    QString defaultPath = QCoreApplication::applicationDirPath() + "/employees.csv";
+    QString defaultPath = QCoreApplication::applicationDirPath() + "/data/Employee.csv";
     exportCSV(defaultPath);
 }
 
 void EmployeeModel::removeEmployee(int index)
 {
-    if (index < 0 || index >= m_employees.size())
-        return;
-
-    QString empPhone = m_employees[index]->getPhone();
-
+    if (index < 0 || index >= m_employees.size()) return;
     beginRemoveRows(QModelIndex(), index, index);
     Employee *emp = m_employees.takeAt(index);
     delete emp;
     endRemoveRows();
 
-    // LƯU Ý: Đã xóa phần gọi m_accountHandler->removeAccount do Account.cpp không hỗ trợ hàm này.
-
-    // Tự động cập nhật file CSV
-    QString defaultPath = QCoreApplication::applicationDirPath() + "/employees.csv";
+    QString defaultPath = QCoreApplication::applicationDirPath() + "/data/Employee.csv";
     exportCSV(defaultPath);
 }
 
-bool EmployeeModel::checkInCheckOut(const QString &phone, const QString &shiftStatus)
+bool EmployeeModel::checkInCheckOut(const QString &phone, const QString &shiftDate, const QString &shiftTime)
 {
     for (int i = 0; i < m_employees.size(); ++i) {
         if (m_employees[i]->getPhone() == phone) {
-            m_employees[i]->setShift(shiftStatus);
+            m_employees[i]->setShiftDate(shiftDate);
+            m_employees[i]->setShiftTime(shiftTime);
             emit dataChanged(createIndex(i, 0), createIndex(i, 0));
-
-            // Tự động lưu trạng thái ca làm mới vào file CSV
-            QString defaultPath = QCoreApplication::applicationDirPath() + "/employees.csv";
+            QString defaultPath = QCoreApplication::applicationDirPath() + "/data/Employee.csv";
             exportCSV(defaultPath);
             return true;
         }
@@ -154,12 +127,10 @@ bool EmployeeModel::checkInCheckOut(const QString &phone, const QString &shiftSt
 void EmployeeModel::importCSV(const QString &filePath)
 {
     QString localPath = QUrl(filePath).toLocalFile();
-    if (localPath.isEmpty())
-        localPath = filePath;
+    if (localPath.isEmpty()) localPath = filePath;
 
     std::ifstream file(localPath.toStdString());
-    if (!file.is_open())
-        return;
+    if (!file.is_open()) return;
 
     beginResetModel();
     qDeleteAll(m_employees);
@@ -169,36 +140,25 @@ void EmployeeModel::importCSV(const QString &filePath)
     bool isFirstLine = true;
 
     while (std::getline(file, line)) {
-        if (line.empty())
-            continue;
-        if (line.back() == '\r')
-            line.pop_back();
-        if (isFirstLine) {
-            isFirstLine = false;
-            continue;
-        }
+        if (line.empty()) continue;
+        if (line.back() == '\r') line.pop_back();
+        if (isFirstLine) { isFirstLine = false; continue; }
 
         std::stringstream ss(line);
-        std::string phone, name, dob, cccd, shift, avatar, cccdFront, cccdBack;
+        std::string id, name, phone, salaryStr, shiftDate, shiftTime;
 
-        std::getline(ss, phone, ',');
+        // Tương thích với CSV của GiangCoffeeSystem
+        std::getline(ss, id, ',');
         std::getline(ss, name, ',');
-        std::getline(ss, dob, ',');
-        std::getline(ss, cccd, ',');
-        std::getline(ss, shift, ',');
-        std::getline(ss, avatar, ',');
-        std::getline(ss, cccdFront, ',');
-        std::getline(ss, cccdBack, ',');
+        std::getline(ss, phone, ',');
+        std::getline(ss, salaryStr, ',');
+        std::getline(ss, shiftDate, ',');
+        std::getline(ss, shiftTime, ',');
 
-        if (!phone.empty()) {
-            m_employees.append(new Employee(QString::fromStdString(phone),
-                                            QString::fromStdString(name),
-                                            QString::fromStdString(dob),
-                                            QString::fromStdString(cccd),
-                                            QString::fromStdString(shift),
-                                            QString::fromStdString(avatar),
-                                            QString::fromStdString(cccdFront),
-                                            QString::fromStdString(cccdBack)));
+        if (!id.empty()) {
+            double salary = 0.0;
+            if (!salaryStr.empty()) salary = std::stod(salaryStr);
+            m_employees.append(new Employee(QString::fromStdString(id), QString::fromStdString(phone), QString::fromStdString(name), salary, "", "", QString::fromStdString(shiftDate), QString::fromStdString(shiftTime)));
         }
     }
     file.close();
@@ -208,20 +168,17 @@ void EmployeeModel::importCSV(const QString &filePath)
 void EmployeeModel::exportCSV(const QString &filePath)
 {
     QString localPath = QUrl(filePath).toLocalFile();
-    if (localPath.isEmpty())
-        localPath = filePath;
+    if (localPath.isEmpty()) localPath = filePath;
 
     std::ofstream file(localPath.toStdString());
-    if (!file.is_open())
-        return;
+    if (!file.is_open()) return;
 
-    file << "Phone,Name,Dob,CCCD,Shift,Avatar,CccdFront,CccdBack\n";
+    // Header chuẩn với GiangCoffeeSystem
+    file << "ID,Name,Phone,Salary,ShiftDate,ShiftTime\n";
     for (Employee *emp : m_employees) {
-        file << emp->getPhone().toStdString() << "," << emp->getName().toStdString() << ","
-             << emp->getDob().toStdString() << "," << emp->getCccd().toStdString() << ","
-             << emp->getShift().toStdString() << "," << emp->getAvatar().toStdString() << ","
-             << emp->getCccdFront().toStdString() << "," << emp->getCccdBack().toStdString()
-             << "\n";
+        file << emp->getId().toStdString() << "," << emp->getName().toStdString() << ","
+             << emp->getPhone().toStdString() << "," << emp->getSalary() << ","
+             << emp->getShiftDate().toStdString() << "," << emp->getShiftTime().toStdString() << "\n";
     }
     file.close();
 }

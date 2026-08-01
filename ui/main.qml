@@ -15,12 +15,13 @@ ApplicationWindow {
     property color colorPrimary: "#0369A1"
     property color colorText: "#1E293B"
 
-    // Biến lưu trạng thái trang hiện tại để làm sáng Menu
     property string currentActivePage: ""
+
+    // BỘ NHỚ ĐỆM (CACHE): Giữ trạng thái các trang để chuyển đổi tức thì, không bị giật lag
+    property var pageCache: ({})
 
     background: Rectangle { color: colorBackground }
 
-    // Biến kiểm tra quyền truy cập (Dựa vào số điện thoại đăng nhập)
     property bool isAdmin: typeof accountHandler !== "undefined" && accountHandler.currentUserPhone === "admin"
     property bool isStaff: typeof accountHandler !== "undefined" && accountHandler.currentUserPhone !== "admin" && accountHandler.currentUserPhone !== ""
 
@@ -30,17 +31,61 @@ ApplicationWindow {
         initialItem: "LoginPage.qml"
     }
 
+    // =========================================================================
+    // HÀM CHUYỂN TRANG TỐI ƯU HIỆU NĂNG
+    // =========================================================================
+    function switchPage(pageUrl) {
+        if (currentActivePage === pageUrl) return;
+
+        // Xử lý riêng khi Đăng xuất: Xoá sạch bộ nhớ đệm để bảo mật và làm nhẹ app
+        if (pageUrl === "LoginPage.qml") {
+            currentActivePage = "";
+            for (var key in pageCache) {
+                if (pageCache[key]) {
+                    pageCache[key].destroy();
+                }
+            }
+            pageCache = {};
+            stackView.replace(null, pageUrl, StackView.Immediate);
+            return;
+        }
+
+        currentActivePage = pageUrl;
+
+        // Nếu trang chưa từng được mở -> Khởi tạo và đưa vào Cache
+        if (!pageCache[pageUrl]) {
+            var component = Qt.createComponent(pageUrl);
+            if (component.status === Component.Ready) {
+                pageCache[pageUrl] = component.createObject(appWindow);
+            } else if (component.status === Component.Error) {
+                console.error("Lỗi tải trang: " + component.errorString());
+                return;
+            }
+        }
+
+        // Kéo trang từ Cache ra và hiển thị ngay lập tức (Không có animation trượt)
+        var targetItem = pageCache[pageUrl];
+        stackView.replace(null, targetItem, StackView.Immediate);
+
+        // KÍCH HOẠT LÀM MỚI DỮ LIỆU: Đảm bảo số liệu luôn cập nhật dù UI không bị load lại
+        if (typeof targetItem.refreshData === "function") {
+            targetItem.refreshData();
+        }
+        if (typeof targetItem.refreshStats === "function") {
+            targetItem.refreshStats();
+        }
+    }
+
     // ---------------------------------------------------
-    // KHU VỰC BẮT SỰ KIỆN RÊ CHUỘT Ở MÉP (CỐ ĐỊNH 15px)
+    // KHU VỰC BẮT SỰ KIỆN RÊ CHUỘT
     // ---------------------------------------------------
     MouseArea {
         id: edgeHoverArea
-        width: 15
+        width: 30 // Mở rộng vùng bắt chuột lên 30px để rê mượt hơn, không bị chớp tắt
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         hoverEnabled: true
-        // ĐÃ SỬA: Hiển thị nếu đã đăng nhập thành công (thay vì dựa vào độ sâu của stack)
         visible: (isAdmin || isStaff)
         z: 99
     }
@@ -58,14 +103,14 @@ ApplicationWindow {
             id: sideBarHover
         }
 
-        // ĐÃ SỬA: Xử lý hoạt ảnh trượt mượt mà dựa vào trạng thái đăng nhập
         x: (edgeHoverArea.containsMouse || sideBarHover.hovered) && (isAdmin || isStaff) ? 0 : -width
         color: colorPrimary
         visible: (isAdmin || isStaff)
         z: 100
 
         Behavior on x {
-            NumberAnimation { duration: 300; easing.type: Easing.OutQuad }
+            // Sử dụng OutQuart để thanh menu trượt nhanh ở đầu và giảm tốc mềm mại ở cuối
+            NumberAnimation { duration: 250; easing.type: Easing.OutQuart }
         }
 
         ColumnLayout {
@@ -73,7 +118,6 @@ ApplicationWindow {
             anchors.margins: 15
             spacing: 10
 
-            // Tiêu đề Sidebar
             Label {
                 text: "☕ GIANG'S COFFEE"
                 font.pixelSize: 20
@@ -84,7 +128,6 @@ ApplicationWindow {
                 Layout.bottomMargin: 20
             }
 
-            // Danh sách các Menu
             ScrollView {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -94,14 +137,12 @@ ApplicationWindow {
                     width: parent.width
                     spacing: 8
 
-                    // Component nút bấm dùng chung
                     component MenuButton : Button {
                         property string iconStr: ""
                         property string btnText: ""
                         property string targetPage: ""
                         property bool checkAccess: true
 
-                        // Kiểm tra xem nút này có đang là trang hiện tại không
                         property bool isActive: appWindow.currentActivePage === targetPage
 
                         visible: checkAccess
@@ -113,10 +154,8 @@ ApplicationWindow {
                         }
 
                         background: Rectangle {
-                            // Nếu đang Active -> Màu sáng đậm (#0284C7). Ngược lại xét theo Hover/Pressed
                             color: parent.isActive ? "#0284C7" : (parent.pressed ? "#0369A1" : (parent.hovered ? "#38BDF8" : "transparent"))
                             radius: 8
-                            // Thêm viền trắng mờ để nút Active nổi bật hẳn lên
                             border.color: parent.isActive ? "#7DD3FC" : "transparent"
                             border.width: parent.isActive ? 1 : 0
                         }
@@ -137,9 +176,7 @@ ApplicationWindow {
 
                         onClicked: {
                             if (targetPage !== "") {
-                                appWindow.currentActivePage = targetPage
-                                // Dọn dẹp stack rác và chuyển trang
-                                stackView.replace(null, targetPage)
+                                appWindow.switchPage(targetPage) // Sử dụng hàm chuyển trang có Cache
                             }
                         }
                     }
@@ -206,10 +243,8 @@ ApplicationWindow {
                 }
             }
 
-            // Đẩy phần đăng xuất xuống dưới cùng
             Item { Layout.fillHeight: true }
 
-            // Nút đăng xuất
             Button {
                 Layout.fillWidth: true
                 implicitHeight: 45
@@ -298,14 +333,10 @@ ApplicationWindow {
                     contentItem: Text { text: parent.text; color: "white"; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                     onClicked: {
                         logoutDialog.close()
-
-                        // Reset lại trang Active khi đăng xuất
-                        appWindow.currentActivePage = ""
-
                         if (typeof accountHandler !== "undefined") {
                             accountHandler.currentUserPhone = ""
                         }
-                        stackView.replace(null, "LoginPage.qml")
+                        appWindow.switchPage("LoginPage.qml")
                     }
                 }
             }

@@ -11,42 +11,43 @@ Page {
 
     Component.onCompleted: refreshStats()
 
-    // 🔑 Hàm tải dữ liệu thống kê tự động
     function refreshStats() {
-        // Tính tổng doanh thu
         var rev = 0;
         if (typeof coffeeSystem !== "undefined" && coffeeSystem.loadFinance) {
             var dataFinance = coffeeSystem.loadFinance()
-            for (var i = 0; i < dataFinance.length; i++) {
-                if (dataFinance[i].type === "Thu") {
-                    rev += dataFinance[i].amount
+            if (dataFinance) {
+                for (var i = 0; i < dataFinance.length; i++) {
+                    if (dataFinance[i].type === "Thu") {
+                        rev += dataFinance[i].amount
+                    }
                 }
             }
         }
         totalRevenueText = Number(rev).toLocaleString(Qt.locale("vi_VN")) + " VNĐ"
 
-        // Đếm số lượng nhân sự
         var empCount = 0;
         if (typeof coffeeSystem !== "undefined" && coffeeSystem.loadEmployees) {
-            empCount = coffeeSystem.loadEmployees().length
+            var empData = coffeeSystem.loadEmployees()
+            if (empData) {
+                empCount = empData.length
+            }
         }
         totalEmpText = empCount + " Nhân sự"
     }
 
-    // 🔑 Hàm hỗ trợ điều hướng trang linh hoạt
+    // Hàm chuyển trang đa năng: Tự động tìm appWindow hoặc StackView để điều hướng
     function openPage(pageUrl) {
-        if (typeof pageStack !== "undefined" && pageStack.push) {
-            pageStack.push(pageUrl)
+        if (typeof appWindow !== "undefined" && typeof appWindow.switchPage === "function") {
+            appWindow.switchPage(pageUrl);
+        } else if (ApplicationWindow.window && typeof ApplicationWindow.window.switchPage === "function") {
+            ApplicationWindow.window.switchPage(pageUrl);
         } else if (StackView.view) {
-            StackView.view.push(pageUrl)
-        } else if (typeof mainLoader !== "undefined") {
-            mainLoader.source = pageUrl
+            StackView.view.push(pageUrl);
         } else {
-            console.log("Chuyển tới trang:", pageUrl)
+            console.log("Lỗi: Không tìm thấy hàm chuyển trang cho", pageUrl);
         }
     }
 
-    // Nút tùy chỉnh giao diện Dashboard
     component DashboardButton: Button {
         id: control
         property string iconText: "📦"
@@ -66,7 +67,6 @@ Page {
             border.color: control.hovered ? "#93C5FD" : "#E2E8F0"
             border.width: 1
 
-            // Hiệu ứng đổ bóng nhẹ
             Rectangle {
                 anchors.fill: parent
                 anchors.margins: -1
@@ -121,9 +121,6 @@ Page {
             anchors.margins: 25
             spacing: 25
 
-            // ---------------------------------------------------------------------
-            // 1. TIÊU ĐỀ QUẢN LÝ
-            // ---------------------------------------------------------------------
             RowLayout {
                 Layout.fillWidth: true
                 Layout.leftMargin: 25
@@ -147,9 +144,6 @@ Page {
                 Item { Layout.fillWidth: true }
             }
 
-            // ---------------------------------------------------------------------
-            // 2. KHUNG THỐNG KÊ NHANH
-            // ---------------------------------------------------------------------
             RowLayout {
                 Layout.fillWidth: true
                 Layout.leftMargin: 25
@@ -179,9 +173,6 @@ Page {
                 }
             }
 
-            // ---------------------------------------------------------------------
-            // 3. DANH SÁCH CÁC CHỨC NĂNG QUẢN TRỊ
-            // ---------------------------------------------------------------------
             ColumnLayout {
                 Layout.fillWidth: true
                 Layout.leftMargin: 25
@@ -233,9 +224,9 @@ Page {
 
                     DashboardButton {
                         iconText: "👥"
-                        titleText: "Kiểm Diện Nhân Viên"
-                        descText: "Xác nhận Check-in / Check-out ca làm"
-                        onClicked: openPage("EmployeePage.qml")
+                        titleText: "Báo Cáo Điểm Danh"
+                        descText: "Xem danh sách Check-in/out ca làm"
+                        onClicked: openPage("AttendanceReportPage.qml")
                     }
 
                     DashboardButton {
