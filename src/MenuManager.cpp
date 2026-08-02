@@ -1,4 +1,5 @@
 #include "MenuManager.h"
+#include "IngredientManager.h"
 #include <QDebug>
 #include <QString>
 
@@ -195,23 +196,39 @@ bool MenuManager::saveFoodsCSV(const QString &path)
     file.close();
     return true;
 }
-
+void MenuManager::setIngredientManager(IngredientManager *manager){
+    m_ingredientManager = manager;
+}
 QVariantList MenuManager::getMenuByCategory(const QString &type) const
 {
     QVariantList list;
     const QList<Menu> &targetList = (type == "Drink") ? m_drinks : m_foods;
 
     for (const Menu &item : targetList) {
-        if (item.getStatus() == "Available") {
-            QVariantMap map;
-            map["id"] = item.getId();
-            map["name"] = item.getName();
-            map["category"] = item.getCategory();
-            map["price"] = item.getPrice();
-            map["sizes"] = item.getSizes();
-            map["status"] = item.getStatus();
-            list.append(map);
+        QVariantMap map;
+        map["id"] = item.getId();
+        map["name"] = item.getName();
+        map["category"] = item.getCategory();
+        map["price"] = item.getPrice();
+        map["sizes"] = item.getSizes();
+        map["status"] = item.getStatus();
+
+        int maxStock = 999;
+        bool isAvailable = (item.getStatus() == "Available");
+
+        // Tích hợp kiểm tra tồn kho từ IngredientManager (giả định đã kết nối)
+        if (m_ingredientManager) {
+            QString defaultSize = "M";
+            if (!item.getSizes().isEmpty())
+                defaultSize = item.getSizes().first();
+            maxStock = m_ingredientManager->getMaxServings(item.getId(), defaultSize);
+            isAvailable = (maxStock > 0) && (item.getStatus() == "Available");
+        } else {
+            map["maxStock"] = 999;
+            map["isAvailable"] = (item.getStatus() == "Available");
         }
+
+        list.append(map);
     }
     return list;
 }
