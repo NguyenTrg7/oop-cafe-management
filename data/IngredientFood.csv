@@ -1,14 +1,15 @@
-ING101,Bánh Tiramisu,Ready,Bánh,cái,20,5,28000,SUP007
-ING102,Bánh Croissant,Ready,Bánh,cái,20,5,22000,SUP007
-ING103,Bánh Donut,Ready,Bánh,cái,20,5,23000,SUP007
-ING104,Bánh Macaron,Ready,Bánh,cái,40,10,12000,SUP007
-ING105,Bánh Mousse Chanh Dây,Ready,Bánh,cái,20,5,30000,SUP007
-ING106,Bánh Red Velvet,Ready,Bánh,cái,20,5,32000,SUP007
-ING107,Cheesecake Việt Quất,Ready,Bánh,cái,20,5,35000,SUP007
-ING108,Bánh Su Kem,Ready,Bánh,cái,30,5,18000,SUP007
-ING109,Cookie Chocolate Chip,Ready,Bánh,cái,50,10,9000,SUP007
-ING110,Cookie Matcha,Ready,Bánh,cái,50,10,9000,SUP007
-ING111,Brownie Socola,Ready,Bánh,cái,25,5,20000,SUP007
-ING112,Bánh Cuộn Matcha,Ready,Bánh,cái,20,5,25000,SUP007
-ING113,Panna Cotta,Ready,Tráng miệng,cốc,20,5,22000,SUP007
-ING114,Pudding Caramel,Ready,Tráng miệng,cốc,20,5,15000,SUP007
+IngredientID,IngredientName,Type,Category,Unit,Quantity,MinimumQuantity
+ING101,Bánh Tiramisu,Raw,,cái,20,5
+ING102,Bánh Croissant,Raw,,cái,20,5
+ING103,Bánh Donut,Raw,,cái,20,5
+ING104,Bánh Macaron,Raw,,cái,40,10
+ING105,Bánh Mousse Chanh Dây,Raw,,cái,20,5
+ING106,Bánh Red Velvet,Raw,,cái,20,5
+ING107,Cheesecake Việt Quất,Raw,,cái,20,5
+ING108,Bánh Su Kem,Raw,,cái,30,5
+ING109,Cookie Chocolate Chip,Raw,,cái,50,10
+ING110,Cookie Matcha,Raw,,cái,50,10
+ING111,Brownie Socola,Raw,,cái,25,5
+ING112,Bánh Cuộn Matcha,Raw,,cái,20,5
+ING113,Panna Cotta,Raw,,cốc,20,5
+ING114,Pudding Caramel,Raw,,cốc,20,5

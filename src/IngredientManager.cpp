@@ -50,6 +50,10 @@ bool IngredientManager::loadIngredientsCSV(const QString &path, bool clearFirst)
             Ingredient ing(id, name, qty, unit, minTh);
             m_ingredients.insert(id, ing);
         }
+        else{
+            m_ingredients[id].setQuantity(qty);
+            m_ingredients[id].setMinThreshold(minTh);
+        }
     }
     file.close();
     emit ingredientsChanged();
@@ -85,13 +89,36 @@ bool IngredientManager::loadRecipesCSV(const QString &path)
     file.close();
     return true;
 }
+// F001 → ING101, F002 → ING102, ... F015 → ING115
+QString IngredientManager::resolveStockId(const QString &menuId) const{
+    if (menuId.isEmpty())
+        return menuId;
+
+    if (m_ingredients.contains(menuId))
+        return menuId;
+
+    if (menuId.startsWith("F", Qt::CaseInsensitive) && menuId.length() >= 2) {
+        bool ok = false;
+        int num = menuId.mid(1).toInt(&ok);
+        if (ok && num > 0) {
+            QString ingId = QString("ING%1").arg(100 + num, 3, 10, QChar('0'));
+            if (m_ingredients.contains(ingId))
+                return ingId;
+        }
+    }
+    return menuId;
+}
 
 bool IngredientManager::checkAvailability(const QString &menuId,
                                           const QString &size,
                                           int quantity) const
 {
-    if (!m_recipes.contains(menuId))
-        return true;   // món không có công thức → luôn cho bán
+    if (!m_recipes.contains(menuId)) {
+        QString stockId = resolveStockId(menuId);   // F001 → ING101
+        if (!m_ingredients.contains(stockId))
+            return true;   // không quản lý kho → cho bán
+        return m_ingredients[stockId].getQuantity() >= quantity;
+    }
 
     QString s = size.isEmpty() ? "M" : size.toUpper();
     if (!m_recipes[menuId].contains(s)) {
@@ -112,11 +139,16 @@ bool IngredientManager::checkAvailability(const QString &menuId,
     return true;
 }
 
+
 int IngredientManager::getMaxServings(const QString &menuId,
                                       const QString &size) const
 {
-    if (!m_recipes.contains(menuId))
-        return 999;
+    if (!m_recipes.contains(menuId)) {
+        QString stockId = resolveStockId(menuId);   // F001 → ING101
+        if (!m_ingredients.contains(stockId))
+            return 999;
+        return static_cast<int>(m_ingredients[stockId].getQuantity());
+    }
 
     QString s = size.isEmpty() ? "M" : size.toUpper();
     if (!m_recipes[menuId].contains(s)) {
@@ -143,18 +175,45 @@ bool IngredientManager::deductIngredientsForOrder(const QString &menuId,
                                                   const QString &size,
                                                   int quantity)
 {
-    if (!checkAvailability(menuId, size, quantity))
+    if (menuId.isEmpty() || quantity <= 0)
         return false;
 
+    // Không có công thức → bỏ qua, không crash
+    if (!m_recipes.contains(menuId)) {
+        QString stockId = resolveStockId(menuId);
+        if (!m_ingredients.contains(stockId)) {
+            qWarning() << "Không có tồn kho cho món:" << menuId << "→ bỏ qua trừ kho";
+            return true;
+        }
+        if (m_ingredients[stockId].getQuantity() < quantity) {
+            qWarning() << "Không đủ tồn kho:" << menuId
+                       << "cần" << quantity
+                       << "còn" << m_ingredients[stockId].getQuantity();
+            return false;
+        }
+        m_ingredients[stockId].consume(quantity);
+        emit ingredientsChanged();
+        autoSave();
+        return true;
+    }
+
     QString s = size.isEmpty() ? "M" : size.toUpper();
-    if (!m_recipes[menuId].contains(s))
+    if (!m_recipes[menuId].contains(s)) {
+        if (m_recipes[menuId].isEmpty()) {
+            qWarning() << "Recipe rỗng cho" << menuId;
+            return false;
+        }
         s = m_recipes[menuId].keys().first();
+    }
 
     for (const auto &item : m_recipes[menuId][s]) {
-        m_ingredients[item.ingredientId].consume(item.requiredAmount * quantity);
+        if (m_ingredients.contains(item.ingredientId)) {
+            m_ingredients[item.ingredientId].consume(item.requiredAmount * quantity);
+        }
     }
 
     emit ingredientsChanged();
+    autoSave();
     return true;
 }
 
@@ -180,6 +239,7 @@ void IngredientManager::setQuantity(const QString &id, double quantity)
     if (m_ingredients.contains(id)) {
         m_ingredients[id].setQuantity(qMax(0.0, quantity));
         emit ingredientsChanged();
+        autoSave();
     }
 }
 
@@ -188,6 +248,7 @@ void IngredientManager::restock(const QString &id, double amount)
     if (m_ingredients.contains(id)) {
         m_ingredients[id].restock(amount);
         emit ingredientsChanged();
+        autoSave();
     }
 }
 
@@ -205,6 +266,59 @@ bool IngredientManager::saveIngredientsCSV(const QString &path) const
         out << ing.getId() << ","
             << ing.getName() << ","
             << "Raw,,"                       // Type, Category tạm
+            << ing.getUnit() << ","
+            << ing.getQuantity() << ","
+            << ing.getMinThreshold() << "\n";
+    }
+    file.close();
+    return true;
+}
+
+bool IngredientManager::deductExtra(const QString &ingredientId, double amount) {
+    if (!m_ingredients.contains(ingredientId)) return false;
+    bool ok = m_ingredients[ingredientId].consume(amount);
+    if (ok) {
+        emit ingredientsChanged();
+        autoSave();
+    }
+    return ok;
+}
+
+void IngredientManager::setPaths(const QString &drinkPath, const QString &foodPath)
+{
+    m_drinkPath = drinkPath;
+    m_foodPath  = foodPath;
+}
+
+void IngredientManager::autoSave()
+{
+    if (!m_drinkPath.isEmpty())
+        saveFiltered(m_drinkPath, "ING0");   // Drink
+    if (!m_foodPath.isEmpty())
+        saveFiltered(m_foodPath, "ING1");    // Food
+}
+
+bool IngredientManager::saveFiltered(const QString &path, const QString &idPrefix) const
+{
+
+    QFile file(path);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qWarning() << "Cannot save ingredients to" << path;
+        return false;
+    }
+
+    QTextStream out(&file);
+    out.setEncoding(QStringConverter::Utf8);
+    out << "IngredientID,IngredientName,Type,Category,Unit,Quantity,MinimumQuantity\n";
+
+    for (auto it = m_ingredients.constBegin(); it != m_ingredients.constEnd(); ++it) {
+        if (!it.key().startsWith(idPrefix))
+            continue;
+
+        const Ingredient &ing = it.value();
+        out << ing.getId() << ","
+            << ing.getName() << ","
+            << "Raw,,"
             << ing.getUnit() << ","
             << ing.getQuantity() << ","
             << ing.getMinThreshold() << "\n";

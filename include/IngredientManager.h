@@ -19,6 +19,15 @@ using SizeRecipeMap = QMap<QString, QList<RecipeItem>>;
 class IngredientManager : public QObject
 {
     Q_OBJECT
+
+private:
+    QMap<QString, Ingredient>   m_ingredients;
+    QMap<QString, SizeRecipeMap> m_recipes;    // menuId → size → ingredients
+
+    QString m_drinkPath;
+    QString m_foodPath;
+    QString resolveStockId(const QString &menuId) const;
+    void autoSave();
 public:
     explicit IngredientManager(QObject *parent = nullptr);
 
@@ -46,13 +55,13 @@ public:
 
     // Lưu tồn kho ra file (tuỳ chọn)
     Q_INVOKABLE bool saveIngredientsCSV(const QString &path) const;
+    Q_INVOKABLE bool deductExtra(const QString &ingredientId, double amount);
+    void setPaths(const QString &drinkPath, const QString &foodPath);
+    Q_INVOKABLE bool saveFiltered(const QString &path, const QString &idPrefix) const;
 
 signals:
     void ingredientsChanged();   // QML lắng nghe để refresh menu
 
-private:
-    QMap<QString, Ingredient>   m_ingredients;
-    QMap<QString, SizeRecipeMap> m_recipes;   // menuId → size → ingredients
 };
 
 #endif // INGREDIENTMANAGER_H

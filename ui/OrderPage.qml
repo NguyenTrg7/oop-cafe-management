@@ -11,6 +11,27 @@ Item {
     property string selectedCategory: "Drink"
     property int maxAllowedQuantity: itemData ? (itemData.maxStock !== undefined ? itemDialog.maxStock : 999) : 999
 
+    property bool showingInventory: false
+    property bool showingHistory: false
+    property var fullMenuData: []
+
+    function filterMenu() {
+        var source = getMenuData(orderPageRoot.selectedCategory)
+        var keyword = searchField.text.trim().toLowerCase()
+        var cat = categoryFilter.currentText
+
+        var result = []
+        for (var i = 0; i < source.length; i++) {
+            var item = source[i]
+            var matchName = keyword === "" || item.name.toLowerCase().indexOf(keyword) !== -1
+            var matchCat  = cat === "Tất cả" || item.category === cat
+
+            if (matchName && matchCat)
+                result.push(item)
+        }
+        menuGrid.model = result
+    }
+
     // Model giỏ hàng tạm thời
     ListModel {
         id: cartModel
@@ -21,7 +42,6 @@ Item {
         return Qt.locale("vi_VN").toString(value) + " VNĐ";
     }
 
-    // Hàm chuyển đổi tên món thành tên file ảnh chuẩn (Ví dụ: "Cà phê đen đá" -> "ca_phe_den_da.png")
     // Hàm chuyển đổi tên món thành tên file ảnh chuẩn
     function getImagePath(itemName, category)
     {
@@ -39,6 +59,7 @@ Item {
 
         return "file:///" + applicationDir + "/data/" + folder + "/" + fileName + ".png";
     }
+
     // Hàm tính tổng tiền toàn bộ giỏ hàng
     function calculateGrandTotal() {
         var total = 0;
@@ -63,7 +84,7 @@ Item {
                 pts += 2 * qty
             }
         }
-            return pts
+        return pts
     }
 
     //Bill
@@ -116,171 +137,265 @@ Item {
 
     RowLayout {
         anchors.fill: parent
-        anchors.margins: 15
-        spacing: 15
+        anchors.margins: 12
+        spacing: 12
 
         // =====================================================================
-        // CỘT BÊN TRÁI: MENU (CHỌN DRINK / FOOD & DANH SÁCH MÓN)
+        // 1. SIDEBAR DỌC BÊN TRÁI
         // =====================================================================
-        ColumnLayout {
-            Layout.fillWidth: true
+        Rectangle {
+            Layout.preferredWidth: 180
             Layout.fillHeight: true
-            spacing: 10
+            color: "#F9F6F0"
+            border.color: "#E0D5C8"
+            radius: 12
 
-            // Thanh Tab Chọn Loại Món
-            RowLayout {
-                Layout.fillWidth: true
-                spacing: 10
+            ColumnLayout {
+                anchors.fill: parent
+                anchors.margins: 12
+                spacing: 8
 
-                ButtonGroup {
-                    id: categoryGroup
+                Text {
+                    text: "MENU"
+                    font.bold: true
+                    font.pixelSize: 14
+                    color: "#8D6E63"
+                    Layout.bottomMargin: 6
                 }
 
+                // Nút Đồ uống
                 Button {
-                    text: "☕ Đồ uống"
                     Layout.fillWidth: true
+                    implicitHeight: 44
+                    text: "☕  Đồ uống"
                     checkable: true
-                    checked: orderPageRoot.selectedCategory === "Drink"
-                    ButtonGroup.group: categoryGroup
-
+                    checked: orderPageRoot.selectedCategory === "Drink" && !showingInventory && !showingHistory
                     onClicked: {
+                        showingInventory = false
+                        showingHistory = false
                         orderPageRoot.selectedCategory = "Drink"
                         menuGrid.model = getMenuData("Drink")
                     }
                 }
 
+                // Nút Món ăn
                 Button {
-                    text: "🍰 Món ăn"
                     Layout.fillWidth: true
+                    implicitHeight: 44
+                    text: "🍰  Món ăn"
                     checkable: true
-                    checked: orderPageRoot.selectedCategory === "Food"
-                    ButtonGroup.group: categoryGroup
-
+                    checked: orderPageRoot.selectedCategory === "Food" && !showingInventory && !showingHistory
                     onClicked: {
+                        showingInventory = false
+                        showingHistory = false
                         orderPageRoot.selectedCategory = "Food"
                         menuGrid.model = getMenuData("Food")
                     }
                 }
+
+                Rectangle { Layout.fillWidth: true; height: 1; color: "#E0D5C8"; Layout.topMargin: 8; Layout.bottomMargin: 8 }
+
+                // Nút Quản lý tồn kho
                 Button {
-                    text: "📦 Quản lý tồn kho"
                     Layout.fillWidth: true
-                    implicitHeight: 40
+                    implicitHeight: 44
+                    text: "📦  Tồn kho"
+                    checkable: true
+                    checked: showingInventory
                     onClicked: {
-                        if (StackView.view)
-                            StackView.view.push("InventoryPage.qml")
-                        else if (typeof stackView !== "undefined")
-                            stackView.push("InventoryPage.qml")
+                        showingInventory = true
+                        showingHistory = false
+                    }
+                }
+
+                // Nút Lịch sử đơn hàng
+                Button {
+                    Layout.fillWidth: true
+                    implicitHeight: 44
+                    text: "📜  Lịch sử"
+                    checkable: true
+                    checked: showingHistory
+                    onClicked: {
+                        showingHistory = true
+                        showingInventory = false
+                    }
+                }
+
+                Item { Layout.fillHeight: true }
+            }
+        }
+
+        // =====================================================================
+        // 2. KHU VỰC GIỮA (Menu / Tồn kho / Lịch sử)
+        // =====================================================================
+        Item {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+
+            // ========== A. MENU ĐỒ UỐNG / MÓN ĂN ==========
+            ColumnLayout {
+                anchors.fill: parent
+                spacing: 12
+                visible: !showingInventory && !showingHistory
+
+                // Thanh tìm kiếm + lọc
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 10
+
+                    TextField {
+                        id: searchField
+                        Layout.fillWidth: true
+                        placeholderText: "🔍  Tìm món theo tên..."
+                        selectByMouse: true
+                        onTextChanged: filterMenu()
+                    }
+
+                    ComboBox {
+                        id: categoryFilter
+                        Layout.preferredWidth: 180
+                        model: orderPageRoot.selectedCategory === "Drink"
+                               ? ["Tất cả", "Cà phê", "Cà phê pha máy", "Trà trái cây", "Trà sữa", "Đá xay", "Nước ép", "Cacao"]
+                               : ["Tất cả", "Bánh ngọt", "Bánh mặn", "Pizza", "Sandwich", "Đồ ăn vặt", "Salad", "Món chính", "Combo"]
+                        onCurrentTextChanged: filterMenu()
+                    }
+                }
+
+                // Grid món
+                GridView {
+                    id: menuGrid
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    clip: true
+                    cellWidth: Math.floor(width / 2) - 4
+                    cellHeight: 100
+                    model: getMenuData(orderPageRoot.selectedCategory)
+
+                    delegate: Item {
+                        width: menuGrid.cellWidth
+                        height: menuGrid.cellHeight
+
+                        property bool isAvailable: modelData.isAvailable !== undefined ? modelData.isAvailable : true
+                        property int maxStock: modelData.maxStock !== undefined ? modelData.maxStock : 999
+
+                        Rectangle {
+                            anchors.fill: parent
+                            anchors.margins: 4
+                            color: !isAvailable ? "#E0E0E0" : (mouseArea.containsMouse ? "#F2EBE1" : "#FFFDF9")
+                            border.color: !isAvailable ? "#B0BEC5" : (mouseArea.containsMouse ? "#8B5A2B" : "#D8C4B6")
+                            radius: 10
+                            opacity: isAvailable ? 1.0 : 0.6
+
+                            RowLayout {
+                                anchors.fill: parent
+                                anchors.margins: 8
+                                spacing: 10
+
+                                Image {
+                                    Layout.preferredWidth: 64
+                                    Layout.preferredHeight: 64
+                                    source: getImagePath(modelData.name, orderPageRoot.selectedCategory)
+                                    fillMode: Image.PreserveAspectCrop
+                                    clip: true
+                                }
+
+                                ColumnLayout {
+                                    Layout.fillWidth: true
+                                    spacing: 3
+
+                                    Text {
+                                        text: modelData.name || ""
+                                        font.bold: true
+                                        font.pixelSize: 13
+                                        color: isAvailable ? "#2C1D11" : "#757575"
+                                        elide: Text.ElideRight
+                                        Layout.fillWidth: true
+                                    }
+
+                                    Text {
+                                        text: formatVND(modelData.price)
+                                        font.pixelSize: 13
+                                        font.bold: true
+                                        color: isAvailable ? "#8B5A2B" : "#757575"
+                                    }
+
+                                    Rectangle {
+                                        visible: !isAvailable || maxStock <= 5
+                                        implicitWidth: lblStock.implicitWidth + 8
+                                        implicitHeight: 18
+                                        radius: 4
+                                        color: !isAvailable ? "#D32F2F" : "#E65100"
+
+                                        Text {
+                                            id: lblStock
+                                            anchors.centerIn: parent
+                                            text: !isAvailable ? "HẾT HÀNG" : ("Còn " + maxStock)
+                                            color: "white"
+                                            font.pixelSize: 10
+                                            font.bold: true
+                                        }
+                                    }
+                                }
+                            }
+
+                            MouseArea {
+                                id: mouseArea
+                                anchors.fill: parent
+                                enabled: isAvailable
+                                hoverEnabled: true
+                                cursorShape: isAvailable ? Qt.PointingHandCursor : Qt.ForbiddenCursor
+                                onClicked: itemDialog.openDialog(modelData, orderPageRoot.selectedCategory)
+                            }
+                        }
                     }
                 }
             }
 
-            // Grid Danh sách món
-            GridView {
-                id: menuGrid
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                cellWidth: menuGrid.width / 2
-                cellHeight: 110
-                clip: true
+            // ========== B. TRANG TỒN KHO ==========
+            Loader {
+                id: inventoryLoader
+                anchors.fill: parent
+                active: showingInventory
+                visible: showingInventory
+                source: showingInventory ? Qt.resolvedUrl("InventoryPage.qml") : ""
 
-                model: getMenuData(orderPageRoot.selectedCategory)
+                onStatusChanged: {
+                    if (status === Loader.Error)
+                        console.error("Không load được InventoryPage.qml")
+                    else if (status === Loader.Ready)
+                        console.log("InventoryPage đã load xong")
+                }
+            }
 
-                delegate: Item {
-                    width: menuGrid.cellWidth
-                    height: menuGrid.cellHeight
+            // ========== C. TRANG LỊCH SỬ ==========
+            Loader {
+                id: historyLoader
+                anchors.fill: parent
+                active: showingHistory
+                visible: showingHistory
+                source: showingHistory ? Qt.resolvedUrl("OrderHistoryPage.qml") : ""
 
-                    // Kiểm tra món còn hàng hay không
-                    property bool isAvailable: modelData.isAvailable !== undefined ? modelData.isAvailable : true
-                    property int maxStock: modelData.maxStock !== undefined ? modelData.maxStock : 999
-
-                    Rectangle {
-                        id: cardBackground
-                        anchors.fill: parent
-                        anchors.margins: 5
-                        // Nếu hết hàng thì làm mờ nền
-                        color: !isAvailable ? "#E0E0E0" : (mouseArea.containsMouse ? "#F2EBE1" : "#FFFDF9")
-                        border.color: !isAvailable ? "#B0BEC5" : (mouseArea.containsMouse ? "#8B5A2B" : "#D8C4B6")
-                        radius: 8
-                        opacity: isAvailable ? 1.0 : 0.6
-
-                        RowLayout {
-                            anchors.fill: parent
-                            anchors.margins: 8
-                            spacing: 10
-
-                            Image {
-                                Layout.preferredWidth: 70
-                                Layout.preferredHeight: 70
-                                source: getImagePath(modelData.name, orderPageRoot.selectedCategory)
-                                fillMode: Image.PreserveAspectCrop
-                                clip: true
-                            }
-
-                            ColumnLayout {
-                                Layout.fillWidth: true
-                                Layout.alignment: Qt.AlignVCenter
-                                spacing: 4
-
-                                Text {
-                                    text: modelData.name || ""
-                                    font.bold: true
-                                    font.pixelSize: 14
-                                    color: isAvailable ? "#2C1D11" : "#757575"
-                                    elide: Text.ElideRight
-                                    Layout.fillWidth: true
-                                }
-
-                                Text {
-                                    text: formatVND(modelData.price)
-                                    font.pixelSize: 13
-                                    font.bold: true
-                                    color: isAvailable ? "#8B5A2B" : "#757575"
-                                }
-
-                                // --- NÓI RÕ TRẠNG THÁI HẾT HÀNG / BÁO ĐỘNG ---
-                                Rectangle {
-                                    visible: !isAvailable || maxStock <= 5
-                                    implicitWidth: lblStock.implicitWidth + 8
-                                    implicitHeight: 18
-                                    radius: 4
-                                    color: !isAvailable ? "#D32F2F" : "#E65100"
-
-                                    Text {
-                                        id: lblStock
-                                        anchors.centerIn: parent
-                                        text: !isAvailable ? "HẾT HÀNG" : ("Còn " + maxStock + " phần")
-                                        color: "white"
-                                        font.pixelSize: 10
-                                        font.bold: true
-                                    }
-                                }
-                            }
-                        }
-
-                        MouseArea {
-                            id: mouseArea
-                            anchors.fill: parent
-                            enabled: isAvailable // Khóa click nếu hết hàng
-                            hoverEnabled: true
-                            cursorShape: isAvailable ? Qt.PointingHandCursor : Qt.ForbiddenCursor
-                            onClicked: {
-                                itemDialog.openDialog(modelData, orderPageRoot.selectedCategory);
-                            }
-                        }
-                    }
+                onStatusChanged: {
+                    if (status === Loader.Error)
+                        console.error("Không load được OrderHistoryPage.qml")
+                    else if (status === Loader.Ready)
+                        console.log("OrderHistoryPage đã load xong")
                 }
             }
         }
 
         // =====================================================================
         // CỘT BÊN PHẢI: GIỎ HÀNG & TỔNG TIỀN ĐƠN HÀNG
+        // Ẩn khi đang xem Tồn kho hoặc Lịch sử để không đè lên
         // =====================================================================
         Rectangle {
-            Layout.preferredWidth: 320
+            Layout.preferredWidth: (showingInventory || showingHistory) ? 0 : 320
             Layout.fillHeight: true
+            visible: !showingInventory && !showingHistory
             color: "#F9F6F0"
             border.color: "#D8C4B6"
-            radius: 8
+            radius: 12
+            clip: true
 
             ColumnLayout {
                 anchors.fill: parent
@@ -303,7 +418,7 @@ Item {
 
                     delegate: Rectangle {
                         width: ListView.view.width
-                        height: 55
+                        height: colCart.implicitHeight + 16
                         color: "#FFFFFF"
                         radius: 4
                         border.color: "#E0E0E0"
@@ -311,18 +426,41 @@ Item {
                         RowLayout {
                             anchors.fill: parent
                             anchors.margins: 6
+                            spacing: 6
 
                             ColumnLayout {
+                                id: colCart
                                 Layout.fillWidth: true
                                 spacing: 2
 
+                                // Tên + size + số lượng
                                 Text {
                                     text: model.name + (model.size ? " (" + model.size + ")" : "") + " x" + model.quantity
                                     font.bold: true
                                     font.pixelSize: 13
                                     elide: Text.ElideRight
+                                    Layout.fillWidth: true
                                 }
 
+                                // Mức đá
+                                Text {
+                                    visible: model.ice && model.ice !== "" && model.ice !== "Bình thường"
+                                    text: "🧊 " + model.ice
+                                    font.pixelSize: 11
+                                    color: "#0277BD"
+                                }
+
+                                // Topping
+                                Text {
+                                    visible: model.toppings && model.toppings !== "" && model.toppings !== "undefined"
+                                    text: "🍒 " + model.toppings
+                                    font.pixelSize: 11
+                                    color: "#6A1B9A"
+                                    elide: Text.ElideRight
+                                    Layout.fillWidth: true
+                                }
+
+                                // Ghi chú
                                 Text {
                                     text: model.note !== "" ? "Ghi chú: " + model.note : "Không ghi chú"
                                     font.pixelSize: 10
@@ -439,28 +577,57 @@ Item {
 
                     onClicked: {
                         updateInvoiceInfo()
-                        invoiceDialog.open()
 
-                        var earned = calculateLoyaltyPoints()
-                        if (typeof customerHandler !== "undefined" && earned > 0) {
-                            customerHandler.addPoints(earned)
-                            if (typeof accountHandler !== "undefined")
-                                accountHandler.saveCustomerLoyalty()
-                            console.log("Tich +" + earned + " diem")
+                        var items = []
+                        for (var i = 0; i < cartModel.count; i++) {
+                            var it = cartModel.get(i)
+
+                            var tops = []
+                            if (it.toppings && it.toppings.length > 0) {
+                                for (var t = 0; t < it.toppings.length; t++) {
+                                    tops.push({
+                                        name: it.toppings[t].name || "",
+                                        price: it.toppings[t].price || 0
+                                    })
+                                }
+                            }
+
+                            items.push({
+                                id: it.id || "",
+                                name: it.name || "",
+                                size: it.size || "",
+                                quantity: it.quantity || 1,
+                                note: it.note || "",
+                                totalPrice: it.totalPrice || 0,
+                                category: it.category || "Drink",
+                                ice: it.ice || "",
+                                toppings: it.toppings || ""
+                            })
                         }
+
+                        invoiceDialog.openWith({
+                            invoiceNumber: invoiceNumber,
+                            date: invoiceDate,
+                            time: invoiceTime,
+                            customerName: "Khách vãng lai",
+                            totalAmount: Math.max(0, calculateGrandTotal() - voucherDiscount),
+                            discount: voucherDiscount,
+                            voucherCode: selectedVoucherCode,
+                            items: items
+                        })
                     }
                 }
 
                 Button {
-                        text: "⭐ Xem điểm Loyalty"
-                        Layout.fillWidth: true
-                        implicitHeight: 40
-                        onClicked: {
-                            if (StackView.view)
-                                StackView.view.push("LoyaltyPage.qml")
-                            else if (typeof stackView !== "undefined")
-                               stackView.push("LoyaltyPage.qml")
-                        }
+                    text: "⭐ Xem điểm Loyalty"
+                    Layout.fillWidth: true
+                    implicitHeight: 40
+                    onClicked: {
+                        if (StackView.view)
+                            StackView.view.push("LoyaltyPage.qml")
+                        else if (typeof stackView !== "undefined")
+                            stackView.push("LoyaltyPage.qml")
+                    }
                 }
 
                 Button {
@@ -476,20 +643,18 @@ Item {
                 }
             }
         }
-}
+    }
+
     // =========================================================================
-    // DIALOG TÙY CHỌN MÓN (SIZE -> SỐ LƯỢNG -> GHI CHÚ -> BẢNG TÍNH TIỀN TẠM)
+    // DIALOG TÙY CHỌN MÓN (giao diện mới – dễ nhìn, hiện đại)
     // =========================================================================
     Dialog {
         id: itemDialog
-
         modal: true
         focus: true
-
-        width: 520
-        height: 560
+        width: 540
+        height: 680
         padding: 0
-
         x: (orderPageRoot.width - width) / 2
         y: (orderPageRoot.height - height) / 2
 
@@ -497,922 +662,688 @@ Item {
         property string category: "Drink"
         property real basePrice: 0
         property real calculatedPrice: 0
+        property int maxAllowedQuantity: 999
+        property string selectedSize: "S"
+        property string selectedIce: "Bình thường"
+        property var availableSizes: ["S", "M", "L"]
+        property int quantityValue: 1
 
-        function openDialog(data, cat){
-
+        // ===== HÀM MỞ DIALOG =====
+        function openDialog(data, cat) {
             itemData = data
             category = cat
             basePrice = Number(data.price || 0)
 
-            if(cat === "Drink" && data.sizes && data.sizes.length>0){
-
-                sizeCombo.model = data.sizes
-                sizeRow.visible = true
-            }
-            else{
-
-                sizeCombo.model = ["Standard"]
-                sizeRow.visible = false
-            }
-
-            var defaultSize = (data.sizes && data.sizes.length > 0) ? data.sizes[0] :"M"
-            if (typeof ingredientManager !== "undefined"){
-                maxAllowedQuantity = ingredientManager.getMaxServings(data.id, defaultSize)
-            }
-            else {
-                maxAllowedQuantity = data.maxStock !== undefined ? data.maxStock : 999
+            // Size
+            if (cat === "Drink" && data.sizes && data.sizes.length > 0) {
+                availableSizes = data.sizes
+                sizeSection.visible = true
+                selectedSize = data.sizes[0]
+            } else {
+                availableSizes = ["Standard"]
+                sizeSection.visible = false
+                selectedSize = "Standard"
             }
 
-            sizeCombo.currentIndex = 0
-            quantityField.text = "1"
+            // Lấy tồn kho mới nhất từ IngredientManager
+            var maxStock = 999
+            if (typeof ingredientManager !== "undefined" && ingredientManager) {
+                var sz = selectedSize || "M"
+                maxStock = ingredientManager.getMaxServings(data.id, sz)
+            } else if (data.maxStock !== undefined && data.maxStock !== null) {
+                maxStock = Number(data.maxStock)
+            }
+
+            // Hết hàng → không mở dialog
+            if (maxStock <= 0) {
+                console.warn("Hết hàng:", data.name)
+                // Có thể hiện thông báo ở đây
+                return
+            }
+
+            maxAllowedQuantity = Math.max(1, maxStock)
+            quantityValue = 1
+            if (typeof quantityField !== "undefined" && quantityField)
+                quantityField.text = "1"
+
             tfNote.text = ""
+            selectedIce = "Bình thường"
+
+            // Reset topping
+            for (var i = 0; i < toppingRepeater.count; i++) {
+                if (toppingRepeater.itemAt(i))
+                    toppingRepeater.itemAt(i).checked = false
+            }
 
             updatePrice()
-
             open()
         }
 
-        function updatePrice(){
-
+        function updatePrice() {
             var extra = 0
 
-            if(category==="Drink" && itemData && itemData.sizes){
-
+            // Phụ thu size
+            if (category === "Drink" && itemData && itemData.sizes) {
                 var list = itemData.sizes
-                var current = sizeCombo.currentText
-
-                if(sizeCombo.currentIndex>0){
-
-                    if(list[0]==="S"){
-
-                        if(current==="M")
-                            extra = 5000
-                        else
-                            extra = 10000
-                    }
-                    else if(list[0]==="M"){
-
-                        if(current==="L")
-                            extra = 5000
-                    }
+                var current = selectedSize
+                if (list[0] === "S") {
+                    if (current === "M") extra = 5000
+                    else if (current === "L") extra = 10000
+                } else if (list[0] === "M") {
+                    if (current === "L") extra = 5000
                 }
             }
 
-            var quantity = parseInt(quantityField.text)
+            // Cộng tiền topping
+            var toppingExtra = 0
+            for (var i = 0; i < toppingRepeater.count; i++) {
+                var btn = toppingRepeater.itemAt(i)
+                if (btn && btn.checked)
+                    toppingExtra += btn.toppingPrice
+            }
 
-            if(isNaN(quantity))
-                quantity = 0
-
-            calculatedPrice =
-                    (basePrice + extra)
-                    * quantity
+            calculatedPrice = (basePrice + extra + toppingExtra) * quantityValue
         }
 
-        background: Rectangle{
-
-            radius:20
-
-            color:"#FFFDF8"
-
-            border.color:"#E6D6C8"
-
-            border.width:1
+        background: Rectangle {
+            radius: 24
+            color: "#FFFCFA"
+            border.color: "#E8DDD2"
+            border.width: 1
         }
 
-        header: Rectangle{
+        // ===== HEADER =====
+        header: Rectangle {
+            height: 96
+            color: "transparent"
 
-            height:95
+            Column {
+                anchors.left: parent.left
+                anchors.leftMargin: 28
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 4
 
-            color:"transparent"
-
-            Column{
-
-                anchors{
-
-                    left: parent.left
-                    leftMargin:25
-
-                    verticalCenter: parent.verticalCenter
+                Text {
+                    text: "Tùy chọn món"
+                    color: "#A1887F"
+                    font.pixelSize: 13
+                    font.letterSpacing: 0.5
                 }
-
-                spacing:6
-
-                Text{
-
-                    text:"Tùy chọn món"
-
-                    color:"#777"
-
-                    font.pixelSize:17
+                Text {
+                    text: itemDialog.itemData ? itemDialog.itemData.name : ""
+                    font.pixelSize: 26
+                    font.bold: true
+                    color: "#3E2723"
                 }
+            }
 
-                Text{
-
-                    text:itemDialog.itemData ?
-                         itemDialog.itemData.name : ""
-
-                    font.pixelSize:30
-
-                    font.bold:true
-
-                    color:"#3E2723"
-                }
+            Rectangle {
+                anchors.bottom: parent.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.leftMargin: 24
+                anchors.rightMargin: 24
+                height: 1
+                color: "#EFE6DC"
             }
         }
 
-        ColumnLayout{
+        // ===== NỘI DUNG CHÍNH (dùng contentItem để Dialog layout đúng) =====
+        contentItem: Flickable {
+            id: contentFlick
+            clip: true
+            boundsBehavior: Flickable.StopAtBounds
+            contentHeight: contentColumn.implicitHeight + 32
+            contentWidth: width
 
-            anchors{
+            ColumnLayout {
+                id: contentColumn
+                width: contentFlick.width - 48
+                x: 24
+                y: 16
+                spacing: 18
 
-                top: header.bottom
-                left: parent.left
-                right: parent.right
-                bottom: footer.top
+                // ─── 1. KÍCH THƯỚC (pill buttons) ───
+                ColumnLayout {
+                    id: sizeSection
+                    Layout.fillWidth: true
+                    spacing: 10
 
-                // leftMargin:25
-                // rightMargin:25
-                // topMargin:15
-                // bottomMargin:20
-                margins: 20
-            }
-
-            spacing:18
-
-            Rectangle{
-
-                id:sizeRow
-
-                Layout.fillWidth:true
-
-                height:60
-
-                radius:8
-
-                color:"#F8F4EF"
-
-                border.color:"#E8DDD2"
-
-                RowLayout{
-
-                    anchors.fill:parent
-
-                    anchors.margins:15
-
-                    Text{
-
-                        text:"☕  Kích thước"
-
-                        font.bold:true
-
-                        font.pixelSize:15
+                    Text {
+                        text: "☕  Kích thước"
+                        font.bold: true
+                        font.pixelSize: 14
+                        color: "#4E342E"
                     }
 
-                    Item{
-
-                        Layout.fillWidth:true
-                    }
-
-                    ComboBox{
-
-                        id:sizeCombo
-
-                        implicitWidth:130
-
-                        onCurrentTextChanged:{
-                            itemDialog.updatePrice()
-                            if (itemDialog.itemData && typeof ingredientManager !== "undefined"){
-                                itemDialog.maxAllowedQuantity = ingredientManager.getMaxServings(itemDialog.itemData.id, currentText)
-                        }
-                    }
-                    }
-                }
-            }
-
-            Rectangle{
-
-                Layout.fillWidth:true
-
-                height:60
-
-                radius:12
-
-                color:"#F8F4EF"
-
-                border.color:"#E8DDD2"
-
-                RowLayout{
-
-                    anchors.fill:parent
-
-                    anchors.margins:15
-
-                    Text{
-
-                        text:"🛒  Số lượng"
-
-                        font.bold:true
-
-                        font.pixelSize:15
-                    }
-
-                    Item{
-
-                        Layout.fillWidth:true
-                    }
-
-                    RowLayout{
-
-                        spacing:8
-
-                        Button{
-
-                            id:minusButton
-
-                            text:"−"
-
-                            implicitWidth:40
-                            implicitHeight:40
-
-                            onClicked:{
-
-                                var n = parseInt(quantityField.text)
-
-                                if(isNaN(n))
-                                    n = 0
-
-                                quantityField.text = String(n-1)
-
-                                itemDialog.updatePrice()
-                            }
-                        }
-
-                        TextField{
-
-                            id:quantityField
-
-                            text:"1"
-
-                            horizontalAlignment: Text.AlignHCenter
-
-                            verticalAlignment: Text.AlignVCenter
-
-                            implicitWidth:40
-                            implicitHeight:40
-
-                            validator:IntValidator{
-
-                                bottom:0
-                                top:999
-                            }
-
-                            onTextChanged:{
-                                itemDialog.updatePrice()
-                            }
-                        }
-                        Text{
-                            id: warnStocktext
-                            Layout.fillWidth: true
-                            visible: parseInt(quantityField.text) > itemDialog.maxAllowedQuantity
-                            text: "⚠️ Không đủ nguyên liệu! Tối đa còn " + itemDialog.maxAllowedQuantity + "."
-                            color: "#D32F2F"
-                            font.pixelSize: 12
-                            font.bold: true
-                        }
-
-                        Button{
-
-                            id:plusButton
-
-                            text:"+"
-
-                            implicitWidth:40
-                            implicitHeight:40
-                            enabled: parseInt(quantityField.text) < itemDialog.maxAllowedQuantity
-
-                            onClicked:{
-
-                                var n = parseInt(quantityField.text)
-
-                                if(isNaN(n)) n = 0
-
-                                if (n < itemDialog.maxAllowedQuantity){
-                                quantityField.text = String(n+1)
-
-                                itemDialog.updatePrice()
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            ColumnLayout{
-
-                Layout.fillWidth:true
-
-                spacing:8
-
-                Text{
-
-                    text:"📝 Ghi chú"
-
-                    font.bold:true
-
-                    font.pixelSize:15
-                }
-
-                TextArea{
-
-                    id:tfNote
-
-                    Layout.fillWidth:true
-
-                    Layout.preferredHeight:90
-
-                    wrapMode: TextArea.Wrap
-
-                    placeholderText:
-                        "Nhập ghi chú món ở đây..."
-
-                    background: Rectangle{
-
-                        radius:12
-
-                        color:"#F8F4EF"
-
-                        border.color:"#E8DDD2"
-                    }
-                }
-            }
-
-            Rectangle{
-
-                Layout.fillWidth:true
-
-                height:1
-
-                color:"#E8DDD2"
-            }
-
-            Rectangle{
-
-                Layout.fillWidth:true
-
-                height:70
-
-                radius:14
-
-                color:"#FFF6ED"
-
-                border.color:"#F2D8B8"
-
-                RowLayout{
-
-                    anchors.fill:parent
-
-                    anchors.margins:18
-
-                    Text{
-
-                        text:"💰 Thành tiền"
-
-                        font.bold:true
-
-                        font.pixelSize:17
-                    }
-
-                    Item{
-
-                        Layout.fillWidth:true
-                    }
-
-                    Text{
-
-                        text:formatVND(itemDialog.calculatedPrice)
-
-                        font.bold:true
-
-                        font.pixelSize:28
-
-                        color:"#A45A1D"
-                    }
-                }
-            }
-
-            Item{
-
-                Layout.fillHeight:true
-            }
-        }
-        footer: Rectangle{
-
-            height:90
-
-            color:"transparent"
-
-            RowLayout{
-
-                anchors.fill: parent
-                anchors.margins:20
-
-                spacing:15
-
-                Item{
-                    Layout.fillWidth:true
-                }
-
-                Button{
-
-                    id:cancelButton
-
-                    text:"HỦY"
-
-                    implicitWidth:120
-                    implicitHeight:45
-
-                    onClicked:itemDialog.close()
-
-                    background: Rectangle{
-
-                        radius:12
-
-                        color: cancelButton.down ?
-                               "#E6E6E6" :
-                               (cancelButton.hovered ? "#F0F0F0" : "#FFFFFF")
-
-                        border.color:"#CFCFCF"
-
-                    }
-
-                    contentItem: Text{
-
-                        text:cancelButton.text
-
-                        horizontalAlignment:Text.AlignHCenter
-                        verticalAlignment:Text.AlignVCenter
-
-                        color:"#555"
-
-                        font.bold:true
-                    }
-                }
-
-                Button{
-
-                    id:okButton
-
-                    text:"XÁC NHẬN"
-
-                    implicitWidth:120
-                    implicitHeight:45
-
-                    onClicked:itemDialog.accept()
-
-                    background: Rectangle{
-
-                        radius:12
-
-                        color: okButton.down ?
-                               "#8A4F22" :
-                               (okButton.hovered ? "#A5622E" : "#9B5D2F")
-                    }
-
-                    contentItem: Text{
-
-                        text:okButton.text
-
-                        horizontalAlignment:Text.AlignHCenter
-                        verticalAlignment:Text.AlignVCenter
-
-                        color:"white"
-
-                        font.bold:true
-                    }
-                }
-            }
-        }
-
-        enter: Transition{
-
-            NumberAnimation{
-
-                property:"opacity"
-
-                from:0
-                to:1
-
-                duration:180
-            }
-
-            NumberAnimation{
-
-                property:"scale"
-
-                from:0.9
-                to:1.0
-
-                duration:180
-            }
-        }
-
-        exit: Transition{
-
-            NumberAnimation{
-
-                property:"opacity"
-
-                from:1
-                to:0
-
-                duration:150
-            }
-
-            NumberAnimation{
-
-                property:"scale"
-
-                from:1
-                to:0.9
-
-                duration:150
-            }
-        }
-
-        opacity: visible ? 1 : 0
-        scale: visible ? 1 : 0.9
-
-        onAccepted:{
-                    var quantity = parseInt(quantityField.text)
-
-                    if(isNaN(quantity) || quantity <= 0){
-                        quantityField.forceActiveFocus()
-                        return
-                    }
-
-                    cartModel.append({
-                        "id": itemDialog.itemData.id,
-                        "name": itemDialog.itemData.name,
-                        "category": itemDialog.category, // <--- THÊM DÒNG NÀY ĐỂ LƯU ĐÚNG DRINK HOẶC FOOD
-                        "size": sizeRow.visible ? sizeCombo.currentText : "",
-                        "quantity": quantity,
-                        "note": tfNote.text,
-                        "totalPrice": itemDialog.calculatedPrice
-                    })
-
-                    close()
-                }
-    }
-    Dialog {
-                id: invoiceDialog
-                modal: true
-                width: 620
-                height: 680
-                anchors.centerIn: parent
-                padding: 0
-
-                background: Rectangle {
-                    color: "#FFFDF9"
-                    radius: 18
-                    border.color: "#D8C4B6"
-                    border.width: 1
-                }
-
-                // Dùng ScrollView làm container chính chứa toàn bộ giao diện
-                ScrollView {
-                    id: invoiceScrollView
-                    anchors.fill: parent
-                    clip: true
-                    ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-
-                    ColumnLayout {
-                        width: invoiceScrollView.availableWidth - 10
-                        spacing: 15
-
-                        // ---------------------------------------------------------
-                        // 1. HEADER (TÊN QUÁN)
-                        // ---------------------------------------------------------
-                        ColumnLayout {
-                            Layout.fillWidth: true
-                            Layout.topMargin: 20
-                            spacing: 4
-
-                            Text {
-                                text: "☕ GIANG'S COFFEE"
-                                font.pixelSize: 26
-                                font.bold: true
-                                color: "#6F4E37"
-
-                                Layout.fillWidth: true
-                                horizontalAlignment: Text.AlignHCenter
-                            }
-
-                            Text {
-                                text: "Thank you for your order ❤️"
-                                color: "#888888"
-                                font.pixelSize: 13
-                                Layout.fillWidth: true
-                                horizontalAlignment: Text.AlignHCenter
-                            }
-                        }
-
-                        // ---------------------------------------------------------
-                        // 2. THÔNG TIN HÓA ĐƠN
-                        // ---------------------------------------------------------
-                        Rectangle {
-                            Layout.fillWidth: true
-                            Layout.leftMargin: 20
-                            Layout.rightMargin: 20
-                            implicitHeight: 80
-                            radius: 10
-                            color: "#F9F5EF"
-                            border.color: "#E6D8C8"
-
-                            Column {
-                                anchors.fill: parent
-                                anchors.margins: 12
-                                spacing: 4
+                    Row {
+                        spacing: 10
+
+                        Repeater {
+                            model: itemDialog.availableSizes
+
+                            delegate: Rectangle {
+                                width: 72
+                                height: 44
+                                radius: 12
+                                color: itemDialog.selectedSize === modelData ? "#6D4C41" : "#F5F0EB"
+                                border.color: itemDialog.selectedSize === modelData ? "#6D4C41" : "#E0D5C8"
+                                border.width: 1.5
 
                                 Text {
-                                    text: "🧾  Mã hóa đơn:  " + invoiceNumber
+                                    anchors.centerIn: parent
+                                    text: modelData
                                     font.bold: true
-                                    font.pixelSize: 13
+                                    font.pixelSize: 16
+                                    color: itemDialog.selectedSize === modelData ? "white" : "#5D4037"
                                 }
-                                Text {
-                                    text: "📅  Ngày: " + invoiceDate
-                                    font.pixelSize: 12
-                                }
-                                Text {
-                                    text: "🕒  Giờ: " + invoiceTime
-                                    font.pixelSize: 12
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        itemDialog.selectedSize = modelData
+
+                                        // Cập nhật tồn kho theo size mới
+                                        if (typeof ingredientManager !== "undefined" && ingredientManager && itemDialog.itemData) {
+                                            itemDialog.maxAllowedQuantity =
+                                                ingredientManager.getMaxServings(itemDialog.itemData.id, modelData)
+
+                                            // Nếu số lượng đang chọn vượt tồn → cắt xuống
+                                            if (itemDialog.quantityValue > itemDialog.maxAllowedQuantity) {
+                                                itemDialog.quantityValue = Math.max(1, itemDialog.maxAllowedQuantity)
+                                            }
+                                        }
+
+                                        itemDialog.updatePrice()
+                                    }
                                 }
                             }
                         }
+                    }
+                }
+
+                // ─── 2. SỐ LƯỢNG (stepper to rõ) ───
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 10
+
+                    Text {
+                        text: "🛒  Số lượng"
+                        font.bold: true
+                        font.pixelSize: 14
+                        color: "#4E342E"
+                    }
+
+                    Row {
+                        spacing: 0
+
+                        // Nút −
+                        Rectangle {
+                            width: 48
+                            height: 48
+                            radius: 14
+                            color: itemDialog.quantityValue <= 1 ? "#F0EBE6" : "#EFEBE9"
+                            border.color: "#D7CCC8"
+
+                            Text {
+                                anchors.centerIn: parent
+                                text: "−"
+                                font.pixelSize: 22
+                                font.bold: true
+                                color: itemDialog.quantityValue <= 1 ? "#BCAAA4" : "#5D4037"
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                enabled: itemDialog.quantityValue > 1
+                                cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                                onClicked: {
+                                    if (itemDialog.quantityValue > 1) {
+                                        itemDialog.quantityValue--
+                                        itemDialog.updatePrice()
+                                    }
+                                }
+                            }
+                        }
+
+                        // Ô số lượng — cho phép nhập bàn phím
+                        TextField {
+                            id: quantityField
+                            width: 64
+                            height: 48
+                            text: "" + itemDialog.quantityValue
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            font.pixelSize: 20
+                            font.bold: true
+                            color: "#3E2723"
+                            selectByMouse: true
+                            validator: IntValidator { bottom: 1; top: 999 }
+                            inputMethodHints: Qt.ImhDigitsOnly
+
+                            background: Rectangle {
+                                color: "#FFFFFF"
+                                border.color: quantityField.activeFocus ? "#A1887F" : "#D7CCC8"
+                                border.width: 1.5
+                            }
+
+                            onTextChanged: {
+                                var n = parseInt(text)
+                                if (!isNaN(n) && n >= 1) {
+                                    if (n !== itemDialog.quantityValue) {
+                                        itemDialog.quantityValue = n
+                                        itemDialog.updatePrice()
+                                    }
+                                }
+                            }
+
+                            // Khi mất focus mà để trống / không hợp lệ → reset về 1
+                            onEditingFinished: {
+                                var n = parseInt(text)
+                                if (isNaN(n) || n < 1) {
+                                    itemDialog.quantityValue = 1
+                                    text = "1"
+                                    itemDialog.updatePrice()
+                                } else if (n > itemDialog.maxAllowedQuantity) {
+                                    itemDialog.quantityValue = itemDialog.maxAllowedQuantity
+                                    text = "" + itemDialog.maxAllowedQuantity
+                                    itemDialog.updatePrice()
+                                }
+                            }
+
+                            // Đồng bộ khi bấm − / +
+                            Connections {
+                                target: itemDialog
+                                function onQuantityValueChanged() {
+                                    if (quantityField.text !== ("" + itemDialog.quantityValue))
+                                        quantityField.text = "" + itemDialog.quantityValue
+                                }
+                            }
+                        }
+
+                        // Nút +
+                        Rectangle {
+                            width: 48
+                            height: 48
+                            radius: 14
+                            color: itemDialog.quantityValue >= itemDialog.maxAllowedQuantity ? "#F0EBE6" : "#EFEBE9"
+                            border.color: "#D7CCC8"
+
+                            Text {
+                                anchors.centerIn: parent
+                                text: "+"
+                                font.pixelSize: 22
+                                font.bold: true
+                                color: itemDialog.quantityValue >= itemDialog.maxAllowedQuantity ? "#BCAAA4" : "#5D4037"
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                enabled: itemDialog.quantityValue < itemDialog.maxAllowedQuantity
+                                cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                                onClicked: {
+                                    if (itemDialog.quantityValue < itemDialog.maxAllowedQuantity) {
+                                        itemDialog.quantityValue++
+                                        itemDialog.updatePrice()
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Cảnh báo tồn kho — chỉ hiện khi vượt quá tồn (và tồn < 999)
+                    Text {
+                        visible: itemDialog.maxAllowedQuantity < 999
+                                 && itemDialog.quantityValue > itemDialog.maxAllowedQuantity
+                        text: "⚠️ Không đủ nguyên liệu! Tối đa còn " + itemDialog.maxAllowedQuantity
+                        color: "#C62828"
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                }
+
+                // ─── 3. GHI CHÚ ───
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 8
+
+                    Text {
+                        text: "📝  Ghi chú"
+                        font.bold: true
+                        font.pixelSize: 14
+                        color: "#4E342E"
+                    }
+
+                    TextArea {
+                        id: tfNote
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 72
+                        wrapMode: TextArea.Wrap
+                        placeholderText: "Ví dụ: Ít đường, thêm sữa..."
+                        font.pixelSize: 14
+                        color: "#3E2723"
+                        selectByMouse: true
+
+                        background: Rectangle {
+                            radius: 12
+                            color: "#FFFFFF"
+                            border.color: parent.activeFocus ? "#A1887F" : "#E0D5C8"
+                            border.width: 1.5
+                        }
+                    }
+                }
+
+                // ─── 4. MỨC ĐÁ (pill buttons) ───
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 10
+                    visible: itemDialog.category === "Drink"
+
+                    Text {
+                        text: "🧊  Mức đá"
+                        font.bold: true
+                        font.pixelSize: 14
+                        color: "#4E342E"
+                    }
+
+                    Flow {
+                        Layout.fillWidth: true
+                        spacing: 8
+
+                        Repeater {
+                            model: ["Bình thường", "Ít đá", "Nhiều đá", "Không đá"]
+
+                            delegate: Rectangle {
+                                width: iceLabel.implicitWidth + 28
+                                height: 40
+                                radius: 20
+                                color: itemDialog.selectedIce === modelData ? "#5D4037" : "#F5F0EB"
+                                border.color: itemDialog.selectedIce === modelData ? "#5D4037" : "#E0D5C8"
+                                border.width: 1.5
+
+                                Text {
+                                    id: iceLabel
+                                    anchors.centerIn: parent
+                                    text: modelData
+                                    font.pixelSize: 13
+                                    font.bold: itemDialog.selectedIce === modelData
+                                    color: itemDialog.selectedIce === modelData ? "white" : "#5D4037"
+                                }
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        itemDialog.selectedIce = modelData
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // ─── 5. TOPPING ───
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 10
+                    visible: itemDialog.category === "Drink"
+
+                    Text {
+                        text: "🍒  Topping thêm"
+                        font.bold: true
+                        font.pixelSize: 14
+                        color: "#4E342E"
+                    }
+
+                    Flow {
+                        Layout.fillWidth: true
+                        spacing: 10
+
+                        Repeater {
+                            id: toppingRepeater
+                            model: [
+                                { name: "Trân châu", price: 10000 },
+                                { name: "Whipping", price: 15000 },
+                                { name: "Thạch", price: 12000 },
+                                { name: "Kem cheese", price: 20000 }
+                            ]
+
+                            delegate: Rectangle {
+                                width: 118
+                                height: 56
+                                radius: 14
+                                property bool checked: false
+                                property real toppingPrice: modelData.price
+                                property string toppingName: modelData.name
+
+                                color: checked ? "#6D4C41" : "#FFFFFF"
+                                border.color: checked ? "#6D4C41" : "#E0D5C8"
+                                border.width: 1.5
+
+                                Column {
+                                    anchors.centerIn: parent
+                                    spacing: 2
+
+                                    Text {
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                        text: modelData.name
+                                        font.pixelSize: 13
+                                        font.bold: true
+                                        color: checked ? "white" : "#3E2723"
+                                    }
+                                    Text {
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                        text: "+" + formatVND(modelData.price)
+                                        font.pixelSize: 11
+                                        color: checked ? "#FFE0B2" : "#8D6E63"
+                                    }
+                                }
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        checked = !checked
+                                        itemDialog.updatePrice()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // ─── 6. THÀNH TIỀN ───
+                Rectangle {
+                    Layout.fillWidth: true
+                    height: 72
+                    radius: 16
+                    color: "#FFF3E0"
+                    border.color: "#FFCC80"
+                    border.width: 1
+
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.margins: 18
 
                         Text {
-                            text: "CHI TIẾT ĐƠN HÀNG"
+                            text: "Thành tiền"
                             font.bold: true
                             font.pixelSize: 15
-                            color: "#6F4E37"
-                            Layout.alignment: Qt.AlignHCenter
+                            color: "#E65100"
                         }
 
-                        // ---------------------------------------------------------
-                        // 3. DANH SÁCH CÁC MÓN ĐÃ CHỌN (HIỂN THỊ ẢNH THẬT NGUYÊN BẢN)
-                       // ---------------------------------------------------------
-                         ListView {
-                                id: invoiceList
-                                Layout.fillWidth: true
-                                Layout.leftMargin: 20
-                                Layout.rightMargin: 20
-                                implicitHeight: contentHeight
-                                interactive: false // Để ScrollView bên ngoài chịu trách nhiệm cuộn
-                                spacing: 8
-                                model: cartModel
+                        Item { Layout.fillWidth: true }
 
-                                delegate: Rectangle {
-                                    width: invoiceList.width
-                                    implicitHeight: 70
-                                    radius: 10
-                                    color: "#FCFAF6"
-                                    border.color: "#E7DBCF"
-
-                                    RowLayout {
-                                        anchors.fill: parent
-                                        anchors.margins: 10
-                                        spacing: 12
-
-                                        // Hiển thị hình ảnh thật của món đã chọn
-                                        Image {
-                                            Layout.preferredWidth: 50
-                                            Layout.preferredHeight: 50
-                                            fillMode: Image.PreserveAspectCrop
-                                            clip: true
-                                            source: getImagePath(model.name, model.category ? model.category : orderPageRoot.selectedCategory)
-
-                                            // Khung vuông bo tròn viền ảnh
-                                            Rectangle {
-                                                anchors.fill: parent
-                                                color: "transparent"
-                                                border.color: "#E0E0E0"
-                                                radius: 6
-                                            }
-
-                                            // Ô nền thay thế nếu ảnh bị lỗi hoặc không tìm thấy
-                                            Rectangle {
-                                                anchors.fill: parent
-                                                color: "#E0E0E0"
-                                                visible: parent.status === Image.Error || parent.status === Image.Null
-                                                radius: 6
-
-                                                Text {
-                                                    anchors.centerIn: parent
-                                                    text: "📷"
-                                                    font.pixelSize: 18
-                                                }
-                                            }
-                                        }
-
-                                        ColumnLayout {
-                                            Layout.fillWidth: true
-                                            spacing: 2
-
-                                            Text {
-                                                text: name + (size !== "" ? " (" + size + ")" : "")
-                                                font.bold: true
-                                                font.pixelSize: 13
-                                                color: "#2C1D11"
-                                                elide: Text.ElideRight
-                                                Layout.fillWidth: true
-                                            }
-
-                                            Text {
-                                                text: "SL: " + quantity
-                                                font.pixelSize: 11
-                                                color: "#666666"
-                                            }
-
-                                            Text {
-                                                visible: note !== ""
-                                                text: "📝 " + note
-                                                color: "#888888"
-                                                font.pixelSize: 10
-                                                elide: Text.ElideRight
-                                                Layout.fillWidth: true
-                                            }
-                                        }
-
-                                        Text {
-                                            text: formatVND(totalPrice)
-                                            font.bold: true
-                                            font.pixelSize: 13
-                                            color: "#8B5A2B"
-                                            horizontalAlignment: Text.AlignRight
-                                        }
-                                    }
-                                }
-                            }
-
-
-                         // Dong voucher rieng (chi hien khi co giam)
-                         Text {
-                             Layout.fillWidth: true
-                             Layout.leftMargin: 20
-                             Layout.rightMargin: 20
-                             visible: voucherDiscount > 0
-                             text: "Voucher " + selectedVoucherCode + ":  -" + formatVND(voucherDiscount)
-                             font.pixelSize: 13
-                             font.bold: true
-                             color: "#2E7D32"
-                         }
-
-                         // ---------------------------------------------------------
-                         // 4. TỔNG THANH TOÁN
-                         // ---------------------------------------------------------
-                         Rectangle {
-                            Layout.fillWidth: true
-                            Layout.leftMargin: 20
-                            Layout.rightMargin: 20
-                            radius: 12
-                            color: "#FFF7ED"
-                            border.color: "#F2D9B6"
-                            implicitHeight: 55
-
-                                RowLayout {
-                                    anchors.fill: parent
-                                    anchors.margins: 12
-
-                                    Text {
-                                        text: "💰 Tổng thanh toán"
-                                        font.bold: true
-                                        font.pixelSize: 15
-                                        color: "#6F4E37"
-                                    }
-
-                                    Item { Layout.fillWidth: true }
-
-                                    Text {
-                                        text: formatVND(Math.max(0, calculateGrandTotal() - voucherDiscount))
-                                        font.bold: true
-                                        font.pixelSize: 20
-                                        color: "#B45309"
-                                    }
-                                }
+                        Text {
+                            text: formatVND(itemDialog.calculatedPrice)
+                            font.bold: true
+                            font.pixelSize: 26
+                            color: "#BF360C"
                         }
+                    }
+                }
+            }
+        }
 
-                        // ---------------------------------------------------------
-                        // 5. MÃ QR BÊN TRÁI & CHỮ BÊN PHẢI
-                        // ---------------------------------------------------------
-                        Rectangle {
-                            Layout.fillWidth: true
-                            Layout.leftMargin: 20
-                            Layout.rightMargin: 20
-                            implicitHeight: 140
-                            radius: 14
-                            color: "#FAF8F4"
-                            border.color: "#E6D8C8"
+        // ===== FOOTER =====
+        footer: Rectangle {
+            height: 88
+            color: "transparent"
 
-                            RowLayout {
-                                anchors.fill: parent
-                                anchors.margins: 12
-                                spacing: 15
+            Rectangle {
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.leftMargin: 24
+                anchors.rightMargin: 24
+                height: 1
+                color: "#EFE6DC"
+            }
 
-                                Image {
-                                    Layout.preferredWidth: 115
-                                    Layout.preferredHeight: 115
-                                    fillMode: Image.PreserveAspectFit
-                                    source: "file:///" + applicationDir + "/data/ma_qr.jpg"
-                                }
+            RowLayout {
+                anchors.fill: parent
+                anchors.margins: 20
+                spacing: 14
 
-                                ColumnLayout {
-                                    Layout.fillWidth: true
-                                    Layout.alignment: Qt.AlignVCenter
-                                    spacing: 6
+                Item { Layout.fillWidth: true }
 
-                                    Text {
-                                        text: "Quét mã QR để thanh toán"
-                                        font.pixelSize: 15
-                                        font.bold: true
-                                        color: "#6F4E37"
-                                        wrapMode: Text.WordWrap
-                                        Layout.fillWidth: true
-                                    }
+                // Nút Hủy
+                Rectangle {
+                    width: 120
+                    height: 48
+                    radius: 14
+                    color: "#F5F0EB"
+                    border.color: "#D7CCC8"
+                    border.width: 1
 
-                                    Text {
-                                        text: "Sử dụng app ngân hàng hoặc ví điện tử để quét mã."
-                                        font.pixelSize: 12
-                                        color: "#666666"
-                                        wrapMode: Text.WordWrap
-                                        Layout.fillWidth: true
-                                    }
+                    Text {
+                        anchors.centerIn: parent
+                        text: "HỦY"
+                        font.bold: true
+                        font.pixelSize: 14
+                        color: "#5D4037"
+                    }
 
-                                    Text {
-                                        text: "Cảm ơn Quý khách! ❤️"
-                                        font.pixelSize: 12
-                                        font.italic: true
-                                        color: "#8B5A2B"
-                                        wrapMode: Text.WordWrap
-                                        Layout.fillWidth: true
-                                    }
-                                }
-                            }
-                        }
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: itemDialog.close()
+                    }
+                }
 
-                        // ---------------------------------------------------------
-                        // 6. CÁC NÚT BẤM (ĐÓNG / HOÀN TẤT)
-                        // ---------------------------------------------------------
-                        RowLayout {
-                            Layout.fillWidth: true
-                            Layout.leftMargin: 20
-                            Layout.rightMargin: 20
-                            Layout.bottomMargin: 20
-                            spacing: 12
+                // Nút Xác nhận
+                Rectangle {
+                    width: 140
+                    height: 48
+                    radius: 14
+                    color: "#5D4037"
 
-                            Item { Layout.fillWidth: true }
+                    Text {
+                        anchors.centerIn: parent
+                        text: "XÁC NHẬN"
+                        font.bold: true
+                        font.pixelSize: 14
+                        color: "white"
+                    }
 
-                            Button {
-                                id: invoiceCancelButton
-                                text: "Đóng"
-                                implicitWidth: 110
-                                implicitHeight: 40
-                                onClicked: invoiceDialog.close()
-                            }
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: itemDialog.accept()
+                    }
+                }
+            }
+        }
 
-                            Button {
-                                id: finishButton
-                                text: "In Hóa Đơn"
-                                implicitWidth: 170
-                                implicitHeight: 40
-                                highlighted: true
+        onAccepted: {
+            if (quantityValue <= 0) return
 
-                                onClicked: {
-                                    // Trừ kho nguyên liệu cho từng món trong cartModel
-                                    for (var i = 0; i < cartModel.count; i++) {
-                                        var item = cartModel.get(i);
-                                        if (typeof ingredientManager !== "undefined") {
-                                            ingredientManager.deductIngredientsForOrder(item.id, item.size ||"M", item.quantity);
-                                        }
-                                    }
+            // Lấy danh sách topping đã chọn
+            var toppingNames = []
+            for (var i = 0; i < toppingRepeater.count; i++) {
+                var btn = toppingRepeater.itemAt(i)
+                if (btn && btn.checked) {
+                    toppingNames.push(btn.toppingName)
+                }
+            }
 
-                                    // Cập nhật lại giao diện menu để phản ánh tồn kho mới
-                                    menuGrid.model = getMenuData(orderPageRoot.selectedCategory)
-                                    cartModel.clear()
-                                    invoiceDialog.close()
-                                }
-                            }
+            cartModel.append({
+                "id": itemDialog.itemData.id,
+                "name": itemDialog.itemData.name,
+                "category": itemDialog.category,
+                "size": sizeSection.visible ? selectedSize : "",
+                "ice": itemDialog.category === "Drink" ? selectedIce : "",
+                "toppings": toppingNames.join(", "),
+                "quantity": quantityValue,
+                "note": tfNote.text,
+                "totalPrice": itemDialog.calculatedPrice
+            })
+
+            close()
+        }
+    }
+
+    InvoiceDialog {
+        id: invoiceDialog
+        showFinishButton: true
+
+        onFinished: {
+            console.log("=== Bắt đầu In Hóa Đơn ===")
+
+            // Copy dữ liệu giỏ ra trước (tránh list thay đổi giữa chừng)
+            var cartCopy = []
+            for (var i = 0; i < cartModel.count; i++) {
+                var it = cartModel.get(i)
+                if (!it || !it.id) continue
+                cartCopy.push({
+                    id: it.id,
+                    size: it.size || "M",
+                    quantity: parseInt(it.quantity) || 1,
+                    name: it.name || "",
+                    note: it.note || "",
+                    totalPrice: it.totalPrice || 0,
+                    category: it.category || "Drink",
+                    ice: it.ice || "",
+                    toppings: it.toppings || ""
+                })
+            }
+
+            try {
+                // 1. Trừ kho
+                if (typeof ingredientManager !== "undefined" && ingredientManager) {
+                    for (var k = 0; k < cartCopy.length; k++) {
+                        var item = cartCopy[k]
+                        try {
+                            ingredientManager.deductIngredientsForOrder(item.id, item.size, item.quantity)
+                        } catch (e) {
+                            console.error("Lỗi trừ kho món", item.id, e)
                         }
                     }
                 }
 
-                enter: Transition {
-                    NumberAnimation { property: "opacity"; from: 0; to: 1; duration: 180 }
-                    NumberAnimation { property: "scale"; from: 0.92; to: 1.0; duration: 180 }
-                }
-                exit: Transition {
-                    NumberAnimation { property: "opacity"; from: 1; to: 0; duration: 150 }
-                    NumberAnimation { property: "scale"; from: 1; to: 0.92; duration: 150 }
+                // 2. Lưu lịch sử
+                if (typeof orderHistoryManager !== "undefined" && orderHistoryManager) {
+                    orderHistoryManager.addOrder({
+                        invoiceNumber: invoiceNumber || "",
+                        date: invoiceDate || "",
+                        time: invoiceTime || "",
+                        customerName: "Khách vãng lai",
+                        totalAmount: Math.max(0, calculateGrandTotal() - voucherDiscount),
+                        discount: voucherDiscount || 0,
+                        voucherCode: selectedVoucherCode || "",
+                        items: cartCopy
+                    })
                 }
 
-                opacity: visible ? 1 : 0
-                scale: visible ? 1 : 0.92
+                // 3. Xóa giỏ + refresh
+                cartModel.clear()
+                menuGrid.model = getMenuData(orderPageRoot.selectedCategory)
+
+                console.log("=== Hoàn tất ===")
+            } catch (e) {
+                console.error("LỖI In Hóa Đơn:", e)
             }
+        }
+    }
 }

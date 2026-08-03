@@ -48,8 +48,15 @@ Item {
             Button {
                 text: "← Quay lại"
                 onClicked: {
-                    if (StackView.view) StackView.view.pop()
-                    else if (typeof stackView !== "undefined") stackView.pop()
+                    // Nếu đang nằm trong Loader của OrderPage
+                    if (typeof orderPageRoot !== "undefined") {
+                        orderPageRoot.showingInventory = false
+                        orderPageRoot.showingHistory = false
+                    }
+                    // fallback cho trường hợp push StackView
+                    else if (StackView.view) {
+                        StackView.view.pop()
+                    }
                 }
             }
         }
@@ -250,12 +257,30 @@ Item {
             Layout.fillWidth: true
             implicitHeight: 44
             highlighted: true
+            // onClicked: {
+            //     if (typeof ingredientManager !== "undefined") {
+            //         // Lưu riêng 2 file hoặc 1 file tổng tuỳ bạn
+            //         var ok1 = ingredientManager.saveIngredientsCSV(applicationDir + "/data/IngredientDrink.csv")
+            //         // Bạn có thể viết thêm hàm save riêng cho Food nếu muốn
+            //         console.log(ok1 ? "Đã lưu thành công" : "Lỗi lưu file")
+            //     }
+            // }
             onClicked: {
                 if (typeof ingredientManager !== "undefined") {
-                    // Lưu riêng 2 file hoặc 1 file tổng tuỳ bạn
-                    var ok1 = ingredientManager.saveIngredientsCSV(applicationDir + "/data/IngredientDrink.csv")
-                    // Bạn có thể viết thêm hàm save riêng cho Food nếu muốn
-                    console.log(ok1 ? "Đã lưu thành công" : "Lỗi lưu file")
+                    // Gọi setQuantity 1 lần để kích hoạt autoSave
+                    // hoặc thêm Q_INVOKABLE forceSave() nếu cần
+                    var list = ingredientManager.getAllIngredients()
+                    console.log("Số nguyên liệu trong memory:", list.length)
+                    for (var i = 0; i < list.length; i++) {
+                        if (list[i].id && list[i].id.indexOf("ING1") === 0)
+                            console.log(list[i].id, list[i].name, list[i].quantity)
+                    }
+                    // Ép save bằng cách set lại cùng số lượng
+                    for (var j = 0; j < list.length; j++) {
+                        if (list[j].id && list[j].id.indexOf("ING1") === 0)
+                            ingredientManager.setQuantity(list[j].id, list[j].quantity)
+                    }
+                    console.log("Đã gọi setQuantity → autoSave")
                 }
             }
         }

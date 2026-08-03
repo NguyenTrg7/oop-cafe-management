@@ -111,7 +111,7 @@ Menu MenuManager::searchDrink(const QString &id) const
 
 Menu MenuManager::searchFood(const QString &id) const
 {
-    for (const Menu &item : m_drinks)
+    for (const Menu &item : m_foods)
         if (item.getId() == id)
             return item;
     return Menu();
@@ -189,7 +189,7 @@ bool MenuManager::saveFoodsCSV(const QString &path)
 
     out << "ID, Name, Category, BasePrice, Status\n";
 
-    for (const Menu &item : m_drinks) {
+    for (const Menu &item : m_foods) {
         out << item.getId() << "," << item.getName() << "," << item.getCategory() << ","
             << item.getPrice() << "," << item.getStatus() << "\n";
     }
@@ -206,28 +206,26 @@ QVariantList MenuManager::getMenuByCategory(const QString &type) const
 
     for (const Menu &item : targetList) {
         QVariantMap map;
-        map["id"] = item.getId();
-        map["name"] = item.getName();
+        map["id"]       = item.getId();
+        map["name"]     = item.getName();
         map["category"] = item.getCategory();
-        map["price"] = item.getPrice();
-        map["sizes"] = item.getSizes();
-        map["status"] = item.getStatus();
+        map["price"]    = item.getPrice();
+        map["sizes"]    = item.getSizes();
+        map["status"]   = item.getStatus();
 
         int maxStock = 999;
         bool isAvailable = (item.getStatus() == "Available");
 
-        // Tích hợp kiểm tra tồn kho từ IngredientManager (giả định đã kết nối)
         if (m_ingredientManager) {
-            QString defaultSize = "M";
-            if (!item.getSizes().isEmpty())
-                defaultSize = item.getSizes().first();
+            QString defaultSize = item.getSizes().isEmpty()
+            ? "M"
+            : item.getSizes().first();
             maxStock = m_ingredientManager->getMaxServings(item.getId(), defaultSize);
             isAvailable = (maxStock > 0) && (item.getStatus() == "Available");
-        } else {
-            map["maxStock"] = 999;
-            map["isAvailable"] = (item.getStatus() == "Available");
         }
 
+        map["maxStock"]    = maxStock;
+        map["isAvailable"] = isAvailable;
         list.append(map);
     }
     return list;
