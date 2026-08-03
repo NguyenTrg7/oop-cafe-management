@@ -3,32 +3,19 @@
 #include <QUrl>
 #include <fstream>
 #include <sstream>
-#include <QDir>
-
-// ==========================================================
-// HELPER: Lấy đường dẫn file data 2 chiều
-// ==========================================================
-static QString getFilePath(const QString &fileName) {
-    QDir().mkpath(QString(DATA_DIR_PATH)); // Đảm bảo thư mục luôn tồn tại
-#ifdef QT_DEBUG
-    // Chế độ Debug: Ghi trực tiếp vào file ở thư mục gốc dự án
-    return QString(DATA_DIR_PATH) + "/" + fileName;
-#else
-    // Chế độ Release: Ghi vào cạnh file .exe khi đóng gói
-    return QCoreApplication::applicationDirPath() + "/data/" + fileName;
-#endif
-}
 
 EmployeeModel::EmployeeModel(Account *accountHandler, QObject *parent)
     : QAbstractListModel(parent)
     , m_accountHandler(accountHandler)
 {
-    importCSV(getFilePath("Employee.csv"));
+    // Đồng bộ đường dẫn với GiangCoffeeSystem
+    QString defaultPath = QCoreApplication::applicationDirPath() + "/data/Employee.csv";
+    importCSV(defaultPath);
 }
 
 EmployeeModel::~EmployeeModel()
 {
-    // Đã xóa hàm exportCSV() tại đây để KHÔNG ghi đè dữ liệu cũ khi tắt app
+    QString defaultPath = QCoreApplication::applicationDirPath() + "/data/Employee.csv";
     qDeleteAll(m_employees);
     m_employees.clear();
 }
@@ -84,8 +71,8 @@ void EmployeeModel::addEmployee(const QString &id, const QString &phone, const Q
     m_employees.append(new Employee(id, phone, name, salary, dob, cccd, shiftDate, shiftTime, avatar, cccdFront, cccdBack));
     endInsertRows();
 
-    // Ghi tức thời vào file cấu hình chung
-    exportCSV(getFilePath("Employee.csv"));
+    QString defaultPath = QCoreApplication::applicationDirPath() + "/data/Employee.csv";
+    exportCSV(defaultPath);
 }
 
 void EmployeeModel::updateEmployee(int index, const QString &id, const QString &phone, const QString &name, double salary, const QString &dob, const QString &cccd, const QString &shiftDate, const QString &shiftTime, const QString &avatar, const QString &cccdFront, const QString &cccdBack)
@@ -105,8 +92,8 @@ void EmployeeModel::updateEmployee(int index, const QString &id, const QString &
     emp->setCccdBack(cccdBack);
     emit dataChanged(createIndex(index, 0), createIndex(index, 0));
 
-    // Ghi tức thời
-    exportCSV(getFilePath("Employee.csv"));
+    QString defaultPath = QCoreApplication::applicationDirPath() + "/data/Employee.csv";
+    exportCSV(defaultPath);
 }
 
 void EmployeeModel::removeEmployee(int index)
@@ -117,8 +104,8 @@ void EmployeeModel::removeEmployee(int index)
     delete emp;
     endRemoveRows();
 
-    // Ghi tức thời
-    exportCSV(getFilePath("Employee.csv"));
+    QString defaultPath = QCoreApplication::applicationDirPath() + "/data/Employee.csv";
+    exportCSV(defaultPath);
 }
 
 bool EmployeeModel::checkInCheckOut(const QString &phone, const QString &shiftDate, const QString &shiftTime)
@@ -128,7 +115,8 @@ bool EmployeeModel::checkInCheckOut(const QString &phone, const QString &shiftDa
             m_employees[i]->setShiftDate(shiftDate);
             m_employees[i]->setShiftTime(shiftTime);
             emit dataChanged(createIndex(i, 0), createIndex(i, 0));
-            exportCSV(getFilePath("Employee.csv"));
+            QString defaultPath = QCoreApplication::applicationDirPath() + "/data/Employee.csv";
+            exportCSV(defaultPath);
             return true;
         }
     }
@@ -158,6 +146,7 @@ void EmployeeModel::importCSV(const QString &filePath)
         std::stringstream ss(line);
         std::string id, name, phone, salaryStr, shiftDate, shiftTime;
 
+        // Tương thích với CSV của GiangCoffeeSystem
         std::getline(ss, id, ',');
         std::getline(ss, name, ',');
         std::getline(ss, phone, ',');
@@ -183,6 +172,7 @@ void EmployeeModel::exportCSV(const QString &filePath)
     std::ofstream file(localPath.toStdString());
     if (!file.is_open()) return;
 
+    // Header chuẩn với GiangCoffeeSystem
     file << "ID,Name,Phone,Salary,ShiftDate,ShiftTime\n";
     for (Employee *emp : m_employees) {
         file << emp->getId().toStdString() << "," << emp->getName().toStdString() << ","
