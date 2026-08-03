@@ -10,7 +10,6 @@
 #include "Account.h"
 #include "Customer.h"
 #include "EmployeeModel.h"
-#include "IngredientManager.h"
 #include "GiangCoffeeSystem.h" // Import Header Singleton xử lý Menu
 
 // Hàm hỗ trợ tìm kiếm file dữ liệu (Lấy từ main1.cpp)
@@ -63,11 +62,6 @@ int main(int argc, char *argv[])
     systemInstance->getMenuManager()->loadDrinksCSV(drinkPath);
     systemInstance->getMenuManager()->loadFoodsCSV(foodPath);
 
-    IngredientManager ingManager;
-    ingManager.loadIngredientsCSV("data/IngredientDrink.csv", true);
-    ingManager.loadIngredientsCSV("data/IngredientFood.csv", false);
-    ingManager.loadRecipesCSV("data/Recipes.csv");
-
     // ==========================================
     // 3. ĐĂNG KÝ QML CONTEXT PROPERTIES
     // ==========================================
@@ -75,8 +69,11 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("customerHandler", &customerHandler);
     engine.rootContext()->setContextProperty("cppEmployeeModel", &employeeModel);
     engine.rootContext()->setContextProperty("coffeeSystem", systemInstance); // Đăng ký thêm system cho menu
-    engine.rootContext()->setContextProperty("ingredientManager", &ingManager);
-    // 4. Load file QML chính
+    engine.rootContext()->setContextProperty("applicationDir", QCoreApplication::applicationDirPath());
+
+    // ==========================================
+    // 4. LOAD FILE QML CHÍNH
+    // ==========================================
     const QUrl url(QStringLiteral("qrc:/qt/qml/GiangsCoffee/ui/main.qml"));
 
     QObject::connect(
