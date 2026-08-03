@@ -24,6 +24,8 @@ GiangCoffeeSystem::GiangCoffeeSystem(QObject *parent)
     m_address = "VNU-HCM University of Science";
     m_menuManager = new MenuManager(this);
 
+    loadSeating();
+
     m_tables.append(Seating(1, 4, false, QStringLiteral("Vuông")));
     m_tables.append(Seating(2, 4, false, QStringLiteral("Vuông")));
     m_tables.append(Seating(3, 4, false, QStringLiteral("Tròn")));
@@ -262,11 +264,100 @@ void GiangCoffeeSystem::placeOrder(Order *order)
     if (order) m_orders.append(order);
 }
 
+// Hàm của seating/table
+void GiangCoffeeSystem::saveSeating()
+{
+    QString path = QCoreApplication::applicationDirPath() + "/data/seating.csv";
+    QFile file(path);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
+        return;
+
+    QTextStream out(&file);
+    out << "TableNumber,Capacity,Occupied,Shape,OriginalNumbers,OriginalCapacities,OriginalShapes,Note\n";
+
+    for (const Seating &t : std::as_const(m_tables)) {
+        QStringList nums, caps, shapes;
+        for (int n : t.getOriginalNumbers()) nums << QString::number(n);
+        for (int c : t.getOriginalCapacities()) caps << QString::number(c);
+        for (const QString &s : t.getOriginalShapes()) shapes << s;
+
+        // Note: thay dau phay de khong vo CSV
+        QString noteSafe = t.getNote();
+        noteSafe.replace(",", ";");
+        noteSafe.replace("\n", " ");
+
+        out << t.getTableNumber() << ","
+            << t.getCapacity() << ","
+            << (t.isTableOccupied() ? "1" : "0") << ","
+            << t.getShape() << ","
+            << nums.join("|") << ","
+            << caps.join("|") << ","
+            << shapes.join("|") << ","
+            << noteSafe << "\n";
+    }
+    file.close();
+}
+
+void GiangCoffeeSystem::loadSeating()
+{
+    QString path = QCoreApplication::applicationDirPath() + "/data/seating.csv";
+    QFile file(path);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+
+    m_tables.clear();
+    QTextStream in(&file);
+    in.readLine(); // bỏ header
+
+    while (!in.atEnd()) {
+        QString line = in.readLine().trimmed();
+        if (line.isEmpty()) continue;
+
+        QStringList f = line.split(",");
+        if (f.size() < 4) continue;
+
+        int num = f[0].toInt();
+        int cap = f[1].toInt();
+        bool occ = (f[2] == "1");
+        QString shape = f[3];
+
+        Seating t(num, cap, occ, shape);
+
+        if (f.size() >= 5 && !f[4].isEmpty()) {
+            QList<int> nums;
+            for (const QString &s : f[4].split("|", Qt::SkipEmptyParts))
+                nums << s.toInt();
+            t.setOriginalNumbers(nums);
+        }
+        if (f.size() >= 6 && !f[5].isEmpty()) {
+            QList<int> caps;
+            for (const QString &s : f[5].split("|", Qt::SkipEmptyParts))
+                caps << s.toInt();
+            t.setOriginalCapacities(caps);
+        }
+        if (f.size() >= 7 && !f[6].isEmpty()) {
+            t.setOriginalShapes(f[6].split("|", Qt::SkipEmptyParts));
+        }
+
+        if (f.size() >= 8) {
+            QString note = f[7].trimmed();
+            note.replace(";", ",");
+            t.setNote(note);
+        }
+
+        m_tables.append(t);
+    }
+    file.close();
+}
+
 void GiangCoffeeSystem::reserveTable(int tableNum)
 {
     for (auto &table : m_tables) {
         if (table.getTableNumber() == tableNum) {
-            if (table.isAvailable()) table.occupyTable();
+            if (table.isAvailable()) {
+                table.occupyTable();
+                saveSeating();
+            }
             return;
         }
     }
@@ -277,6 +368,7 @@ void GiangCoffeeSystem::clearTable(int tableNum)
     for (auto &table : m_tables) {
         if (table.getTableNumber() == tableNum) {
             table.clearTable();
+            saveSeating();
             return;
         }
     }
@@ -293,21 +385,36 @@ void GiangCoffeeSystem::mergeTable(int tableNum1, int tableNum2)
     }
     if (idx1 < 0 || idx2 < 0) return;
 
-    QList<int> orig1 = m_tables[idx1].getOriginalCapacities();
-    if (orig1.isEmpty()) orig1 << m_tables[idx1].getCapacity();
+    // Lấy lịch sử gốc
+    QList<int> origNums1 = m_tables[idx1].getOriginalNumbers();
+    if (origNums1.isEmpty()) origNums1 << tableNum1;
+    QList<int> origCaps1 = m_tables[idx1].getOriginalCapacities();
+    if (origCaps1.isEmpty()) origCaps1 << m_tables[idx1].getCapacity();
+    QList<QString> origShapes1 = m_tables[idx1].getOriginalShapes();
+    if (origShapes1.isEmpty()) origShapes1 << m_tables[idx1].getShape();
+    QString note1 = m_tables[idx1].getNote();
 
-    QList<int> orig2 = m_tables[idx2].getOriginalCapacities();
-    if (orig2.isEmpty()) orig2 << m_tables[idx2].getCapacity();
-
-    QList<int> mergedOrig = orig1 + orig2;
+    QList<int> origNums2 = m_tables[idx2].getOriginalNumbers();
+    if (origNums2.isEmpty()) origNums2 << tableNum2;
+    QList<int> origCaps2 = m_tables[idx2].getOriginalCapacities();
+    if (origCaps2.isEmpty()) origCaps2 << m_tables[idx2].getCapacity();
+    QList<QString> origShapes2 = m_tables[idx2].getOriginalShapes();
+    if (origShapes2.isEmpty()) origShapes2 << m_tables[idx2].getShape();
+    QString note2 = m_tables[idx2].getNote();
 
     const int mergedNumber = qMin(tableNum1, tableNum2);
     const int mergedCapacity = m_tables[idx1].getCapacity() + m_tables[idx2].getCapacity();
     const bool mergedOccupied = m_tables[idx1].isTableOccupied() || m_tables[idx2].isTableOccupied();
     const QString mergedShape = (tableNum1 < tableNum2) ? m_tables[idx1].getShape() : m_tables[idx2].getShape();
+    QString mergedNote = note1;
+    if (!note2.isEmpty())
+        mergedNote = note1.isEmpty() ? note2 : (note1 + " | " + note2);
 
     Seating mergedTable(mergedNumber, mergedCapacity, mergedOccupied, mergedShape);
-    mergedTable.setOriginalCapacities(mergedOrig);
+    mergedTable.setOriginalNumbers(origNums1 + origNums2);
+    mergedTable.setOriginalCapacities(origCaps1 + origCaps2);
+    mergedTable.setOriginalShapes(origShapes1 + origShapes2);
+    mergedTable.setNote(mergedNote);
 
     if (tableNum1 < tableNum2) {
         m_tables[idx1] = mergedTable;
@@ -316,6 +423,8 @@ void GiangCoffeeSystem::mergeTable(int tableNum1, int tableNum2)
         m_tables[idx2] = mergedTable;
         m_tables.removeAt(idx1);
     }
+
+    saveSeating();
 }
 
 bool GiangCoffeeSystem::undoMerge(int tableNumber)
@@ -329,31 +438,29 @@ bool GiangCoffeeSystem::undoMerge(int tableNumber)
     }
     if (idx < 0) return false;
 
+    QList<int> origNums = m_tables[idx].getOriginalNumbers();
     QList<int> origCaps = m_tables[idx].getOriginalCapacities();
-    if (origCaps.size() <= 1) return false;
+    QList<QString> origShapes = m_tables[idx].getOriginalShapes();
 
-    m_tables[idx].setCapacity(origCaps[0]);
-    m_tables[idx].clearOriginalCapacities();
-    QString shp = m_tables[idx].getShape();
+    if (origNums.size() <= 1 || origNums.size() != origCaps.size())
+        return false;
 
-    for (int i = 1; i < origCaps.size(); ++i) {
-        int newNumber = -1;
-        for (int candidate = 1; candidate <= 30; ++candidate) {
-            bool exists = false;
-            for (const Seating &t : std::as_const(m_tables)) {
-                if (t.getTableNumber() == candidate) {
-                    exists = true;
-                    break;
-                }
-            }
-            if (!exists) {
-                newNumber = candidate;
-                break;
-            }
-        }
-        if (newNumber == -1) break;
-        m_tables.append(Seating(newNumber, origCaps[i], false, shp));
+    // Xóa bàn đã gộp
+    m_tables.removeAt(idx);
+
+    // Khôi phục từng bàn gốc
+    for (int i = 0; i < origNums.size(); ++i) {
+        QString shp = (i < origShapes.size()) ? origShapes[i] : QStringLiteral("Vuông");
+        m_tables.append(Seating(origNums[i], origCaps[i], false, shp));
     }
+
+    // Sắp xếp lại theo số bàn
+    std::sort(m_tables.begin(), m_tables.end(),
+              [](const Seating &a, const Seating &b) {
+                  return a.getTableNumber() < b.getTableNumber();
+              });
+
+    saveSeating();
     return true;
 }
 
@@ -362,7 +469,20 @@ void GiangCoffeeSystem::editTable(int tableNumber, const QString &shape, int cap
     for (auto &table : m_tables) {
         if (table.getTableNumber() == tableNumber) {
             table.setShape(shape);
-            if (capacity >= 1 && capacity <= 20) table.setCapacity(capacity);
+            if (capacity >= 1 && capacity <= 20)
+                table.setCapacity(capacity);
+            saveSeating();
+            return;
+        }
+    }
+}
+
+void GiangCoffeeSystem::setTableNote(int tableNumber, const QString &note)
+{
+    for (auto &table : m_tables) {
+        if (table.getTableNumber() == tableNumber) {
+            table.setNote(note);
+            saveSeating();
             return;
         }
     }
@@ -379,6 +499,7 @@ QVariantList GiangCoffeeSystem::getSeatingList() const
         map["available"] = table.isAvailable();
         map["status"] = table.isTableOccupied() ? QStringLiteral("Đã có khách") : QStringLiteral("Trống");
         map["shape"] = table.getShape();
+        map["note"] = table.getNote();
         list.append(map);
     }
     return list;

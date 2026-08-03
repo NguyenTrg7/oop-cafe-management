@@ -1,6 +1,10 @@
 #include "Customer.h"
 #include <QDebug>
 #include <QRandomGenerator>
+#include <QFile>
+#include <QTextStream>
+#include <QMap>
+#include <QCoreApplication>
 
 Customer::Customer(const QString &id, const QString &name, int points, QObject *parent)
     : User(id, name, parent)
@@ -40,6 +44,7 @@ QString Customer::role() const
 void Customer::displayInfo() const
 {
     qDebug() << "Khách:" << m_name
+             << "| SĐT:" << m_phoneNumber
              << "| Điểm:" << m_loyaltyPoints
              << "| Voucher:" << m_vouchers.size();
 }
@@ -50,7 +55,7 @@ void Customer::addPoints(int points)
         return;
     m_loyaltyPoints += points;
     emit loyaltyPointsChanged();
-    qDebug() << "[Loyalty] +" << points << " -> Tổng:" << m_loyaltyPoints;
+    qDebug() << "[Loyalty] +" << points << " -> Tổng:" << m_loyaltyPoints << "| SĐT:" << m_phoneNumber;
 }
 
 QVariantList Customer::voucherTiers() const
@@ -100,14 +105,14 @@ QVariantMap Customer::redeemVoucher(int pointsRequired)
     }
 
     if (percent <= 0) {
-        result["message"] = QStringLiteral("Móc điểm không hợp lệ!");
+        result["message"] = QStringLiteral("Mốc điểm không hợp lệ!");
         return result;
     }
 
     if (m_loyaltyPoints < pointsRequired) {
         result["message"] = QStringLiteral("Không đủ điểm! Cần %1, Có %2.")
-        .arg(pointsRequired)
-            .arg(m_loyaltyPoints);
+                                .arg(pointsRequired)
+                                .arg(m_loyaltyPoints);
         return result;
     }
 
@@ -132,7 +137,7 @@ QVariantMap Customer::redeemVoucher(int pointsRequired)
                             .arg(vc.code);
 
     qDebug() << "[Loyalty]" << result["message"].toString()
-             << "| Còn điểm::" << m_loyaltyPoints;
+             << "| Còn điểm:" << m_loyaltyPoints;
     return result;
 }
 
@@ -221,9 +226,16 @@ void Customer::vouchersFromString(const QString &s)
 
 void Customer::loadFrom(const QString &phone, const QString &name, int points)
 {
-    setPhoneNumber(phone);
-    setName(name.isEmpty() ? phone : name);
-    setLoyaltyPoints(points);
+    // Ưu tiên load từ file theo số điện thoại
+    if (!phone.trimmed().isEmpty()) {
+        loadByPhone(phone);
+    } else {
+        setPhoneNumber(QString());
+        setName(name.isEmpty() ? QStringLiteral("Khách vãng lai") : name);
+        setLoyaltyPoints(points);
+        m_vouchers.clear();
+        emit vouchersChanged();
+    }
 }
 
 void Customer::resetToGuest()
@@ -233,4 +245,130 @@ void Customer::resetToGuest()
     setLoyaltyPoints(0);
     m_vouchers.clear();
     emit vouchersChanged();
+}
+
+// ====================== LOYALTY CSV ======================
+
+static QString loyaltyFilePath()
+{
+    return QCoreApplication::applicationDirPath() + "/data/loyalty.csv";
+}
+
+bool Customer::loadByPhone(const QString &phone)
+{
+    QString cleanPhone = phone.trimmed();
+    if (cleanPhone.isEmpty()) {
+        resetToGuest();
+        return false;
+    }
+
+    QFile file(loyaltyFilePath());
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        // File chưa tồn tại → tạo khách mới
+        setPhoneNumber(cleanPhone);
+        setName(cleanPhone);
+        setLoyaltyPoints(0);
+        m_vouchers.clear();
+        emit vouchersChanged();
+        return true;
+    }
+
+    QTextStream in(&file);
+    QString firstLine = in.readLine();
+    bool hasHeader = firstLine.startsWith("phone");
+
+    if (!hasHeader) {
+        // Quay lại đầu file nếu không có header
+        file.seek(0);
+        in.seek(0);
+    }
+
+    bool found = false;
+    while (!in.atEnd()) {
+        QString line = in.readLine().trimmed();
+        if (line.isEmpty()) continue;
+
+        QStringList parts = line.split(",");
+        if (parts.size() < 2) continue;
+
+        QString csvPhone = parts[0].trimmed();
+        if (csvPhone == cleanPhone) {
+            int points = parts[1].toInt();
+            QString vouchersStr = (parts.size() >= 3) ? parts[2] : "";
+
+            setPhoneNumber(cleanPhone);
+            setName(cleanPhone);
+            setLoyaltyPoints(points);
+            vouchersFromString(vouchersStr);
+            found = true;
+            break;
+        }
+    }
+    file.close();
+
+    if (!found) {
+        // Chưa có trong file → khách mới
+        setPhoneNumber(cleanPhone);
+        setName(cleanPhone);
+        setLoyaltyPoints(0);
+        m_vouchers.clear();
+        emit vouchersChanged();
+    }
+
+    return true;
+}
+
+bool Customer::save()
+{
+    QString cleanPhone = m_phoneNumber.trimmed();
+    if (cleanPhone.isEmpty())
+        return false;
+
+    QString path = loyaltyFilePath();
+    QFile file(path);
+
+    // Đọc toàn bộ dữ liệu hiện có
+    QMap<QString, QString> allData; // phone → "points,vouchers"
+
+    if (file.exists() && file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QTextStream in(&file);
+        QString firstLine = in.readLine();
+        bool hasHeader = firstLine.startsWith("phone");
+
+        if (!hasHeader && !firstLine.trimmed().isEmpty()) {
+            QStringList parts = firstLine.split(",");
+            if (parts.size() >= 2)
+                allData[parts[0].trimmed()] = parts.mid(1).join(",");
+        }
+
+        while (!in.atEnd()) {
+            QString line = in.readLine().trimmed();
+            if (line.isEmpty()) continue;
+            QStringList parts = line.split(",");
+            if (parts.size() >= 2)
+                allData[parts[0].trimmed()] = parts.mid(1).join(",");
+        }
+        file.close();
+    }
+
+    // Cập nhật hoặc thêm khách hiện tại
+    QString vouchersStr = vouchersToString();
+    allData[cleanPhone] = QString("%1,%2").arg(m_loyaltyPoints).arg(vouchersStr);
+
+    // Ghi lại toàn bộ file
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {
+        qWarning() << "Không thể mở file loyalty.csv để ghi";
+        return false;
+    }
+
+    QTextStream out(&file);
+    out << "phone,points,vouchers\n";
+
+    for (auto it = allData.constBegin(); it != allData.constEnd(); ++it) {
+        out << it.key() << "," << it.value() << "\n";
+    }
+    file.close();
+
+    qDebug() << "[Loyalty] Đã lưu SĐT:" << cleanPhone << "| Điểm:" << m_loyaltyPoints;
+    return true;
 }

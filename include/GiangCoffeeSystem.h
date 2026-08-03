@@ -56,8 +56,12 @@ public:
     void addSup(const Supplier& sup);
     void createInventory();
 
+    Q_INVOKABLE void saveSeating();
+    Q_INVOKABLE void loadSeating();
+
     Q_INVOKABLE void placeOrder(Order* order);
     Q_INVOKABLE void reserveTable(int tableNum);
+    Q_INVOKABLE void setTableNote(int tableNumber, const QString &note);
     Q_INVOKABLE void clearTable(int tableNum);
     Q_INVOKABLE void mergeTable(int num1, int num2);
     Q_INVOKABLE bool undoMerge(int tableNumber);
