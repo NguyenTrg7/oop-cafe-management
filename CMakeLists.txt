@@ -33,6 +33,7 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/include/Seating.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/Account.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/MenuManager.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/IngredientManager.h"
 )
 
 set(LOGIC_FILES
@@ -51,6 +52,7 @@ set(LOGIC_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/src/Seating.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/Account.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/MenuManager.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/IngredientManager.cpp"
 )
 
 # Đã thêm ui/AttendanceReportPage.qml vào danh sách
@@ -82,7 +84,7 @@ source_group("Mục UI (QML)" FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/ui/EmployeeManagementPage.qml"
     "${CMAKE_CURRENT_SOURCE_DIR}/ui/FinancePage.qml"
     "${CMAKE_CURRENT_SOURCE_DIR}/ui/SeatingPage.qml"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ui/AttendanceReportPage.qml"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/InventoryPage.qml"
 )
 
 # =============================================================================
@@ -98,6 +100,9 @@ qt_add_qml_module(GiangsCoffee
     URI GiangsCoffee
     VERSION 1.0
     QML_FILES ${UI_FILES}
+    QML_FILES ui/SeatingPage.qml
+    SOURCES include/IngredientManager.h
+    QML_FILES ui/InventoryPage.qml
 )
 
 target_include_directories(GiangsCoffee PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
