@@ -11,14 +11,11 @@
 
 #include "Menu.h"
 
-class IngredientManager; //forward declaration
-
 class MenuManager : public QObject{
     Q_OBJECT;
 private:
     QList<Menu> m_drinks;
     QList<Menu> m_foods;
-    IngredientManager *m_ingredientManager = nullptr;
 public:
     explicit MenuManager(QObject *parent = nullptr);
 
@@ -42,7 +39,6 @@ public:
 
     QList<Menu> getDrinkByCategory(const QString &category) const;
     QList<Menu> getFoodByCategory(const QString &category) const;
-    void setIngredientManager(IngredientManager *manager);
 
     Q_INVOKABLE QVariantList getMenuByCategory(const QString &type) const;
 };
