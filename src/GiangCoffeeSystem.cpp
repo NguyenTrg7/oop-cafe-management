@@ -9,6 +9,18 @@
 #include <QDir>
 #include <QCoreApplication>
 
+// ==========================================================
+// HELPER: Lấy đường dẫn file data 2 chiều cho Hệ thống
+// ==========================================================
+static QString getSystemDataPath(const QString &fileName) {
+    QDir().mkpath(QString(DATA_DIR_PATH));
+#ifdef QT_DEBUG
+    return QString(DATA_DIR_PATH) + "/" + fileName;
+#else
+    return QCoreApplication::applicationDirPath() + "/data/" + fileName;
+#endif
+}
+
 GiangCoffeeSystem *GiangCoffeeSystem::m_instance = nullptr;
 
 GiangCoffeeSystem *GiangCoffeeSystem::getInstance()
@@ -72,7 +84,7 @@ void GiangCoffeeSystem::removeEmployee(const QString &empID)
 
 void GiangCoffeeSystem::updateEmployeeInShifts(const QString &id, const QString &newName, const QString &newPhone)
 {
-    QString path = QCoreApplication::applicationDirPath() + "/data/Shift.csv";
+    QString path = getSystemDataPath("Shift.csv");
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return;
 
@@ -100,7 +112,7 @@ void GiangCoffeeSystem::updateEmployeeInShifts(const QString &id, const QString 
 
 void GiangCoffeeSystem::deleteEmployeeShifts(const QString &id)
 {
-    QString path = QCoreApplication::applicationDirPath() + "/data/Shift.csv";
+    QString path = getSystemDataPath("Shift.csv");
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return;
 
@@ -126,7 +138,7 @@ void GiangCoffeeSystem::deleteEmployeeShifts(const QString &id)
 
 bool GiangCoffeeSystem::deleteEmployeeCSV(const QString &id)
 {
-    QString path = QCoreApplication::applicationDirPath() + "/data/Employee.csv";
+    QString path = getSystemDataPath("Employee.csv");
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return false;
@@ -158,13 +170,13 @@ bool GiangCoffeeSystem::deleteEmployeeCSV(const QString &id)
 QVariantList GiangCoffeeSystem::loadEmployees()
 {
     QVariantList list;
-    QString path = QCoreApplication::applicationDirPath() + "/data/Employee.csv";
+    QString path = getSystemDataPath("Employee.csv");
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return list;
 
     QTextStream in(&file);
-    in.readLine(); // Bỏ qua Header
+    in.readLine();
 
     while (!in.atEnd()) {
         QString line = in.readLine().trimmed();
@@ -189,7 +201,7 @@ QVariantList GiangCoffeeSystem::loadEmployees()
 
 bool GiangCoffeeSystem::addEmployeeCSV(const QString &id, const QString &name, const QString &phone, double salary, const QString &shiftDate, const QString &shiftTime)
 {
-    QString path = QCoreApplication::applicationDirPath() + "/data/Employee.csv";
+    QString path = getSystemDataPath("Employee.csv");
     QFile file(path);
     if (!file.open(QIODevice::Append | QIODevice::Text))
         return false;
@@ -202,7 +214,7 @@ bool GiangCoffeeSystem::addEmployeeCSV(const QString &id, const QString &name, c
 
 bool GiangCoffeeSystem::updateEmployeeCSV(const QString &id, const QString &name, const QString &phone, double salary, const QString &shiftDate, const QString &shiftTime)
 {
-    QString path = QCoreApplication::applicationDirPath() + "/data/Employee.csv";
+    QString path = getSystemDataPath("Employee.csv");
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return false;
 
@@ -382,7 +394,7 @@ void GiangCoffeeSystem::generateReport(const QDateTime &date) { Q_UNUSED(date); 
 
 double GiangCoffeeSystem::checkDiscount(const QString &code, double totalAmount)
 {
-    QString path = QCoreApplication::applicationDirPath() + "/data/discounts.csv";
+    QString path = getSystemDataPath("discounts.csv");
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         return 0.0;
@@ -415,7 +427,7 @@ double GiangCoffeeSystem::checkDiscount(const QString &code, double totalAmount)
 QVariantList GiangCoffeeSystem::loadFinance()
 {
     QVariantList list;
-    QString path = QCoreApplication::applicationDirPath() + "/data/finance.csv";
+    QString path = getSystemDataPath("finance.csv");
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return list;
@@ -440,10 +452,7 @@ QVariantList GiangCoffeeSystem::loadFinance()
 
 bool GiangCoffeeSystem::addTransactionCSV(const QString &date, const QString &type, double amount, const QString &note)
 {
-    QString dirPath = QCoreApplication::applicationDirPath() + "/data";
-    QDir().mkpath(dirPath);
-
-    QString path = dirPath + "/finance.csv";
+    QString path = getSystemDataPath("finance.csv");
     bool fileExists = QFile::exists(path);
 
     QFile file(path);
@@ -480,7 +489,7 @@ bool GiangCoffeeSystem::verifyEmployeePhone(const QString &phone)
 
 bool GiangCoffeeSystem::recordAttendanceCSV(const QString &identifier, const QString &type, const QString &timestamp)
 {
-    QString path = QCoreApplication::applicationDirPath() + "/data/attendance.csv";
+    QString path = getSystemDataPath("attendance.csv");
     QFile file(path);
     if (!file.open(QIODevice::Append | QIODevice::Text))
         return false;
@@ -515,7 +524,7 @@ bool GiangCoffeeSystem::verifyEmployeeID(const QString &id)
 QVariantList GiangCoffeeSystem::loadAttendance()
 {
     QVariantList list;
-    QString path = QCoreApplication::applicationDirPath() + "/data/attendance.csv";
+    QString path = getSystemDataPath("attendance.csv");
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return list;
@@ -594,7 +603,7 @@ QVariantMap GiangCoffeeSystem::importEmployeesNoDuplicate(const QString &filePat
 QVariantList GiangCoffeeSystem::loadShifts(const QString &dateStr)
 {
     QVariantList list;
-    QString path = QCoreApplication::applicationDirPath() + "/data/Shift.csv";
+    QString path = getSystemDataPath("Shift.csv");
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return list;
@@ -621,7 +630,7 @@ QVariantList GiangCoffeeSystem::loadShifts(const QString &dateStr)
 
 bool GiangCoffeeSystem::addShift(const QString &id, const QString &name, const QString &phone, const QString &dateStr, const QString &time, int repeatMonths)
 {
-    QString path = QCoreApplication::applicationDirPath() + "/data/Shift.csv";
+    QString path = getSystemDataPath("Shift.csv");
     QFile file(path);
     if (!file.open(QIODevice::Append | QIODevice::Text))
         return false;
@@ -644,7 +653,7 @@ bool GiangCoffeeSystem::addShift(const QString &id, const QString &name, const Q
 
 bool GiangCoffeeSystem::removeShift(const QString &id, const QString &dateStr, const QString &time)
 {
-    QString path = QCoreApplication::applicationDirPath() + "/data/Shift.csv";
+    QString path = getSystemDataPath("Shift.csv");
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return false;
@@ -676,7 +685,7 @@ bool GiangCoffeeSystem::exportEmployeesCSV(const QString &filePath)
     QString localPath = QUrl(filePath).toLocalFile();
     if (localPath.isEmpty()) localPath = filePath;
 
-    QString sourcePath = QCoreApplication::applicationDirPath() + "/data/Employee.csv";
+    QString sourcePath = getSystemDataPath("Employee.csv");
     QFile sourceFile(sourcePath);
     if (!sourceFile.exists()) return false;
 
