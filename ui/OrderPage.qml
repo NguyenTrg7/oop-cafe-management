@@ -284,26 +284,6 @@ Item {
                         invoiceDialog.open()
                     }
                 }
-
-                Button {
-                    text: "⭐ Xem điểm Loyalty"
-                    Layout.fillWidth: true
-                    implicitHeight: 40
-                    onClicked: {
-                        if (StackView.view) StackView.view.push("LoyaltyPage.qml")
-                        else if (typeof stackView !== "undefined") stackView.push("LoyaltyPage.qml")
-                    }
-                }
-
-                Button {
-                    text: "🪑 Xem trạng thái bàn"
-                    Layout.fillWidth: true
-                    implicitHeight: 40
-                    onClicked: {
-                        if (StackView.view) StackView.view.push("SeatingPage.qml")
-                        else if (typeof stackView !== "undefined") stackView.push("SeatingPage.qml")
-                    }
-                }
             }
         }
     }

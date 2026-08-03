@@ -1,4 +1,3 @@
-// Seating.cpp (thay thế toàn bộ)
 #include "Seating.h"
 
 Seating::Seating()
@@ -6,13 +5,16 @@ Seating::Seating()
     , capacity(4)
     , isOccupied(false)
     , shape(QStringLiteral("Vuông"))
+    , m_note()
 {}
 
-Seating::Seating(int tableNumber, int capacity, bool isOccupied, const QString &shape)
+Seating::Seating(int tableNumber, int capacity, bool isOccupied,
+                 const QString &shape, const QString &note)
     : tableNumber(tableNumber)
     , capacity(capacity)
     , isOccupied(isOccupied)
     , shape(shape)
+    , m_note(note)
 {}
 
 int Seating::getTableNumber() const { return tableNumber; }
@@ -20,14 +22,21 @@ int Seating::getCapacity() const { return capacity; }
 bool Seating::isTableOccupied() const { return isOccupied; }
 bool Seating::isAvailable() const { return !isOccupied; }
 QString Seating::getShape() const { return shape; }
+QString Seating::getNote() const { return m_note; }
 
 void Seating::setTableNumber(int n) { tableNumber = n; }
 void Seating::setCapacity(int c) { capacity = c; }
 void Seating::setOccupied(bool o) { isOccupied = o; }
 void Seating::setShape(const QString &s) { shape = s; }
+void Seating::setNote(const QString &n) { m_note = n; }
 
 void Seating::occupyTable() { isOccupied = true; }
-void Seating::clearTable() { isOccupied = false; }
+
+void Seating::clearTable()
+{
+    isOccupied = false;
+    m_note.clear();   // Xóa ghi chú khi trả bàn
+}
 
 bool Seating::canSeat(int guestCount) const
 {

@@ -72,10 +72,25 @@ Page {
                 value: 4
                 Layout.fillWidth: true
             }
+
+            Label { text: "Ghi chú khách đặt bàn:"; color: "#334155"; font.bold: true }
+            TextArea {
+                id: editNote
+                Layout.fillWidth: true
+                Layout.preferredHeight: 72
+                wrapMode: TextArea.Wrap
+                placeholderText: "VD: Anh Nam - 4 người - 18:30"
+                background: Rectangle {
+                    radius: 8
+                    color: "#F8FAFC"
+                    border.color: "#CBD5E1"
+                }
+            }
         }
 
         onAccepted: {
             coffeeSystem.editTable(editingTable, editShape.currentText, editCapacity.value)
+            coffeeSystem.setTableNote(editingTable, editNote.text.trim())
             refresh()
         }
     }
@@ -323,11 +338,22 @@ Page {
                         // Thông tin ghế + hình dạng
                         Text {
                             anchors.top: tableShape.bottom
-                            anchors.topMargin: 6
+                            anchors.topMargin: 4
                             anchors.horizontalCenter: parent.horizontalCenter
-                            text: info ? (info.shape + " • " + info.capacity + " ghế") : ""
-                            font.pixelSize: 12
+                            width: parent.width - 4
+                            horizontalAlignment: Text.AlignHCenter
+                            text: {
+                                if (!info) return ""
+                                var base = info.shape + " • " + info.capacity + " ghế"
+                                if (info.note && info.note.length > 0)
+                                    return base + "\n📝 " + info.note
+                                return base
+                            }
+                            font.pixelSize: 11
                             color: "#64748B"
+                            wrapMode: Text.WordWrap
+                            elide: Text.ElideRight
+                            maximumLineCount: 3
                         }
 
                         // Nút sửa
@@ -354,6 +380,7 @@ Page {
                                 if (info) {
                                     editShape.currentIndex = (info.shape === "Tròn") ? 1 : 0
                                     editCapacity.value = info.capacity
+                                    editNote.text = info.note || ""
                                 }
                                 editDialog.open()
                             }

@@ -273,7 +273,7 @@ void GiangCoffeeSystem::saveSeating()
         return;
 
     QTextStream out(&file);
-    out << "TableNumber,Capacity,Occupied,Shape,OriginalNumbers,OriginalCapacities,OriginalShapes\n";
+    out << "TableNumber,Capacity,Occupied,Shape,OriginalNumbers,OriginalCapacities,OriginalShapes,Note\n";
 
     for (const Seating &t : std::as_const(m_tables)) {
         QStringList nums, caps, shapes;
@@ -281,13 +281,19 @@ void GiangCoffeeSystem::saveSeating()
         for (int c : t.getOriginalCapacities()) caps << QString::number(c);
         for (const QString &s : t.getOriginalShapes()) shapes << s;
 
+        // Note: thay dau phay de khong vo CSV
+        QString noteSafe = t.getNote();
+        noteSafe.replace(",", ";");
+        noteSafe.replace("\n", " ");
+
         out << t.getTableNumber() << ","
             << t.getCapacity() << ","
             << (t.isTableOccupied() ? "1" : "0") << ","
             << t.getShape() << ","
             << nums.join("|") << ","
             << caps.join("|") << ","
-            << shapes.join("|") << "\n";
+            << shapes.join("|") << ","
+            << noteSafe << "\n";
     }
     file.close();
 }
@@ -331,6 +337,12 @@ void GiangCoffeeSystem::loadSeating()
         }
         if (f.size() >= 7 && !f[6].isEmpty()) {
             t.setOriginalShapes(f[6].split("|", Qt::SkipEmptyParts));
+        }
+
+        if (f.size() >= 8) {
+            QString note = f[7].trimmed();
+            note.replace(";", ",");
+            t.setNote(note);
         }
 
         m_tables.append(t);
@@ -380,6 +392,7 @@ void GiangCoffeeSystem::mergeTable(int tableNum1, int tableNum2)
     if (origCaps1.isEmpty()) origCaps1 << m_tables[idx1].getCapacity();
     QList<QString> origShapes1 = m_tables[idx1].getOriginalShapes();
     if (origShapes1.isEmpty()) origShapes1 << m_tables[idx1].getShape();
+    QString note1 = m_tables[idx1].getNote();
 
     QList<int> origNums2 = m_tables[idx2].getOriginalNumbers();
     if (origNums2.isEmpty()) origNums2 << tableNum2;
@@ -387,16 +400,21 @@ void GiangCoffeeSystem::mergeTable(int tableNum1, int tableNum2)
     if (origCaps2.isEmpty()) origCaps2 << m_tables[idx2].getCapacity();
     QList<QString> origShapes2 = m_tables[idx2].getOriginalShapes();
     if (origShapes2.isEmpty()) origShapes2 << m_tables[idx2].getShape();
+    QString note2 = m_tables[idx2].getNote();
 
     const int mergedNumber = qMin(tableNum1, tableNum2);
     const int mergedCapacity = m_tables[idx1].getCapacity() + m_tables[idx2].getCapacity();
     const bool mergedOccupied = m_tables[idx1].isTableOccupied() || m_tables[idx2].isTableOccupied();
     const QString mergedShape = (tableNum1 < tableNum2) ? m_tables[idx1].getShape() : m_tables[idx2].getShape();
+    QString mergedNote = note1;
+    if (!note2.isEmpty())
+        mergedNote = note1.isEmpty() ? note2 : (note1 + " | " + note2);
 
     Seating mergedTable(mergedNumber, mergedCapacity, mergedOccupied, mergedShape);
     mergedTable.setOriginalNumbers(origNums1 + origNums2);
     mergedTable.setOriginalCapacities(origCaps1 + origCaps2);
     mergedTable.setOriginalShapes(origShapes1 + origShapes2);
+    mergedTable.setNote(mergedNote);
 
     if (tableNum1 < tableNum2) {
         m_tables[idx1] = mergedTable;
@@ -459,6 +477,17 @@ void GiangCoffeeSystem::editTable(int tableNumber, const QString &shape, int cap
     }
 }
 
+void GiangCoffeeSystem::setTableNote(int tableNumber, const QString &note)
+{
+    for (auto &table : m_tables) {
+        if (table.getTableNumber() == tableNumber) {
+            table.setNote(note);
+            saveSeating();
+            return;
+        }
+    }
+}
+
 QVariantList GiangCoffeeSystem::getSeatingList() const
 {
     QVariantList list;
@@ -470,6 +499,7 @@ QVariantList GiangCoffeeSystem::getSeatingList() const
         map["available"] = table.isAvailable();
         map["status"] = table.isTableOccupied() ? QStringLiteral("Đã có khách") : QStringLiteral("Trống");
         map["shape"] = table.getShape();
+        map["note"] = table.getNote();
         list.append(map);
     }
     return list;
