@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.15
 
 Page {
     id: seatingPage
-    background: Rectangle { color: "#BAE6FD" }
+    background: Rectangle { color: "#F8FAFC" }
 
     property var seatingData: []
     property int editingTable: -1
@@ -44,21 +44,27 @@ Page {
         title: "Sửa bàn " + editingTable
         modal: true
         anchors.centerIn: parent
-        width: 320
+        width: 340
         standardButtons: Dialog.Ok | Dialog.Cancel
+
+        background: Rectangle {
+            color: "#FFFFFF"
+            radius: 12
+            border.color: "#E2E8F0"
+        }
 
         ColumnLayout {
             anchors.fill: parent
-            spacing: 12
+            spacing: 14
 
-            Label { text: "Hình dạng:" }
+            Label { text: "Hình dạng:"; color: "#334155"; font.bold: true }
             ComboBox {
                 id: editShape
                 model: ["Vuông", "Tròn"]
                 Layout.fillWidth: true
             }
 
-            Label { text: "Số ghế:" }
+            Label { text: "Số ghế:"; color: "#334155"; font.bold: true }
             SpinBox {
                 id: editCapacity
                 from: 1
@@ -76,35 +82,66 @@ Page {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 20
-        spacing: 12
+        anchors.margins: 24
+        spacing: 16
 
-        Label {
-            text: "Sơ đồ bàn của Giang's Coffee"
-            font.family: "Georgia"
-            font.pixelSize: 24
-            font.bold: true
-            color: "#4E3629"
-            Layout.alignment: Qt.AlignHCenter
+        // ===== HEADER =====
+        RowLayout {
+            Layout.fillWidth: true
+
+            ColumnLayout {
+                spacing: 2
+                Label {
+                    text: "🪑 Sơ Đồ Bàn"
+                    font.pixelSize: 24
+                    font.bold: true
+                    color: "#0369A1"
+                }
+                Label {
+                    text: "Quản lý trạng thái bàn • Gộp / Tách bàn"
+                    font.pixelSize: 13
+                    color: "#64748B"
+                }
+            }
+
+            Item { Layout.fillWidth: true }
+
+            Button {
+                text: "🔄 Làm mới"
+                implicitHeight: 38
+                background: Rectangle {
+                    color: parent.hovered ? "#E0F2FE" : "#F0F9FF"
+                    radius: 8
+                    border.color: "#7DD3FC"
+                }
+                contentItem: Text {
+                    text: parent.text
+                    color: "#0369A1"
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+                onClicked: refresh()
+            }
         }
 
+        // ===== THANH GỘP / TÁCH BÀN =====
         Rectangle {
             Layout.fillWidth: true
-            Layout.preferredHeight: 70
-            color: "#F0F9FF"
-            border.color: "#B68D40"
-            border.width: 2
-            radius: 8
+            Layout.preferredHeight: 72
+            color: "#FFFFFF"
+            radius: 12
+            border.color: "#E2E8F0"
 
             RowLayout {
                 anchors.fill: parent
-                anchors.margins: 12
-                spacing: 10
+                anchors.margins: 14
+                spacing: 12
 
                 Label {
                     text: "Gộp bàn:"
                     font.bold: true
-                    color: "#4E3629"
+                    color: "#334155"
                 }
 
                 TextField {
@@ -113,9 +150,14 @@ Page {
                     validator: IntValidator { bottom: 1 }
                     Layout.preferredWidth: 70
                     horizontalAlignment: Text.AlignHCenter
+                    background: Rectangle {
+                        radius: 8
+                        color: "#F8FAFC"
+                        border.color: "#CBD5E1"
+                    }
                 }
 
-                Label { text: "+" }
+                Label { text: "+"; font.bold: true; color: "#64748B" }
 
                 TextField {
                     id: mergeInput2
@@ -123,12 +165,21 @@ Page {
                     validator: IntValidator { bottom: 1 }
                     Layout.preferredWidth: 70
                     horizontalAlignment: Text.AlignHCenter
+                    background: Rectangle {
+                        radius: 8
+                        color: "#F8FAFC"
+                        border.color: "#CBD5E1"
+                    }
                 }
 
                 Button {
                     text: "Gộp"
                     Layout.preferredWidth: 80
-                    background: Rectangle { color: "#6A1B9A"; radius: 5 }
+                    implicitHeight: 36
+                    background: Rectangle {
+                        color: parent.pressed ? "#6D28D9" : "#7C3AED"
+                        radius: 8
+                    }
                     contentItem: Text {
                         text: parent.text
                         color: "white"
@@ -151,9 +202,9 @@ Page {
                 Item { Layout.fillWidth: true }
 
                 Label {
-                    text: "Hủy gộp:"
+                    text: "Tách bàn:"
                     font.bold: true
-                    color: "#4E3629"
+                    color: "#334155"
                 }
 
                 TextField {
@@ -162,12 +213,21 @@ Page {
                     validator: IntValidator { bottom: 1 }
                     Layout.preferredWidth: 70
                     horizontalAlignment: Text.AlignHCenter
+                    background: Rectangle {
+                        radius: 8
+                        color: "#F8FAFC"
+                        border.color: "#CBD5E1"
+                    }
                 }
 
                 Button {
-                    text: "Tách bàn"
-                    Layout.preferredWidth: 90
-                    background: Rectangle { color: "#E65100"; radius: 5 }
+                    text: "Tách"
+                    Layout.preferredWidth: 80
+                    implicitHeight: 36
+                    background: Rectangle {
+                        color: parent.pressed ? "#C2410C" : "#EA580C"
+                        radius: 8
+                    }
                     contentItem: Text {
                         text: parent.text
                         color: "white"
@@ -188,114 +248,114 @@ Page {
             }
         }
 
+        // ===== SƠ ĐỒ BÀN =====
         Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            color: "#F0F9FF"
-            border.color: "#B68D40"
-            border.width: 2
-            radius: 8
+            color: "#FFFFFF"
+            radius: 12
+            border.color: "#E2E8F0"
             clip: true
 
-            Rectangle {
-                anchors.fill: parent
-                anchors.margins: 10
-                color: "#F0F9FF"
-                radius: 6
+            Item {
+                id: tableMap
+                width: 580
+                height: 490
+                anchors.centerIn: parent
 
-                Item {
-                    id: tableMap
-                    width: 580
-                    height: 490
-                    anchors.centerIn: parent
+                Repeater {
+                    model: tablePositions
 
-                    Repeater {
-                        model: tablePositions
+                    Item {
+                        x: modelData.x
+                        y: modelData.y
+                        width: 120
+                        height: 130
 
-                        Item {
-                            x: modelData.x
-                            y: modelData.y
-                            width: 120
-                            height: 130
+                        property var info: getTableData(modelData.num)
+                        visible: info !== null
 
-                            property var info: getTableData(modelData.num)
-                            visible: info !== null
+                        // Bàn
+                        Rectangle {
+                            id: tableShape
+                            width: 90
+                            height: 90
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            radius: (info && info.shape === "Tròn") ? width / 2 : 12
+                            color: (info && info.occupied) ? "#FEE2E2" : "#DCFCE7"
+                            border.color: (info && info.occupied) ? "#DC2626" : "#16A34A"
+                            border.width: 3
 
-                            Rectangle {
-                                id: tableShape
-                                width: 90
-                                height: 90
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                radius: (info && info.shape === "Tròn") ? width / 2 : 10
-                                color: (info && info.occupied) ? "#C62828" : "#81C784"
-                                border.color: "#4E3629"
-                                border.width: 3
-
-                                Text {
-                                    anchors.centerIn: parent
-                                    text: modelData.num
-                                    font.pixelSize: 24
-                                    font.bold: true
-                                    color: "white"
-                                }
-
-                                Text {
-                                    anchors.bottom: parent.bottom
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                    anchors.bottomMargin: 4
-                                    text: (info && info.occupied) ? "Có khách" : "Trống"
-                                    font.pixelSize: 11
-                                    color: "white"
-                                }
-
-                                MouseArea {
-                                    anchors.fill: parent
-                                    onClicked: {
-                                        if (!info) return
-                                        if (info.available)
-                                            coffeeSystem.reserveTable(modelData.num)
-                                        else
-                                            coffeeSystem.clearTable(modelData.num)
-                                        refresh()
-                                    }
-                                }
-                            }
-
+                            // Số bàn
                             Text {
-                                anchors.top: tableShape.bottom
-                                anchors.topMargin: 4
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                text: info ? (info.shape + " • " + info.capacity + " ghế") : ""
-                                font.pixelSize: 11
-                                color: "#5D4037"
+                                anchors.centerIn: parent
+                                text: modelData.num
+                                font.pixelSize: 26
+                                font.bold: true
+                                color: (info && info.occupied) ? "#B91C1C" : "#15803D"
                             }
 
-                            Button {
-                                anchors.right: parent.right
-                                anchors.top: parent.top
-                                width: 24
-                                height: 24
-                                text: "✎"
-                                visible: info !== null
-                                background: Rectangle {
-                                    color: "#1565C0"
-                                    radius: 12
-                                }
-                                contentItem: Text {
-                                    text: parent.text
-                                    color: "white"
-                                    font.pixelSize: 12
-                                    horizontalAlignment: Text.AlignHCenter
-                                    verticalAlignment: Text.AlignVCenter
-                                }
+                            // Trạng thái
+                            Text {
+                                anchors.bottom: parent.bottom
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                anchors.bottomMargin: 6
+                                text: (info && info.occupied) ? "Có khách" : "Trống"
+                                font.pixelSize: 11
+                                font.bold: true
+                                color: (info && info.occupied) ? "#B91C1C" : "#15803D"
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
                                 onClicked: {
-                                    editingTable = modelData.num
-                                    if (info) {
-                                        editShape.currentIndex = (info.shape === "Tròn") ? 1 : 0
-                                        editCapacity.value = info.capacity
-                                    }
-                                    editDialog.open()
+                                    if (!info) return
+                                    if (info.available)
+                                        coffeeSystem.reserveTable(modelData.num)
+                                    else
+                                        coffeeSystem.clearTable(modelData.num)
+                                    refresh()
                                 }
+                            }
+                        }
+
+                        // Thông tin ghế + hình dạng
+                        Text {
+                            anchors.top: tableShape.bottom
+                            anchors.topMargin: 6
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            text: info ? (info.shape + " • " + info.capacity + " ghế") : ""
+                            font.pixelSize: 12
+                            color: "#64748B"
+                        }
+
+                        // Nút sửa
+                        Button {
+                            anchors.right: parent.right
+                            anchors.top: parent.top
+                            width: 28
+                            height: 28
+                            text: "✎"
+                            visible: info !== null
+                            background: Rectangle {
+                                color: parent.hovered ? "#0284C7" : "#0369A1"
+                                radius: 14
+                            }
+                            contentItem: Text {
+                                text: parent.text
+                                color: "white"
+                                font.pixelSize: 13
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                            }
+                            onClicked: {
+                                editingTable = modelData.num
+                                if (info) {
+                                    editShape.currentIndex = (info.shape === "Tròn") ? 1 : 0
+                                    editCapacity.value = info.capacity
+                                }
+                                editDialog.open()
                             }
                         }
                     }

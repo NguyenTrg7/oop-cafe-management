@@ -1,6 +1,7 @@
 #ifndef ACCOUNT_H
 #define ACCOUNT_H
 
+#include "Customer.h"
 #include <QObject>
 #include <QString>
 #include <string>
@@ -18,6 +19,10 @@ public:
     void setCurrentUserPhone(const QString &phone);
 
     Q_INVOKABLE QString authenticate(const QString &username, const QString &password);
+
+    Customer *m_customerHandler = nullptr;
+    Q_INVOKABLE void setCustomerHandler(Customer *customer);
+    Q_INVOKABLE bool saveCustomerLoyalty();
 
 signals:
     void currentUserPhoneChanged();

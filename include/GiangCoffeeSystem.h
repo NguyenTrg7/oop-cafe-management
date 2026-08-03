@@ -56,6 +56,9 @@ public:
     void addSup(const Supplier& sup);
     void createInventory();
 
+    Q_INVOKABLE void saveSeating();
+    Q_INVOKABLE void loadSeating();
+
     Q_INVOKABLE void placeOrder(Order* order);
     Q_INVOKABLE void reserveTable(int tableNum);
     Q_INVOKABLE void clearTable(int tableNum);

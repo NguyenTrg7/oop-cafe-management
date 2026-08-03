@@ -47,8 +47,8 @@ int main(int argc, char *argv[])
     Account accountHandler;
     Customer customerHandler;
 
-    // Đã xóa dòng accountHandler.setCustomerHandler(&customerHandler); vì Account.cpp không có hàm này
     EmployeeModel employeeModel(&accountHandler);
+    accountHandler.setCustomerHandler(&customerHandler);
 
     // ==========================================
     // 2. XỬ LÝ MENU (Thêm từ main1.cpp)

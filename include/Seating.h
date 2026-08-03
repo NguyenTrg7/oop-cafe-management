@@ -1,3 +1,4 @@
+// Seating.h (thay thế toàn bộ)
 #ifndef SEATING_H
 #define SEATING_H
 
@@ -10,13 +11,15 @@ private:
     int tableNumber;
     int capacity;
     bool isOccupied;
-    QString shape; // "Vuong" | "Tron"
+    QString shape; // "Vuông" | "Tròn"
     QList<int> m_originalCapacities;
+    QList<int> m_originalNumbers;   // <-- THÊM MỚI: lưu số bàn gốc
+    QList<QString> m_originalShapes; // <-- THÊM MỚI
 
 public:
     Seating();
     Seating(int tableNumber, int capacity, bool isOccupied = false,
-            const QString &shape = QStringLiteral("Vuong"));
+            const QString &shape = QStringLiteral("Vuông"));
     ~Seating() = default;
 
     int getTableNumber() const;
@@ -37,6 +40,15 @@ public:
     void setOriginalCapacities(const QList<int> &caps);
     QList<int> getOriginalCapacities() const;
     void clearOriginalCapacities();
+
+    // === MỚI ===
+    void setOriginalNumbers(const QList<int> &nums);
+    QList<int> getOriginalNumbers() const;
+    void clearOriginalNumbers();
+
+    void setOriginalShapes(const QList<QString> &shapes);
+    QList<QString> getOriginalShapes() const;
+    void clearOriginalShapes();
 };
 
 #endif // SEATING_H

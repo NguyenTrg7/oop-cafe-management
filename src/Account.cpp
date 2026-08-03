@@ -88,3 +88,17 @@ QString Account::authenticate(const QString &username, const QString &password)
     file.close();
     return userExists ? QString("WRONG_PASSWORD") : QString("NOT_REGISTERED");
 }
+
+Customer *m_customerHandler = nullptr;
+
+void Account::setCustomerHandler(Customer *customer)
+{
+    m_customerHandler = customer;
+}
+
+bool Account::saveCustomerLoyalty()
+{
+    if (m_customerHandler)
+        return m_customerHandler->save();
+    return false;
+}
