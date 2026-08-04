@@ -7,39 +7,6 @@ Page {
     title: "Trang Nhân Viên"
 
     property string currentAction: "" // Trạng thái: "CHECK_IN" hoặc "CHECK_OUT"
-    property string pendingPhone: ""  // Biến tạm để lưu SĐT khi chờ chuyển trang
-
-    // ==========================================
-    // TIMER TRÌ HOÃN ĐIỀU HƯỚNG
-    // ==========================================
-    Timer {
-        id: delayNavigationTimer
-        interval: 1500 // Độ trễ 1.5 giây để đọc thông báo
-        repeat: false
-        onTriggered: {
-            // Lấy con trỏ StackView điều hướng
-            var navStack = StackView.view || (typeof stackView !== "undefined" ? stackView : null)
-
-            if (!navStack) {
-                console.log("Lỗi: Không tìm thấy StackView để điều hướng!")
-                return
-            }
-
-            if (employeePage.currentAction === "CHECK_IN") {
-                // Chuyển sang OrderPage.qml và truyền kèm SĐT
-                navStack.push("OrderPage.qml", { "employeePhone": employeePage.pendingPhone })
-            }
-            else if (employeePage.currentAction === "CHECK_OUT") {
-                // Chuyển về màn hình Đăng nhập
-                // Ưu tiên dùng hàm switchPage tối ưu nếu có ở file main, ngược lại dùng replace
-                if (typeof appWindow !== "undefined" && typeof appWindow.switchPage === "function") {
-                    appWindow.switchPage("LoginPage.qml")
-                } else {
-                    navStack.replace("LoginPage.qml")
-                }
-            }
-        }
-    }
 
     Rectangle {
         anchors.fill: parent
@@ -75,9 +42,7 @@ Page {
                     implicitWidth: 185
                     implicitHeight: 48
 
-                    HoverHandler {
-                        cursorShape: Qt.PointingHandCursor
-                    }
+                    HoverHandler { cursorShape: Qt.PointingHandCursor }
 
                     background: Rectangle {
                         color: btnCheckIn.pressed ? "#F1F5F9" : "#FFFFFF"
@@ -100,7 +65,7 @@ Page {
                         employeePage.currentAction = "CHECK_IN"
                         txtConfirmPhone.text = ""
                         lblDialogError.visible = false
-                        statusText.visible = false // Ẩn thông báo cũ khi mở lại
+                        statusText.visible = false
                         confirmDialog.open()
                     }
                 }
@@ -111,9 +76,7 @@ Page {
                     implicitWidth: 185
                     implicitHeight: 48
 
-                    HoverHandler {
-                        cursorShape: Qt.PointingHandCursor
-                    }
+                    HoverHandler { cursorShape: Qt.PointingHandCursor }
 
                     background: Rectangle {
                         color: btnCheckOut.pressed ? "#F1F5F9" : "#FFFFFF"
@@ -136,7 +99,7 @@ Page {
                         employeePage.currentAction = "CHECK_OUT"
                         txtConfirmPhone.text = ""
                         lblDialogError.visible = false
-                        statusText.visible = false // Ẩn thông báo cũ khi mở lại
+                        statusText.visible = false
                         confirmDialog.open()
                     }
                 }
@@ -148,7 +111,7 @@ Page {
                 text: ""
                 font.bold: true
                 font.pixelSize: 16
-                visible: false // Ẩn mặc định
+                visible: false
                 Layout.alignment: Qt.AlignHCenter
                 Layout.topMargin: 10
             }
@@ -160,8 +123,8 @@ Page {
     // ==========================================
     Popup {
         id: confirmDialog
-        width: 360
-        height: 270
+        width: 380
+        height: 290
         modal: true
         focus: true
         anchors.centerIn: parent
@@ -188,7 +151,7 @@ Page {
             }
 
             Text {
-                text: "Nhập SĐT cá nhân để xác thực danh tính:"
+                text: "Nhập SĐT hoặc Mã NV để xác thực:"
                 font.pixelSize: 13
                 color: "#64748B"
                 Layout.alignment: Qt.AlignHCenter
@@ -196,11 +159,16 @@ Page {
 
             TextField {
                 id: txtConfirmPhone
-                placeholderText: "Nhập số điện thoại nhân viên..."
+                placeholderText: "Nhập SĐT / Mã nhân viên..."
                 Layout.fillWidth: true
                 Layout.preferredHeight: 44
                 font.pixelSize: 15
                 horizontalAlignment: TextInput.AlignHCenter
+                verticalAlignment: TextInput.AlignVCenter
+                leftPadding: 10
+                rightPadding: 10
+                topPadding: 0
+                bottomPadding: 0
                 color: "#1E293B"
                 background: Rectangle {
                     radius: 8
@@ -209,7 +177,6 @@ Page {
                     color: "#F8FAFC"
                 }
 
-                // Hỗ trợ bấm Enter để nộp
                 Keys.onReturnPressed: btnConfirm.clicked()
                 Keys.onEnterPressed: btnConfirm.clicked()
             }
@@ -238,9 +205,7 @@ Page {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 40
 
-                    HoverHandler {
-                        cursorShape: Qt.PointingHandCursor
-                    }
+                    HoverHandler { cursorShape: Qt.PointingHandCursor }
 
                     background: Rectangle {
                         color: btnCancel.pressed ? "#E2E8F0" : "#F1F5F9"
@@ -262,9 +227,7 @@ Page {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 40
 
-                    HoverHandler {
-                        cursorShape: Qt.PointingHandCursor
-                    }
+                    HoverHandler { cursorShape: Qt.PointingHandCursor }
 
                     background: Rectangle {
                         color: btnConfirm.pressed ? "#0284C7" : "#0369A1"
@@ -281,46 +244,89 @@ Page {
                     onClicked: {
                         var inputStr = txtConfirmPhone.text.trim()
                         if (inputStr === "") {
-                            lblDialogError.text = "Vui lòng nhập số điện thoại!"
+                            lblDialogError.text = "Vui lòng nhập số điện thoại hoặc Mã NV!"
                             lblDialogError.visible = true
                             return
                         }
 
-                        // 1. Truy xuất danh sách để xác minh và lấy Tên nhân viên
+                        // 1. Xác minh danh tính Nhân viên
                         var isValid = false;
                         var employeeName = "";
                         var phoneToRecord = inputStr;
+                        var empId = "";
 
                         if (typeof coffeeSystem !== "undefined" && coffeeSystem.loadEmployees) {
                             var list = coffeeSystem.loadEmployees()
                             for (var i = 0; i < list.length; i++) {
-                                // Kiểm tra trùng khớp theo SĐT hoặc Mã ID đều được
                                 if (list[i].phone === inputStr || list[i].id === inputStr) {
                                     isValid = true;
                                     employeeName = list[i].name;
-                                    phoneToRecord = list[i].phone; // Đảm bảo ghi nhận bằng SĐT chuẩn
+                                    phoneToRecord = list[i].phone;
+                                    empId = list[i].id;
                                     break;
                                 }
                             }
                         }
 
-                        // Fallback kiểm tra qua hàm C++ nếu cần
                         if (!isValid) {
                             if (typeof coffeeSystem !== "undefined" && coffeeSystem.verifyEmployeePhone) {
                                 isValid = coffeeSystem.verifyEmployeePhone(inputStr)
-                            } else if (typeof cppEmployeeModel !== "undefined" && cppEmployeeModel.verifyEmployeePhone) {
-                                isValid = cppEmployeeModel.verifyEmployeePhone(inputStr)
                             }
                         }
 
-                        // 2. Báo lỗi nếu SĐT/Mã không đúng trong file employees.csv
                         if (!isValid) {
                             lblDialogError.text = "Thông tin chưa được gán bởi Quản lý!"
                             lblDialogError.visible = true
                             return
                         }
 
-                        // 3. Đúng thông tin -> Ghi nhận thời gian và hiển thị thông báo
+                        // 2. KIỂM TRA CA LÀM TRONG NGÀY
+                        var todayStr = Qt.formatDateTime(new Date(), "dd/MM/yyyy")
+                        var hasShiftToday = false
+
+                        if (typeof coffeeSystem !== "undefined" && coffeeSystem.loadShifts) {
+                            var todayShifts = coffeeSystem.loadShifts(todayStr)
+                            for (var s = 0; s < todayShifts.length; s++) {
+                                if (todayShifts[s].phone === phoneToRecord || todayShifts[s].id === empId || todayShifts[s].id === inputStr) {
+                                    hasShiftToday = true
+                                    break
+                                }
+                            }
+                        } else {
+                            hasShiftToday = true
+                        }
+
+                        if (!hasShiftToday) {
+                            lblDialogError.text = "⚠️ Bạn không có ca làm việc đăng ký hôm nay (" + todayStr + ")!"
+                            lblDialogError.visible = true
+                            return
+                        }
+
+                        // 3. KIỂM TRA TRẠNG THÁI CHECK-IN TRƯỚC KHI CHECK-OUT
+                        if (typeof coffeeSystem !== "undefined" && coffeeSystem.loadAttendance) {
+                            var attendanceList = coffeeSystem.loadAttendance()
+                            var lastAction = ""
+
+                            for (var a = 0; a < attendanceList.length; a++) {
+                                if (attendanceList[a].identifier === phoneToRecord || attendanceList[a].identifier === empId) {
+                                    lastAction = attendanceList[a].type
+                                }
+                            }
+
+                            if (employeePage.currentAction === "CHECK_OUT" && lastAction !== "CHECK_IN") {
+                                lblDialogError.text = "⚠️ Bạn chưa Check-In ca làm, không thể Check-Out!"
+                                lblDialogError.visible = true
+                                return
+                            }
+
+                            if (employeePage.currentAction === "CHECK_IN" && lastAction === "CHECK_IN") {
+                                lblDialogError.text = "⚠️ Bạn đã Check-In ca làm trước đó rồi!"
+                                lblDialogError.visible = true
+                                return
+                            }
+                        }
+
+                        // 4. GHI NHẬN ĐIỂM DANH & HIỂN THỊ THÔNG BÁO TẠI TRANG
                         var currentTime = Qt.formatDateTime(new Date(), "hh:mm dd/MM/yyyy")
                         var displayName = employeeName !== "" ? employeeName : ("SĐT " + phoneToRecord)
 
@@ -330,22 +336,18 @@ Page {
                             if (typeof coffeeSystem !== "undefined" && coffeeSystem.recordAttendanceCSV) {
                                 coffeeSystem.recordAttendanceCSV(phoneToRecord, "CHECK_IN", currentTime)
                             }
-                            statusText.text = "🟢 Nhân viên " + displayName + " đã Check-In lúc " + currentTime
+                            statusText.text = "🟢 Nhân viên " + displayName + " đã Check-In thành công lúc " + currentTime
                             statusText.color = "#15803D"
                         }
                         else if (employeePage.currentAction === "CHECK_OUT") {
                             if (typeof coffeeSystem !== "undefined" && coffeeSystem.recordAttendanceCSV) {
                                 coffeeSystem.recordAttendanceCSV(phoneToRecord, "CHECK_OUT", currentTime)
                             }
-                            statusText.text = "🔴 Nhân viên " + displayName + " đã Check-Out lúc " + currentTime
+                            statusText.text = "🔴 Nhân viên " + displayName + " đã Check-Out thành công lúc " + currentTime
                             statusText.color = "#B91C1C"
                         }
 
                         statusText.visible = true
-
-                        // 4. Bật bộ đếm Timer để chờ người dùng đọc thông báo rồi mới điều hướng
-                        employeePage.pendingPhone = phoneToRecord
-                        delayNavigationTimer.start()
                     }
                 }
             }

@@ -38,6 +38,7 @@ QVariant EmployeeModel::data(const QModelIndex &index, int role) const
     case NameRole: return emp->getName();
     case SalaryRole: return emp->getSalary();
     case DobRole: return emp->getDob();
+    case JobRoleRole: return emp->getJobRole();
     case CccdRole: return emp->getCccd();
     case ShiftDateRole: return emp->getShiftDate();
     case ShiftTimeRole: return emp->getShiftTime();
@@ -56,6 +57,7 @@ QHash<int, QByteArray> EmployeeModel::roleNames() const
     roles[NameRole] = "name";
     roles[SalaryRole] = "salary";
     roles[DobRole] = "dob";
+    roles[JobRoleRole] = "jobRole";
     roles[CccdRole] = "cccd";
     roles[ShiftDateRole] = "shiftDate";
     roles[ShiftTimeRole] = "shiftTime";
