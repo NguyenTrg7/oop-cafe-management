@@ -46,7 +46,6 @@ Page {
     }
 
     function refreshData() {
-        // CÁCH SỬA LỖI ĐƠ UI: Tạm thời ngắt model khỏi ComboBox để UI không phải re-render liên tục
         if (typeof cbEmployee !== "undefined" && cbEmployee !== null) {
             cbEmployee.model = null
         }
@@ -62,13 +61,14 @@ Page {
                         "empId": data[i].id,
                         "empName": data[i].name,
                         "empPhone": data[i].phone,
-                        "empSalary": data[i].salary
+                        "empSalary": data[i].salary,
+                        "empGender": data[i].gender ? data[i].gender : "Nam",
+                        "empRole": data[i].jobRole ? data[i].jobRole : "Part-time"
                     })
                 }
             }
         }
 
-        // Gắn model lại sau khi đã nạp xong dữ liệu
         if (typeof cbEmployee !== "undefined" && cbEmployee !== null) {
             cbEmployee.model = allEmployeesModel
             cbEmployee.currentIndex = -1
@@ -94,6 +94,12 @@ Page {
         return phoneRegex.test(phone.trim());
     }
 
+    // KIỂM TRA ĐỊNH DẠNG GIỜ CA LÀM (HH:mm-HH:mm)
+    function validateShiftTime(timeStr) {
+        var shiftRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]-([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
+        return shiftRegex.test(timeStr.trim());
+    }
+
     function checkDuplicate(id, phone, ignoreId) {
         for (var i = 0; i < allEmployeesModel.count; i++) {
             var emp = allEmployeesModel.get(i);
@@ -114,6 +120,57 @@ Page {
             return { bg: "#FFFBEB", border: "#FDE047", text: "#B45309" };
         } else {
             return { bg: "#EFF6FF", border: "#93C5FD", text: "#1D4ED8" };
+        }
+    }
+
+    // DIALOG CẢNH BÁO LỖI ĐỊNH DẠNG HOẶC QUY ĐỊNH CA LÀM
+    Dialog {
+        id: shiftErrorDialog
+        title: "⚠️ Lỗi Phân Ca Làm"
+        width: 380; modal: true; anchors.centerIn: parent
+        standardButtons: Dialog.Ok
+        property alias message: lblShiftError.text
+
+        contentItem: Text {
+            id: lblShiftError
+            text: ""
+            font.pixelSize: 14
+            color: "#BE123C"
+            wrapMode: Text.WordWrap
+            horizontalAlignment: Text.AlignLeft
+        }
+    }
+
+    // DIALOG XÁC NHẬN XÓA HỒ SƠ NHÂN VIÊN
+    Dialog {
+        id: confirmDeleteDialog
+        title: "⚠️ Xác Nhận Xóa Hồ Sơ"
+        width: 380; modal: true; anchors.centerIn: parent
+        standardButtons: Dialog.Yes | Dialog.No
+        background: Rectangle { color: "#FFFFFF"; radius: 12; border.color: "#CBD5E1" }
+
+        contentItem: ColumnLayout {
+            spacing: 12
+            Text {
+                text: "Bạn có chắc chắn muốn xóa hồ sơ nhân viên này không?"
+                font.pixelSize: 14; color: "#334155"
+            }
+            Text {
+                text: editName.text + " (Mã NV: " + editId.text + ")"
+                font.bold: true; font.pixelSize: 15; color: "#BE123C"
+            }
+            Text {
+                text: "⚠️ Lịch ca làm liên quan cũng sẽ bị xóa khỏi hệ thống."
+                font.pixelSize: 12; font.italic: true; color: "#64748B"
+            }
+        }
+
+        onAccepted: {
+            if (typeof coffeeSystem !== "undefined" && coffeeSystem.deleteEmployeeCSV) {
+                coffeeSystem.deleteEmployeeCSV(editId.text.trim());
+                editEmpDialog.close();
+                refreshData();
+            }
         }
     }
 
@@ -299,20 +356,40 @@ Page {
                             TextField {
                                 id: txtShiftTime
                                 placeholderText: "VD: 08:00-12:00"
-                                Layout.preferredWidth: 140; Layout.preferredHeight: 40; verticalAlignment: TextInput.AlignVCenter
+                                Layout.preferredWidth: 140; Layout.preferredHeight: 40
+                                verticalAlignment: TextInput.AlignVCenter; leftPadding: 10
                                 background: Rectangle { radius: 6; border.color: "#CBD5E1"; color: "#F8FAFC" }
-                                leftPadding: 10
                             }
                             Text { text: "Lặp lại (tháng):" }
                             SpinBox { id: repeatMonths; from: 0; to: 12; value: 0; editable: true; Layout.preferredWidth: 100 }
+
                             Button {
                                 text: "➕ Phân ca"; highlighted: true; font.bold: true
                                 onClicked: {
-                                    if (cbEmployee.currentIndex >= 0 && txtShiftTime.text.trim() !== "") {
-                                        var emp = allEmployeesModel.get(cbEmployee.currentIndex)
-                                        if (typeof coffeeSystem !== "undefined" && coffeeSystem.addShift) {
-                                            coffeeSystem.addShift(emp.empId, emp.empName, emp.empPhone, selectedDateStr, txtShiftTime.text.trim(), repeatMonths.value)
+                                    if (cbEmployee.currentIndex < 0) {
+                                        shiftErrorDialog.message = "⚠️ Vui lòng chọn nhân sự trước khi phân ca!";
+                                        shiftErrorDialog.open();
+                                        return;
+                                    }
+                                    if (txtShiftTime.text.trim() === "") {
+                                        shiftErrorDialog.message = "⚠️ Vui lòng nhập khung giờ làm việc!";
+                                        shiftErrorDialog.open();
+                                        return;
+                                    }
+                                    if (!validateShiftTime(txtShiftTime.text)) {
+                                        shiftErrorDialog.message = "⚠️ Giờ làm không đúng định dạng!\nVí dụ chuẩn: 08:00-12:00 hoặc 14:00-22:00";
+                                        shiftErrorDialog.open();
+                                        return;
+                                    }
+
+                                    var emp = allEmployeesModel.get(cbEmployee.currentIndex)
+                                    if (typeof coffeeSystem !== "undefined" && coffeeSystem.addShift) {
+                                        var success = coffeeSystem.addShift(emp.empId, emp.empName, emp.empPhone, selectedDateStr, txtShiftTime.text.trim(), repeatMonths.value)
+                                        if (success) {
                                             refreshShifts(); txtShiftTime.text = ""; repeatMonths.value = 0
+                                        } else {
+                                            shiftErrorDialog.message = "⚠️ Đăng ký ca làm không hợp lệ!\n\nLý do có thể do:\n• Ca Part-time phải dài từ 3 đến 5 tiếng.\n• Khung giờ nằm ngoài 07:00 đến 22:00.\n• Ca làm bị trùng/chồng giờ với ca đã có.\n• Vượt quá giới hạn giờ làm (12h/ngày, 48h/tuần).";
+                                            shiftErrorDialog.open();
                                         }
                                     }
                                 }
@@ -379,9 +456,9 @@ Page {
                     Rectangle { Layout.fillWidth: true; height: 1; color: "#E2E8F0" }
                     GridView {
                         Layout.fillWidth: true; Layout.fillHeight: true
-                        model: allEmployeesModel; cellWidth: 320; cellHeight: 120; clip: true
+                        model: allEmployeesModel; cellWidth: 320; cellHeight: 125; clip: true
                         delegate: Rectangle {
-                            width: 300; height: 100
+                            width: 300; height: 110
                             color: mouseArea.containsMouse ? "#F1F5F9" : "#F8FAFC"
                             radius: 10; border.color: mouseArea.containsMouse ? "#94A3B8" : "#CBD5E1"
 
@@ -397,18 +474,20 @@ Page {
                                     editName.text = model.empName;
                                     editPhone.text = model.empPhone;
                                     editSalary.text = model.empSalary.toString();
+                                    editGender.currentIndex = editGender.find(model.empGender) !== -1 ? editGender.find(model.empGender) : 0;
+                                    editRole.currentIndex = editRole.find(model.empRole) !== -1 ? editRole.find(model.empRole) : 0;
                                     editEmpDialog.open();
                                 }
                             }
 
                             RowLayout {
                                 anchors.fill: parent; anchors.margins: 12; spacing: 15
-                                Rectangle { width: 50; height: 50; radius: 25; color: "#E2E8F0"; Text { text: "👤"; anchors.centerIn: parent; font.pixelSize: 24 } }
+                                Rectangle { width: 50; height: 50; radius: 25; color: "#E2E8F0"; Text { text: model.empGender === "Nữ" ? "👩" : "👤"; anchors.centerIn: parent; font.pixelSize: 24 } }
                                 ColumnLayout {
-                                    Layout.fillWidth: true; spacing: 4
+                                    Layout.fillWidth: true; spacing: 3
                                     Text { text: model.empName; font.bold: true; font.pixelSize: 16; color: "#1E293B" }
-                                    Text { text: "ID: " + model.empId; font.pixelSize: 13; color: "#64748B" }
-                                    Text { text: "📞 " + model.empPhone; font.pixelSize: 13; color: "#64748B" }
+                                    Text { text: "ID: " + model.empId + " | Giới tính: " + model.empGender; font.pixelSize: 13; color: "#64748B" }
+                                    Text { text: "👔 " + model.empRole; font.pixelSize: 13; color: "#64748B" }
                                     Text { text: "💰 Lương: " + model.empSalary + "đ/h"; font.pixelSize: 13; color: "#059669"; font.bold: true }
                                 }
                             }
@@ -425,7 +504,7 @@ Page {
         width: 440; modal: true; anchors.centerIn: parent
         background: Rectangle { color: "#FFFFFF"; radius: 16; border.color: "#CBD5E1"; border.width: 1 }
         contentItem: ColumnLayout {
-            spacing: 15; anchors.margins: 15
+            spacing: 12; anchors.margins: 15
             RowLayout {
                 Layout.fillWidth: true
                 Text { text: "✨"; font.pixelSize: 22 }
@@ -436,6 +515,26 @@ Page {
             TextField { id: newName; placeholderText: "Họ và tên nhân viên"; Layout.fillWidth: true; font.pixelSize: 14; leftPadding: 12; verticalAlignment: TextInput.AlignVCenter; background: Rectangle { implicitHeight: 45; radius: 8; border.color: newName.activeFocus ? "#0F766E" : "#CBD5E1"; border.width: newName.activeFocus ? 2 : 1; color: "#F8FAFC" } }
             TextField { id: newPhone; placeholderText: "Số điện thoại"; Layout.fillWidth: true; font.pixelSize: 14; inputMethodHints: Qt.ImhDialableCharactersOnly; leftPadding: 12; verticalAlignment: TextInput.AlignVCenter; background: Rectangle { implicitHeight: 45; radius: 8; border.color: newPhone.activeFocus ? "#0F766E" : "#CBD5E1"; border.width: newPhone.activeFocus ? 2 : 1; color: "#F8FAFC" } }
             TextField { id: newSalary; placeholderText: "Mức lương/giờ (VNĐ)"; Layout.fillWidth: true; font.pixelSize: 14; inputMethodHints: Qt.ImhDigitsOnly; leftPadding: 12; verticalAlignment: TextInput.AlignVCenter; background: Rectangle { implicitHeight: 45; radius: 8; border.color: newSalary.activeFocus ? "#0F766E" : "#CBD5E1"; border.width: newSalary.activeFocus ? 2 : 1; color: "#F8FAFC" } }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 10
+                ComboBox {
+                    id: newGender
+                    Layout.fillWidth: true
+                    model: ["Nam", "Nữ", "Khác"]
+                    font.pixelSize: 14
+                    background: Rectangle { implicitHeight: 45; radius: 8; border.color: "#CBD5E1"; color: "#F8FAFC" }
+                }
+                ComboBox {
+                    id: newRole
+                    Layout.fillWidth: true
+                    model: ["Part-time", "Full-time", "Bảo vệ (Full-time)"]
+                    font.pixelSize: 14
+                    background: Rectangle { implicitHeight: 45; radius: 8; border.color: "#CBD5E1"; color: "#F8FAFC" }
+                }
+            }
+
             Text { id: newEmpError; color: "#E11D48"; visible: text !== ""; font.pixelSize: 13; font.italic: true; Layout.alignment: Qt.AlignHCenter }
             RowLayout {
                 Layout.fillWidth: true; spacing: 15; Layout.topMargin: 10
@@ -451,14 +550,24 @@ Page {
                     enabled: isValidForm
                     background: Rectangle { color: parent.enabled ? (parent.pressed ? "#0D9488" : "#0F766E") : "#CBD5E1"; radius: 8 }
                     contentItem: Text { text: "💾 Lưu hồ sơ"; color: "white"; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+
                     onClicked: {
                         if (!validatePhone(newPhone.text)) { newEmpError.text = "⚠️ Số điện thoại không hợp lệ!"; return; }
                         var dupError = checkDuplicate(newId.text.trim(), newPhone.text.trim(), "");
                         if (dupError !== "") { newEmpError.text = "⚠️ " + dupError; return; }
                         var salaryVal = parseFloat(newSalary.text) || 0;
                         if (typeof coffeeSystem !== "undefined" && coffeeSystem.addEmployeeCSV) {
-                            if (coffeeSystem.addEmployeeCSV(newId.text.trim(), newName.text.trim(), newPhone.text.trim(), salaryVal, "", "")) {
-                                newId.text = ""; newName.text = ""; newPhone.text = ""; newSalary.text = "";
+                            if (coffeeSystem.addEmployeeCSV(
+                                    newId.text.trim(),
+                                    newName.text.trim(),
+                                    newPhone.text.trim(),
+                                    salaryVal,
+                                    newGender.currentText,
+                                    newRole.currentText,
+                                    "",
+                                    ""
+                            )) {
+                                newId.text = ""; newName.text = ""; newPhone.text = ""; newSalary.text = ""; newGender.currentIndex = 0; newRole.currentIndex = 0;
                                 newEmpError.text = ""; newEmpDialog.close(); refreshData();
                             } else { newEmpError.text = "⚠️ Lỗi: Không thể ghi file. Vui lòng thử lại!"; }
                         }
@@ -474,7 +583,7 @@ Page {
         width: 440; modal: true; anchors.centerIn: parent
         background: Rectangle { color: "#FFFFFF"; radius: 16; border.color: "#CBD5E1"; border.width: 1 }
         contentItem: ColumnLayout {
-            spacing: 15; anchors.margins: 15
+            spacing: 12; anchors.margins: 15
             RowLayout {
                 Layout.fillWidth: true
                 Text { text: "✏️"; font.pixelSize: 22 }
@@ -485,6 +594,26 @@ Page {
             TextField { id: editName; placeholderText: "Họ và tên nhân viên"; Layout.fillWidth: true; font.pixelSize: 14; leftPadding: 12; verticalAlignment: TextInput.AlignVCenter; background: Rectangle { implicitHeight: 45; radius: 8; border.color: editName.activeFocus ? "#0F766E" : "#CBD5E1"; border.width: editName.activeFocus ? 2 : 1; color: "#F8FAFC" } }
             TextField { id: editPhone; placeholderText: "Số điện thoại"; Layout.fillWidth: true; font.pixelSize: 14; inputMethodHints: Qt.ImhDialableCharactersOnly; leftPadding: 12; verticalAlignment: TextInput.AlignVCenter; background: Rectangle { implicitHeight: 45; radius: 8; border.color: editPhone.activeFocus ? "#0F766E" : "#CBD5E1"; border.width: editPhone.activeFocus ? 2 : 1; color: "#F8FAFC" } }
             TextField { id: editSalary; placeholderText: "Mức lương/giờ (VNĐ)"; Layout.fillWidth: true; font.pixelSize: 14; inputMethodHints: Qt.ImhDigitsOnly; leftPadding: 12; verticalAlignment: TextInput.AlignVCenter; background: Rectangle { implicitHeight: 45; radius: 8; border.color: editSalary.activeFocus ? "#0F766E" : "#CBD5E1"; border.width: editSalary.activeFocus ? 2 : 1; color: "#F8FAFC" } }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 10
+                ComboBox {
+                    id: editGender
+                    Layout.fillWidth: true
+                    model: ["Nam", "Nữ", "Khác"]
+                    font.pixelSize: 14
+                    background: Rectangle { implicitHeight: 45; radius: 8; border.color: "#CBD5E1"; color: "#F8FAFC" }
+                }
+                ComboBox {
+                    id: editRole
+                    Layout.fillWidth: true
+                    model: ["Part-time", "Full-time", "Bảo vệ (Full-time)"]
+                    font.pixelSize: 14
+                    background: Rectangle { implicitHeight: 45; radius: 8; border.color: "#CBD5E1"; color: "#F8FAFC" }
+                }
+            }
+
             Text { id: editEmpError; color: "#E11D48"; visible: text !== ""; font.pixelSize: 13; font.italic: true; Layout.alignment: Qt.AlignHCenter }
 
             RowLayout {
@@ -495,11 +624,7 @@ Page {
                     background: Rectangle { color: parent.pressed ? "#FEE2E2" : "#FFF1F2"; radius: 8; border.color: "#FDA4AF" }
                     contentItem: Text { text: "🗑️ Xoá hồ sơ"; color: "#BE123C"; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                     onClicked: {
-                        if (typeof coffeeSystem !== "undefined" && coffeeSystem.deleteEmployeeCSV) {
-                            coffeeSystem.deleteEmployeeCSV(editId.text.trim());
-                            editEmpDialog.close();
-                            refreshData();
-                        }
+                        confirmDeleteDialog.open()
                     }
                 }
                 Button {
@@ -508,6 +633,7 @@ Page {
                     enabled: isValidForm
                     background: Rectangle { color: parent.enabled ? (parent.pressed ? "#0D9488" : "#0F766E") : "#CBD5E1"; radius: 8 }
                     contentItem: Text { text: "🔄 Cập nhật"; color: "white"; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+
                     onClicked: {
                         if (!validatePhone(editPhone.text)) { editEmpError.text = "⚠️ Số điện thoại không hợp lệ!"; return; }
                         var dupError = checkDuplicate(editId.text.trim(), editPhone.text.trim(), editId.text.trim());
@@ -515,7 +641,16 @@ Page {
 
                         var salaryVal = parseFloat(editSalary.text) || 0;
                         if (typeof coffeeSystem !== "undefined" && coffeeSystem.updateEmployeeCSV) {
-                            if (coffeeSystem.updateEmployeeCSV(editId.text.trim(), editName.text.trim(), editPhone.text.trim(), salaryVal, "", "")) {
+                            if (coffeeSystem.updateEmployeeCSV(
+                                    editId.text.trim(),
+                                    editName.text.trim(),
+                                    editPhone.text.trim(),
+                                    salaryVal,
+                                    editGender.currentText,
+                                    editRole.currentText,
+                                    "",
+                                    ""
+                            )) {
                                 editEmpError.text = ""; editEmpDialog.close(); refreshData();
                             } else { editEmpError.text = "⚠️ Lỗi: Không thể cập nhật file!"; }
                         }

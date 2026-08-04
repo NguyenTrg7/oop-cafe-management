@@ -6,7 +6,9 @@
 #include <QUrl>
 #include <QSet>
 #include <QDate>
+#include <QTime>
 #include <QCoreApplication>
+#include <algorithm>
 
 GiangCoffeeSystem *GiangCoffeeSystem::m_instance = nullptr;
 
@@ -26,44 +28,40 @@ GiangCoffeeSystem::GiangCoffeeSystem(QObject *parent)
 
     loadSeating();
 
-    m_tables.append(Seating(1, 4, false, QStringLiteral("Vuông")));
-    m_tables.append(Seating(2, 4, false, QStringLiteral("Vuông")));
-    m_tables.append(Seating(3, 4, false, QStringLiteral("Tròn")));
-    m_tables.append(Seating(4, 4, false, QStringLiteral("Tròn")));
-    m_tables.append(Seating(5, 4, false, QStringLiteral("Vuông")));
-    m_tables.append(Seating(6, 4, false, QStringLiteral("Vuông")));
-    m_tables.append(Seating(7, 4, false, QStringLiteral("Tròn")));
-    m_tables.append(Seating(8, 4, false, QStringLiteral("Vuông")));
-    m_tables.append(Seating(9, 4, false, QStringLiteral("Vuông")));
-    m_tables.append(Seating(10, 4, false, QStringLiteral("Tròn")));
-    m_tables.append(Seating(11, 4, false, QStringLiteral("Vuông")));
-    m_tables.append(Seating(12, 4, false, QStringLiteral("Tròn")));
+    if(m_tables.isEmpty()) {
+        m_tables.append(Seating(1, 4, false, QStringLiteral("Vuông")));
+        m_tables.append(Seating(2, 4, false, QStringLiteral("Vuông")));
+        m_tables.append(Seating(3, 4, false, QStringLiteral("Tròn")));
+        m_tables.append(Seating(4, 4, false, QStringLiteral("Tròn")));
+        m_tables.append(Seating(5, 4, false, QStringLiteral("Vuông")));
+        m_tables.append(Seating(6, 4, false, QStringLiteral("Vuông")));
+        m_tables.append(Seating(7, 4, false, QStringLiteral("Tròn")));
+        m_tables.append(Seating(8, 4, false, QStringLiteral("Vuông")));
+        m_tables.append(Seating(9, 4, false, QStringLiteral("Vuông")));
+        m_tables.append(Seating(10, 4, false, QStringLiteral("Tròn")));
+        m_tables.append(Seating(11, 4, false, QStringLiteral("Vuông")));
+        m_tables.append(Seating(12, 4, false, QStringLiteral("Tròn")));
+    }
 }
 
 GiangCoffeeSystem::~GiangCoffeeSystem()
 {
-    for (auto *emp : std::as_const(m_employees_list)) {
-        delete emp;
-    }
+    qDeleteAll(m_employees_list);
     m_employees_list.clear();
 
-    for (auto *order : std::as_const(m_orders)) {
-        delete order;
-    }
+    qDeleteAll(m_orders);
     m_orders.clear();
 }
 
 void GiangCoffeeSystem::addEmployee(Employee *emp)
 {
-    if (emp) {
-        m_employees_list.append(emp);
-    }
+    if (emp) m_employees_list.append(emp);
 }
 
 void GiangCoffeeSystem::removeEmployee(const QString &empID)
 {
     for (int i = 0; i < m_employees_list.size(); ++i) {
-        if (m_employees_list[i]->getID() == empID) {
+        if (m_employees_list[i]->getId() == empID) {
             delete m_employees_list[i];
             m_employees_list.removeAt(i);
             break;
@@ -71,7 +69,6 @@ void GiangCoffeeSystem::removeEmployee(const QString &empID)
     }
 }
 
-// THÊM MỚI: Cập nhật Tên/SĐT của Nhân viên bên trong file Ca Làm (Shift.csv)
 void GiangCoffeeSystem::updateEmployeeInShifts(const QString &id, const QString &newName, const QString &newPhone)
 {
     QString path = QCoreApplication::applicationDirPath() + "/data/Shift.csv";
@@ -100,7 +97,6 @@ void GiangCoffeeSystem::updateEmployeeInShifts(const QString &id, const QString 
     file.close();
 }
 
-// THÊM MỚI: Xóa toàn bộ ca làm của nhân viên khi Hồ sơ bị xóa
 void GiangCoffeeSystem::deleteEmployeeShifts(const QString &id)
 {
     QString path = QCoreApplication::applicationDirPath() + "/data/Shift.csv";
@@ -113,7 +109,7 @@ void GiangCoffeeSystem::deleteEmployeeShifts(const QString &id)
         QString line = in.readLine();
         QStringList fields = line.split(",");
         if (fields.size() >= 5 && fields[0] == id) {
-            continue; // Bỏ qua dòng này (Xóa)
+            continue;
         }
         lines.append(line);
     }
@@ -131,8 +127,7 @@ bool GiangCoffeeSystem::deleteEmployeeCSV(const QString &id)
 {
     QString path = QCoreApplication::applicationDirPath() + "/data/Employee.csv";
     QFile file(path);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        return false;
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return false;
 
     QStringList lines;
     QTextStream in(&file);
@@ -141,9 +136,7 @@ bool GiangCoffeeSystem::deleteEmployeeCSV(const QString &id)
     }
     file.close();
 
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
-        return false;
-
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) return false;
     QTextStream out(&file);
     for (const QString &line : std::as_const(lines)) {
         QStringList fields = line.split(",");
@@ -154,9 +147,7 @@ bool GiangCoffeeSystem::deleteEmployeeCSV(const QString &id)
     }
     file.close();
 
-    // ĐỒNG BỘ: Xóa luôn lịch làm việc của người này
     deleteEmployeeShifts(id);
-
     return true;
 }
 
@@ -165,26 +156,26 @@ QVariantList GiangCoffeeSystem::loadEmployees()
     QVariantList list;
     QString path = QCoreApplication::applicationDirPath() + "/data/Employee.csv";
     QFile file(path);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        return list;
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return list;
 
     QTextStream in(&file);
-    in.readLine(); // Bỏ qua Header
+    in.readLine();
 
     while (!in.atEnd()) {
         QString line = in.readLine().trimmed();
-        if (line.isEmpty())
-            continue;
+        if (line.isEmpty()) continue;
 
         QStringList fields = line.split(",");
-        if (fields.size() >= 6) {
+        if (fields.size() >= 8) {
             QVariantMap emp;
             emp["id"] = fields[0].trimmed();
             emp["name"] = fields[1].trimmed();
             emp["phone"] = fields[2].trimmed();
             emp["salary"] = fields[3].trimmed().toDouble();
-            emp["shiftDate"] = fields[4].trimmed();
-            emp["shiftTime"] = fields[5].trimmed();
+            emp["gender"] = fields[4].trimmed();
+            emp["jobRole"] = fields[5].trimmed();
+            emp["shiftDate"] = fields[6].trimmed();
+            emp["shiftTime"] = fields[7].trimmed();
             list.append(emp);
         }
     }
@@ -192,22 +183,20 @@ QVariantList GiangCoffeeSystem::loadEmployees()
     return list;
 }
 
-bool GiangCoffeeSystem::addEmployeeCSV(const QString &id, const QString &name, const QString &phone, double salary, const QString &shiftDate, const QString &shiftTime)
+bool GiangCoffeeSystem::addEmployeeCSV(const QString &id, const QString &name, const QString &phone, double salary, const QString &gender, const QString &jobRole, const QString &shiftDate, const QString &shiftTime)
 {
     QString path = QCoreApplication::applicationDirPath() + "/data/Employee.csv";
     QFile file(path);
-    if (!file.open(QIODevice::Append | QIODevice::Text))
-        return false;
+    if (!file.open(QIODevice::Append | QIODevice::Text)) return false;
 
     QTextStream out(&file);
-    out << id << "," << name << "," << phone << "," << salary << "," << shiftDate << "," << shiftTime << "\n";
+    out << id << "," << name << "," << phone << "," << salary << "," << gender << "," << jobRole << "," << shiftDate << "," << shiftTime << "\n";
     file.close();
     return true;
 }
 
-bool GiangCoffeeSystem::updateEmployeeCSV(const QString &id, const QString &name, const QString &phone, double salary, const QString &shiftDate, const QString &shiftTime)
+bool GiangCoffeeSystem::updateEmployeeCSV(const QString &id, const QString &name, const QString &phone, double salary, const QString &gender, const QString &jobRole, const QString &shiftDate, const QString &shiftTime)
 {
-    // ĐÃ SỬA: Thay vì gọi delete -> gọi add. Ta tự quét và thay đổi, vì hàm delete hiện tại sẽ xóa mất ca làm việc (Shifts)
     QString path = QCoreApplication::applicationDirPath() + "/data/Employee.csv";
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return false;
@@ -218,7 +207,7 @@ bool GiangCoffeeSystem::updateEmployeeCSV(const QString &id, const QString &name
         QString line = in.readLine();
         QStringList fields = line.split(",");
         if (!fields.isEmpty() && fields[0].trimmed() == id) {
-            line = QString("%1,%2,%3,%4,%5,%6").arg(id, name, phone, QString::number(salary), shiftDate, shiftTime);
+            line = QString("%1,%2,%3,%4,%5,%6,%7,%8").arg(id, name, phone, QString::number(salary), gender, jobRole, shiftDate, shiftTime);
         }
         lines.append(line);
     }
@@ -231,9 +220,7 @@ bool GiangCoffeeSystem::updateEmployeeCSV(const QString &id, const QString &name
     }
     file.close();
 
-    // ĐỒNG BỘ: Cập nhật ca làm việc với Tên/SĐT mới!
     updateEmployeeInShifts(id, name, phone);
-
     return true;
 }
 
@@ -264,13 +251,11 @@ void GiangCoffeeSystem::placeOrder(Order *order)
     if (order) m_orders.append(order);
 }
 
-// Hàm của seating/table
 void GiangCoffeeSystem::saveSeating()
 {
     QString path = QCoreApplication::applicationDirPath() + "/data/seating.csv";
     QFile file(path);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
-        return;
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) return;
 
     QTextStream out(&file);
     out << "TableNumber,Capacity,Occupied,Shape,OriginalNumbers,OriginalCapacities,OriginalShapes,Note\n";
@@ -281,7 +266,6 @@ void GiangCoffeeSystem::saveSeating()
         for (int c : t.getOriginalCapacities()) caps << QString::number(c);
         for (const QString &s : t.getOriginalShapes()) shapes << s;
 
-        // Note: thay dau phay de khong vo CSV
         QString noteSafe = t.getNote();
         noteSafe.replace(",", ";");
         noteSafe.replace("\n", " ");
@@ -302,12 +286,11 @@ void GiangCoffeeSystem::loadSeating()
 {
     QString path = QCoreApplication::applicationDirPath() + "/data/seating.csv";
     QFile file(path);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        return;
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return;
 
     m_tables.clear();
     QTextStream in(&file);
-    in.readLine(); // bỏ header
+    in.readLine();
 
     while (!in.atEnd()) {
         QString line = in.readLine().trimmed();
@@ -325,26 +308,22 @@ void GiangCoffeeSystem::loadSeating()
 
         if (f.size() >= 5 && !f[4].isEmpty()) {
             QList<int> nums;
-            for (const QString &s : f[4].split("|", Qt::SkipEmptyParts))
-                nums << s.toInt();
+            for (const QString &s : f[4].split("|", Qt::SkipEmptyParts)) nums << s.toInt();
             t.setOriginalNumbers(nums);
         }
         if (f.size() >= 6 && !f[5].isEmpty()) {
             QList<int> caps;
-            for (const QString &s : f[5].split("|", Qt::SkipEmptyParts))
-                caps << s.toInt();
+            for (const QString &s : f[5].split("|", Qt::SkipEmptyParts)) caps << s.toInt();
             t.setOriginalCapacities(caps);
         }
         if (f.size() >= 7 && !f[6].isEmpty()) {
             t.setOriginalShapes(f[6].split("|", Qt::SkipEmptyParts));
         }
-
         if (f.size() >= 8) {
             QString note = f[7].trimmed();
             note.replace(";", ",");
             t.setNote(note);
         }
-
         m_tables.append(t);
     }
     file.close();
@@ -385,7 +364,6 @@ void GiangCoffeeSystem::mergeTable(int tableNum1, int tableNum2)
     }
     if (idx1 < 0 || idx2 < 0) return;
 
-    // Lấy lịch sử gốc
     QList<int> origNums1 = m_tables[idx1].getOriginalNumbers();
     if (origNums1.isEmpty()) origNums1 << tableNum1;
     QList<int> origCaps1 = m_tables[idx1].getOriginalCapacities();
@@ -407,8 +385,7 @@ void GiangCoffeeSystem::mergeTable(int tableNum1, int tableNum2)
     const bool mergedOccupied = m_tables[idx1].isTableOccupied() || m_tables[idx2].isTableOccupied();
     const QString mergedShape = (tableNum1 < tableNum2) ? m_tables[idx1].getShape() : m_tables[idx2].getShape();
     QString mergedNote = note1;
-    if (!note2.isEmpty())
-        mergedNote = note1.isEmpty() ? note2 : (note1 + " | " + note2);
+    if (!note2.isEmpty()) mergedNote = note1.isEmpty() ? note2 : (note1 + " | " + note2);
 
     Seating mergedTable(mergedNumber, mergedCapacity, mergedOccupied, mergedShape);
     mergedTable.setOriginalNumbers(origNums1 + origNums2);
@@ -423,7 +400,6 @@ void GiangCoffeeSystem::mergeTable(int tableNum1, int tableNum2)
         m_tables[idx2] = mergedTable;
         m_tables.removeAt(idx1);
     }
-
     saveSeating();
 }
 
@@ -442,23 +418,18 @@ bool GiangCoffeeSystem::undoMerge(int tableNumber)
     QList<int> origCaps = m_tables[idx].getOriginalCapacities();
     QList<QString> origShapes = m_tables[idx].getOriginalShapes();
 
-    if (origNums.size() <= 1 || origNums.size() != origCaps.size())
-        return false;
+    if (origNums.size() <= 1 || origNums.size() != origCaps.size()) return false;
 
-    // Xóa bàn đã gộp
     m_tables.removeAt(idx);
 
-    // Khôi phục từng bàn gốc
     for (int i = 0; i < origNums.size(); ++i) {
         QString shp = (i < origShapes.size()) ? origShapes[i] : QStringLiteral("Vuông");
         m_tables.append(Seating(origNums[i], origCaps[i], false, shp));
     }
 
-    // Sắp xếp lại theo số bàn
-    std::sort(m_tables.begin(), m_tables.end(),
-              [](const Seating &a, const Seating &b) {
-                  return a.getTableNumber() < b.getTableNumber();
-              });
+    std::sort(m_tables.begin(), m_tables.end(), [](const Seating &a, const Seating &b) {
+        return a.getTableNumber() < b.getTableNumber();
+    });
 
     saveSeating();
     return true;
@@ -469,8 +440,7 @@ void GiangCoffeeSystem::editTable(int tableNumber, const QString &shape, int cap
     for (auto &table : m_tables) {
         if (table.getTableNumber() == tableNumber) {
             table.setShape(shape);
-            if (capacity >= 1 && capacity <= 20)
-                table.setCapacity(capacity);
+            if (capacity >= 1 && capacity <= 20) table.setCapacity(capacity);
             saveSeating();
             return;
         }
@@ -511,9 +481,7 @@ double GiangCoffeeSystem::checkDiscount(const QString &code, double totalAmount)
 {
     QString path = QCoreApplication::applicationDirPath() + "/data/discounts.csv";
     QFile file(path);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        return 0.0;
-    }
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return 0.0;
 
     QTextStream in(&file);
     in.readLine();
@@ -544,8 +512,7 @@ QVariantList GiangCoffeeSystem::loadFinance()
     QVariantList list;
     QString path = QCoreApplication::applicationDirPath() + "/data/finance.csv";
     QFile file(path);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        return list;
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return list;
 
     QTextStream in(&file);
     in.readLine();
@@ -569,8 +536,7 @@ bool GiangCoffeeSystem::addTransactionCSV(const QString &date, const QString &ty
 {
     QString path = QCoreApplication::applicationDirPath() + "/data/finance.csv";
     QFile file(path);
-    if (!file.open(QIODevice::Append | QIODevice::Text))
-        return false;
+    if (!file.open(QIODevice::Append | QIODevice::Text)) return false;
 
     QTextStream out(&file);
     out << date << "," << type << "," << amount << "," << note << "\n";
@@ -578,7 +544,126 @@ bool GiangCoffeeSystem::addTransactionCSV(const QString &date, const QString &ty
     return true;
 }
 
-void GiangCoffeeSystem::calculatePayroll() { }
+// Tính tổng thời lượng ca làm việc (Gross)
+double GiangCoffeeSystem::parseShiftDurationHours(const QString &timeStr)
+{
+    QStringList parts = timeStr.split("-");
+    if (parts.size() != 2) return 0.0;
+
+    QTime start = QTime::fromString(parts[0].trimmed(), "HH:mm");
+    QTime end = QTime::fromString(parts[1].trimmed(), "HH:mm");
+
+    if (!start.isValid() || !end.isValid()) return 0.0;
+
+    int secs = start.secsTo(end);
+    if (secs < 0) secs += 24 * 3600;
+
+    return secs / 3600.0;
+}
+
+// Trừ 30 phút (0.5h) nghỉ giữa giờ nếu ca từ 6 tiếng trở lên
+double GiangCoffeeSystem::getNetWorkingHours(const QString &timeStr)
+{
+    double gross = parseShiftDurationHours(timeStr);
+    if (gross >= 6.0) {
+        return gross - 0.5;
+    }
+    return gross;
+}
+
+// Kiểm tra khung giờ ca làm có nằm trong 07:00 - 22:00 không
+bool GiangCoffeeSystem::validateShiftTimeBounds(const QString &timeStr)
+{
+    QStringList parts = timeStr.split("-");
+    if (parts.size() != 2) return false;
+
+    QTime start = QTime::fromString(parts[0].trimmed(), "HH:mm");
+    QTime end = QTime::fromString(parts[1].trimmed(), "HH:mm");
+
+    if (!start.isValid() || !end.isValid()) return false;
+
+    QTime minTime(7, 0);
+    QTime maxTime(22, 0);
+
+    if (start < minTime || end > maxTime || start >= end) {
+        return false;
+    }
+    return true;
+}
+
+// HÀM TÍNH LƯƠNG HOÀN CHỈNH BẢO ĐẢM TẤT CẢ GIỚI HẠN PHÁP LUẬT
+QVariantList GiangCoffeeSystem::calculateMonthlyPayroll(int month, int year)
+{
+    QVariantList payrollList;
+    QVariantList employees = loadEmployees();
+
+    for (const QVariant& item : std::as_const(employees)) {
+        QVariantMap empMap = item.toMap();
+        QString empId = empMap["id"].toString();
+        double salaryPerHour = empMap["salary"].toDouble();
+
+        double totalNormalHours = 0.0;
+        double totalWeekdayOtHours = 0.0;
+        double totalSundayOtHours = 0.0;
+
+        // Đọc tất cả ca làm trong tháng của nhân viên
+        QString path = QCoreApplication::applicationDirPath() + "/data/Shift.csv";
+        QFile file(path);
+        if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            QTextStream in(&file);
+            QMap<QDate, double> dailyNetHours;
+
+            while (!in.atEnd()) {
+                QString line = in.readLine().trimmed();
+                if (line.isEmpty()) continue;
+
+                QStringList fields = line.split(",");
+                if (fields.size() >= 5 && fields[0] == empId) {
+                    QDate shiftDate = QDate::fromString(fields[3], "dd/MM/yyyy");
+                    if (shiftDate.isValid() && shiftDate.month() == month && shiftDate.year() == year) {
+                        double netHours = getNetWorkingHours(fields[4]);
+                        dailyNetHours[shiftDate] += netHours;
+                    }
+                }
+            }
+            file.close();
+
+            // Tính toán từng ngày: Tối đa 8h thường/ngày, phần dư tính OT
+            for (auto it = dailyNetHours.begin(); it != dailyNetHours.end(); ++it) {
+                QDate d = it.key();
+                double net = it.value();
+
+                double normal = qMin(8.0, net);
+                double ot = qMax(0.0, net - 8.0);
+
+                if (d.dayOfWeek() == 7) { // Chủ Nhật
+                    totalNormalHours += normal;      // Giờ thường Chủ nhật x1.0
+                    totalSundayOtHours += ot;        // Giờ OT Chủ Nhật x2.0
+                } else {
+                    totalNormalHours += normal;      // Giờ thường x1.0
+                    totalWeekdayOtHours += ot;       // Giờ OT ngày thường x1.5
+                }
+            }
+        }
+
+        Employee tempEmp;
+        tempEmp.setSalary(salaryPerHour);
+        double totalSalary = tempEmp.calculateSalary(totalNormalHours, totalWeekdayOtHours, totalSundayOtHours);
+
+        QVariantMap record;
+        record["id"] = empId;
+        record["name"] = empMap["name"].toString();
+        record["baseSalary"] = salaryPerHour;
+        record["normalHours"] = totalNormalHours;
+        record["weekdayOtHours"] = totalWeekdayOtHours;
+        record["sundayOtHours"] = totalSundayOtHours;
+        record["totalSalary"] = totalSalary;
+
+        payrollList.append(record);
+    }
+
+    return payrollList;
+}
 
 bool GiangCoffeeSystem::verifyEmployeePhone(const QString &phone)
 {
@@ -600,8 +685,7 @@ bool GiangCoffeeSystem::recordAttendanceCSV(const QString &identifier, const QSt
 {
     QString path = QCoreApplication::applicationDirPath() + "/data/attendance.csv";
     QFile file(path);
-    if (!file.open(QIODevice::Append | QIODevice::Text))
-        return false;
+    if (!file.open(QIODevice::Append | QIODevice::Text)) return false;
 
     QTextStream out(&file);
     out << identifier << "," << type << "," << timestamp << "\n";
@@ -629,8 +713,7 @@ QVariantList GiangCoffeeSystem::loadAttendance()
     QVariantList list;
     QString path = QCoreApplication::applicationDirPath() + "/data/attendance.csv";
     QFile file(path);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        return list;
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return list;
 
     QTextStream in(&file);
     while (!in.atEnd()) {
@@ -680,7 +763,7 @@ QVariantMap GiangCoffeeSystem::importEmployeesNoDuplicate(const QString &filePat
         if (line.isEmpty()) continue;
 
         QStringList fields = line.split(",");
-        if (fields.size() >= 6) {
+        if (fields.size() >= 8) {
             QString newId = fields[0].trimmed();
             QString newPhone = fields[2].trimmed();
 
@@ -689,7 +772,7 @@ QVariantMap GiangCoffeeSystem::importEmployeesNoDuplicate(const QString &filePat
                 continue;
             }
 
-            addEmployeeCSV(newId, fields[1].trimmed(), newPhone, fields[3].toDouble(), fields[4].trimmed(), fields[5].trimmed());
+            addEmployeeCSV(newId, fields[1].trimmed(), newPhone, fields[3].toDouble(), fields[4].trimmed(), fields[5].trimmed(), fields[6].trimmed(), fields[7].trimmed());
             existingIds.insert(newId);
             existingPhones.insert(newPhone);
             addedCount++;
@@ -708,8 +791,7 @@ QVariantList GiangCoffeeSystem::loadShifts(const QString &dateStr)
     QVariantList list;
     QString path = QCoreApplication::applicationDirPath() + "/data/Shift.csv";
     QFile file(path);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        return list;
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return list;
 
     QTextStream in(&file);
     while (!in.atEnd()) {
@@ -731,26 +813,165 @@ QVariantList GiangCoffeeSystem::loadShifts(const QString &dateStr)
     return list;
 }
 
+// BỔ SUNG BƯỚC KIỂM TRA CHỐNG TRÙNG CA VÀ RÀNG BUỘC PHÂN CA THEO LOẠI HÌNH NHÂN VIÊN
 bool GiangCoffeeSystem::addShift(const QString &id, const QString &name, const QString &phone, const QString &dateStr, const QString &time, int repeatMonths)
 {
-    QString path = QCoreApplication::applicationDirPath() + "/data/Shift.csv";
-    QFile file(path);
-    if (!file.open(QIODevice::Append | QIODevice::Text))
+    // 1. Kiểm tra khung giờ 07:00 - 22:00
+    if (!validateShiftTimeBounds(time)) {
+        qDebug() << "Lỗi: Khung giờ phải nằm trong khoảng 07:00 đến 22:00 và đúng định dạng HH:mm-HH:mm!";
         return false;
+    }
 
-    QTextStream out(&file);
+    // Tách thời gian ca mới để phục vụ so sánh trùng ca
+    QStringList newParts = time.split("-");
+    QTime newStart = QTime::fromString(newParts[0].trimmed(), "HH:mm");
+    QTime newEnd = QTime::fromString(newParts[1].trimmed(), "HH:mm");
+
+    // Lấy vị trí công việc (jobRole) của nhân viên
+    QVariantList employees = loadEmployees();
+    QString jobRole = "Part-time";
+
+    for (const QVariant &item : employees) {
+        if (item.toMap()["id"].toString() == id) {
+            jobRole = item.toMap()["jobRole"].toString();
+            break;
+        }
+    }
+
+    double shiftGrossHours = parseShiftDurationHours(time);
+
+    // 2. Kiểm tra ràng buộc theo vị trí công việc
+    if (jobRole == "Part-time") {
+        // Ca Part-time giới hạn từ 3.0 đến 5.0 tiếng
+        if (shiftGrossHours < 3.0 || shiftGrossHours > 5.0) {
+            qDebug() << "Lỗi: Ca Part-time chỉ được đăng ký từ 3 đến 5 tiếng!";
+            return false;
+        }
+    } else if (jobRole == "Full-time" || jobRole == "Bảo vệ (Full-time)") {
+        if (time != "07:00-15:00" && time != "14:00-22:00") {
+            qDebug() << "Lỗi: Nhân viên Full-time/Bảo vệ chỉ được đăng ký ca 07:00-15:00 hoặc 14:00-22:00";
+            return false;
+        }
+    }
+
+    double newShiftNetHours = getNetWorkingHours(time);
     QDate startDate = QDate::fromString(dateStr, "dd/MM/yyyy");
     if (!startDate.isValid()) return false;
 
     QDate endDate = startDate.addMonths(repeatMonths);
     QDate currentDate = startDate;
 
+    QString path = QCoreApplication::applicationDirPath() + "/data/Shift.csv";
+
+    // Vòng lặp kiểm tra từng ngày
     while (currentDate <= endDate) {
-        out << id << "," << name << "," << phone << "," << currentDate.toString("dd/MM/yyyy") << "," << time << "\n";
-        currentDate = currentDate.addDays(1);
+        double dayNetHours = 0.0;
+        double weekNormalHours = 0.0;
+        double monthOtHours = 0.0;
+        double yearOtHours = 0.0;
+
+        QDate startOfWeek = currentDate.addDays(-(currentDate.dayOfWeek() - 1)); // Thứ 2
+        QDate endOfWeek = startOfWeek.addDays(6); // Chủ nhật
+
+        QFile fileRead(path);
+        if (fileRead.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            QTextStream in(&fileRead);
+            QMap<QDate, double> dailyNetMap;
+
+            while (!in.atEnd()) {
+                QString line = in.readLine().trimmed();
+                if (line.isEmpty()) continue;
+
+                QStringList fields = line.split(",");
+                if (fields.size() >= 5 && fields[0] == id) {
+                    QDate d = QDate::fromString(fields[3], "dd/MM/yyyy");
+                    if (d.isValid()) {
+
+                        // === BỔ SUNG: KIỂM TRA TRÙNG / CHỒNG CA TRONG CÙNG NGÀY ===
+                        if (d == currentDate) {
+                            QStringList existParts = fields[4].split("-");
+                            if (existParts.size() == 2) {
+                                QTime existStart = QTime::fromString(existParts[0].trimmed(), "HH:mm");
+                                QTime existEnd = QTime::fromString(existParts[1].trimmed(), "HH:mm");
+
+                                // Điều kiện trùng/chồng giờ giữa 2 khoảng thời gian
+                                if (existStart.isValid() && existEnd.isValid()) {
+                                    if (newStart < existEnd && newEnd > existStart) {
+                                        qDebug() << "Lỗi: Ca mới (" << time << ") bị trùng/chồng thời gian với ca đã đăng ký (" << fields[4] << ")!";
+                                        fileRead.close();
+                                        return false;
+                                    }
+                                }
+                            }
+                        }
+                        // =======================================================
+
+                        double h = getNetWorkingHours(fields[4]);
+
+                        if (d == currentDate) dayNetHours += h;
+                        if (d >= startOfWeek && d <= endOfWeek) {
+                            dailyNetMap[d] += h;
+                        }
+                        if (d.month() == currentDate.month() && d.year() == currentDate.year()) {
+                            double dayH = dailyNetMap[d];
+                            if (dayH > 8.0) monthOtHours += (dayH - 8.0);
+                        }
+                        if (d.year() == currentDate.year()) {
+                            double dayH = dailyNetMap[d];
+                            if (dayH > 8.0) yearOtHours += (dayH - 8.0);
+                        }
+                    }
+                }
+            }
+            fileRead.close();
+
+            for (auto it = dailyNetMap.begin(); it != dailyNetMap.end(); ++it) {
+                weekNormalHours += qMin(8.0, it.value());
+            }
+        }
+
+        // 3. Kiểm tra giới hạn Ngày: Max 12h
+        if ((dayNetHours + newShiftNetHours) > 12.0) {
+            qDebug() << "Lỗi: Tổng giờ làm trong ngày không được vượt quá 12 giờ!";
+            return false;
+        }
+
+        // 4. Kiểm tra giới hạn Tuần: Max 48h
+        if ((weekNormalHours + qMin(8.0, newShiftNetHours)) > 48.0) {
+            qDebug() << "Lỗi: Giờ làm việc bình thường vượt quá 48 giờ/tuần!";
+            return false;
+        }
+
+        double currentDayTotal = dayNetHours + newShiftNetHours;
+        double newOt = (currentDayTotal > 8.0) ? (currentDayTotal - qMax(8.0, dayNetHours)) : 0.0;
+
+        // 5. Kiểm tra giới hạn Tháng: Max 40h OT
+        if ((monthOtHours + newOt) > 40.0) {
+            qDebug() << "Lỗi: Tổng giờ làm thêm (OT) vượt quá 40 giờ/tháng!";
+            return false;
+        }
+
+        // 6. Kiểm tra giới hạn Năm: Max 200h OT
+        if ((yearOtHours + newOt) > 200.0) {
+            qDebug() << "Lỗi: Tổng giờ làm thêm (OT) vượt quá 200 giờ/năm!";
+            return false;
+        }
+
+        currentDate = currentDate.addDays(7);
     }
 
-    file.close();
+    // Ghi ca mới vào CSV nếu hợp lệ hoàn toàn
+    QFile fileAppend(path);
+    if (!fileAppend.open(QIODevice::Append | QIODevice::Text)) return false;
+
+    QTextStream out(&fileAppend);
+    currentDate = startDate;
+    while (currentDate <= endDate) {
+        out << id << "," << name << "," << phone << "," << currentDate.toString("dd/MM/yyyy") << "," << time << "\n";
+        currentDate = currentDate.addDays(7);
+    }
+
+    fileAppend.close();
     return true;
 }
 
@@ -758,8 +979,7 @@ bool GiangCoffeeSystem::removeShift(const QString &id, const QString &dateStr, c
 {
     QString path = QCoreApplication::applicationDirPath() + "/data/Shift.csv";
     QFile file(path);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        return false;
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return false;
 
     QStringList lines;
     QTextStream in(&file);
@@ -768,8 +988,7 @@ bool GiangCoffeeSystem::removeShift(const QString &id, const QString &dateStr, c
     }
     file.close();
 
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
-        return false;
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) return false;
 
     QTextStream out(&file);
     for (const QString &line : std::as_const(lines)) {
@@ -793,9 +1012,7 @@ bool GiangCoffeeSystem::exportEmployeesCSV(const QString &filePath)
     if (!sourceFile.exists()) return false;
 
     QFile destFile(localPath);
-    if (destFile.exists()) {
-        destFile.remove();
-    }
+    if (destFile.exists()) destFile.remove();
 
     return sourceFile.copy(localPath);
 }

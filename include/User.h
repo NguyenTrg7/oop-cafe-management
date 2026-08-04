@@ -1,5 +1,3 @@
-
-
 #ifndef USER_H
 #define USER_H
 
@@ -8,31 +6,34 @@
 
 class User : public QObject {
     Q_OBJECT
-    // Q_PROPERTY giúp QML có thể đọc/ghi dữ liệu từ C++ (Áp dụng MVVM)
-    Q_PROPERTY(QString id READ id CONSTANT)
-    Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
+    // SỬA Ở ĐÂY: Xóa CONSTANT, thêm NOTIFY idChanged
+    Q_PROPERTY(QString id READ getId WRITE setId NOTIFY idChanged)
+    Q_PROPERTY(QString name READ getName WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(QString role READ role CONSTANT)
 
 public:
-    explicit User(const QString& id, const QString& name, QObject *parent = nullptr);
+    explicit User(const QString& id = "", const QString& name = "", QObject *parent = nullptr);
     virtual ~User() = default;
 
-    // Getters (Tính đóng gói)
-    QString id() const;
-    QString name() const;
+    // Getters đồng nhất
+    QString getId() const;
+    QString getName() const;
 
     // Setters
+    void setId(const QString& id);
     void setName(const QString& name);
-    QString getName();
-    // Tính trừu tượng & Đa hình: Hàm thuần ảo (Pure virtual function)
+
+    // Hàm thuần ảo bắt buộc lớp con phải định nghĩa
     virtual QString role() const = 0;
     virtual void displayInfo() const = 0;
-    QString getID() { return m_id;}
 
 signals:
-    void nameChanged(); // Signal báo cho QML biết dữ liệu đã đổi
+    // THÊM Ở ĐÂY: Tín hiệu khi id thay đổi
+    void idChanged();
+    void nameChanged();
 
-protected: // Cho phép lớp con truy cập
+protected:
+    // Protected giúp lớp con (Employee) dùng trực tiếp được m_id và m_name
     QString m_id;
     QString m_name;
 };

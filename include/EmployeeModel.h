@@ -15,6 +15,7 @@ public:
         PhoneRole,
         NameRole,
         SalaryRole,
+        JobRoleRole,
         DobRole,
         CccdRole,
         ShiftDateRole,

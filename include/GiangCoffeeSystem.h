@@ -34,18 +34,24 @@ private:
     QList<Account> m_accounts;
     QList<QString> m_receipts;
 
-    // THÊM MỚI: Helper functions để đồng bộ ca làm việc
     void updateEmployeeInShifts(const QString &id, const QString &newName, const QString &newPhone);
     void deleteEmployeeShifts(const QString &id);
 
+    // Các hàm phụ trợ kiểm tra giới hạn giờ làm
+    double parseShiftDurationHours(const QString &timeStr);
+    double getNetWorkingHours(const QString &timeStr);
+    bool validateShiftTimeBounds(const QString &timeStr);
+
 public:
     static GiangCoffeeSystem* getInstance();
-    MenuManager* getMenuManager() const{ return m_menuManager; }
+    MenuManager* getMenuManager() const { return m_menuManager; }
     ~GiangCoffeeSystem();
 
     Q_INVOKABLE void addEmployee(Employee* emp);
     Q_INVOKABLE void removeEmployee(const QString& empID);
-    Q_INVOKABLE void calculatePayroll();
+
+    // Bổ sung hàm tính lương hàng tháng hoàn chỉnh theo Luật Lao động
+    Q_INVOKABLE QVariantList calculateMonthlyPayroll(int month, int year);
 
     Q_INVOKABLE void addItem(const Menu& item);
     Q_INVOKABLE void removeItem(const QString& itemId);
@@ -72,15 +78,16 @@ public:
 
     Q_INVOKABLE double checkDiscount(const QString& code, double totalAmount);
     Q_INVOKABLE QVariantList loadEmployees();
-    Q_INVOKABLE bool addEmployeeCSV(const QString &id, const QString &name, const QString &phone, double salary, const QString &shiftDate, const QString &shiftTime);
-    Q_INVOKABLE bool updateEmployeeCSV(const QString &id, const QString &name, const QString &phone, double salary, const QString &shiftDate, const QString &shiftTime);
+
+    Q_INVOKABLE bool addEmployeeCSV(const QString &id, const QString &name, const QString &phone, double salary, const QString &gender, const QString &jobRole, const QString &shiftDate, const QString &shiftTime);
+    Q_INVOKABLE bool updateEmployeeCSV(const QString &id, const QString &name, const QString &phone, double salary, const QString &gender, const QString &jobRole, const QString &shiftDate, const QString &shiftTime);
+
     Q_INVOKABLE QVariantList loadFinance();
     Q_INVOKABLE bool addTransactionCSV(const QString& date, const QString& type, double amount, const QString& note);
     Q_INVOKABLE bool deleteEmployeeCSV(const QString& id);
     Q_INVOKABLE QVariantList loadShifts(const QString &dateStr);
 
     Q_INVOKABLE bool addShift(const QString &id, const QString &name, const QString &phone, const QString &dateStr, const QString &time, int repeatMonths);
-
     Q_INVOKABLE bool removeShift(const QString &id, const QString &dateStr, const QString &time);
 
     Q_INVOKABLE QVariantMap importEmployeesNoDuplicate(const QString &filePath);
