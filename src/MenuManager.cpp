@@ -1,4 +1,5 @@
 #include "MenuManager.h"
+#include "IngredientManager.h"
 #include <QDebug>
 #include <QString>
 
@@ -73,6 +74,7 @@ QList<Menu> MenuManager::getDrinks() const
 {
     return m_drinks;
 }
+
 QList<Menu> MenuManager::getFoods() const
 {
     return m_foods;
@@ -110,7 +112,7 @@ Menu MenuManager::searchDrink(const QString &id) const
 
 Menu MenuManager::searchFood(const QString &id) const
 {
-    for (const Menu &item : m_drinks)
+    for (const Menu &item : m_foods)
         if (item.getId() == id)
             return item;
     return Menu();
@@ -137,6 +139,7 @@ bool MenuManager::updateFoodStatus(const QString &id, const QString &status)
     }
     return false;
 }
+
 QList<Menu> MenuManager::getDrinkByCategory(const QString &category) const
 {
     QList<Menu> result;
@@ -188,12 +191,18 @@ bool MenuManager::saveFoodsCSV(const QString &path)
 
     out << "ID, Name, Category, BasePrice, Status\n";
 
-    for (const Menu &item : m_drinks) {
+    // Đã dùng m_foods (Sửa lỗi dùng nhầm m_drinks ở Source 6)
+    for (const Menu &item : m_foods) {
         out << item.getId() << "," << item.getName() << "," << item.getCategory() << ","
             << item.getPrice() << "," << item.getStatus() << "\n";
     }
     file.close();
     return true;
+}
+
+void MenuManager::setIngredientManager(IngredientManager *manager)
+{
+    m_ingredientManager = manager;
 }
 
 QVariantList MenuManager::getMenuByCategory(const QString &type) const
@@ -202,16 +211,27 @@ QVariantList MenuManager::getMenuByCategory(const QString &type) const
     const QList<Menu> &targetList = (type == "Drink") ? m_drinks : m_foods;
 
     for (const Menu &item : targetList) {
-        if (item.getStatus() == "Available") {
-            QVariantMap map;
-            map["id"] = item.getId();
-            map["name"] = item.getName();
-            map["category"] = item.getCategory();
-            map["price"] = item.getPrice();
-            map["sizes"] = item.getSizes();
-            map["status"] = item.getStatus();
-            list.append(map);
+        QVariantMap map;
+        map["id"]       = item.getId();
+        map["name"]     = item.getName();
+        map["category"] = item.getCategory();
+        map["price"]    = item.getPrice();
+        map["sizes"]    = item.getSizes();
+        map["status"]   = item.getStatus();
+
+        int maxStock = 999;
+        bool isAvailable = (item.getStatus() == "Available");
+
+        // Liên kết dữ liệu tồn kho từ IngredientManager (Lấy từ Source 5)
+        if (m_ingredientManager) {
+            QString defaultSize = item.getSizes().isEmpty() ? "M" : item.getSizes().first();
+            maxStock = m_ingredientManager->getMaxServings(item.getId(), defaultSize);
+            isAvailable = (maxStock > 0) && (item.getStatus() == "Available");
         }
+
+        map["maxStock"]    = maxStock;
+        map["isAvailable"] = isAvailable;
+        list.append(map);
     }
     return list;
 }

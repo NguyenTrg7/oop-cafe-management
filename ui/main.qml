@@ -17,7 +17,7 @@ ApplicationWindow {
 
     property string currentActivePage: ""
 
-    // [THÊM MỚI] Biến lưu trạng thái ghim Sidebar
+    // Biến lưu trạng thái ghim Sidebar
     property bool sidebarPinned: false
 
     // BỘ NHỚ ĐỆM (CACHE): Giữ trạng thái các trang để chuyển đổi tức thì, không bị giật lag
@@ -25,6 +25,7 @@ ApplicationWindow {
 
     background: Rectangle { color: colorBackground }
 
+    // GIỮ NGUYÊN LOGIC CỦA BẠN: Phụ thuộc 100% vào accountHandler từ C++
     property bool isAdmin: typeof accountHandler !== "undefined" && accountHandler.currentUserPhone === "admin"
     property bool isStaff: typeof accountHandler !== "undefined" && accountHandler.currentUserPhone !== "admin" && accountHandler.currentUserPhone !== ""
 
@@ -40,8 +41,9 @@ ApplicationWindow {
     function switchPage(pageUrl) {
         if (currentActivePage === pageUrl) return;
 
-        // Xử lý riêng khi Đăng xuất: Xoá sạch bộ nhớ đệm để bảo mật và làm nhẹ app
+        // Xử lý riêng khi Đăng xuất: Xoá sạch bộ nhớ đệm, tháo ghim
         if (pageUrl === "LoginPage.qml") {
+            sidebarPinned = false; // [THÊM] Tháo ghim ngay khi đăng xuất
             currentActivePage = "";
             for (var key in pageCache) {
                 if (pageCache[key]) {
@@ -51,6 +53,11 @@ ApplicationWindow {
             pageCache = {};
             stackView.replace(null, pageUrl, StackView.Immediate);
             return;
+        }
+
+        // [THÊM] Tự động ghim thanh điều hướng khi vừa từ trang đăng nhập vào
+        if (currentActivePage === "") {
+            sidebarPinned = true;
         }
 
         currentActivePage = pageUrl;
@@ -89,7 +96,8 @@ ApplicationWindow {
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         hoverEnabled: true
-        visible: (isAdmin || isStaff)
+        visible: (isAdmin || isStaff) // Giữ nguyên logic C++
+        enabled: (isAdmin || isStaff) // [THÊM] Tránh dính chuột tàng hình khi đăng xuất
         z: 99
     }
 
@@ -104,12 +112,13 @@ ApplicationWindow {
 
         HoverHandler {
             id: sideBarHover
+            enabled: (isAdmin || isStaff)
         }
 
         // Mở khi: Đã ghim OR Rê mép trái OR Rê vào Sidebar OR Rê vào nút mũi tên
         x: (sidebarPinned || edgeHoverArea.containsMouse || sideBarHover.hovered || toggleBtnHover.hovered) && (isAdmin || isStaff) ? 0 : -width
         color: colorPrimary
-        visible: (isAdmin || isStaff)
+        visible: (isAdmin || isStaff) // Giữ nguyên logic C++
         z: 100
 
         Behavior on x {
@@ -117,7 +126,7 @@ ApplicationWindow {
         }
 
         // =========================================================
-        // [THÊM MỚI] NÚT MŨI TÊN NHÔ RA Ở MẾP SIDEBAR
+        // NÚT MŨI TÊN NHÔ RA Ở MẾP SIDEBAR
         // =========================================================
         Rectangle {
             id: toggleHandle
@@ -140,6 +149,7 @@ ApplicationWindow {
             HoverHandler {
                 id: toggleBtnHover
                 cursorShape: Qt.PointingHandCursor
+                enabled: (isAdmin || isStaff)
             }
 
             Text {
@@ -153,6 +163,7 @@ ApplicationWindow {
             MouseArea {
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
+                enabled: (isAdmin || isStaff)
                 onClicked: {
                     sidebarPinned = !sidebarPinned // Nhấp để Ghim / Bỏ ghim
                 }
@@ -280,6 +291,14 @@ ApplicationWindow {
                         checkAccess: isAdmin
                     }
 
+                    // [ĐÃ THÊM] Menu Báo Cáo Điểm Danh cho Admin
+                    MenuButton {
+                        iconStr: "📋"
+                        btnText: "Báo Cáo Điểm Danh"
+                        targetPage: "AttendanceReportPage.qml"
+                        checkAccess: isAdmin
+                    }
+
                     MenuButton {
                         iconStr: "📈"
                         btnText: "Quản Lý Tài Chính"
@@ -379,6 +398,7 @@ ApplicationWindow {
                     contentItem: Text { text: parent.text; color: "white"; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                     onClicked: {
                         logoutDialog.close()
+                        // Đặt lại accountHandler sẽ tự động làm isAdmin và isStaff thành false -> Sidebar tự ẩn
                         if (typeof accountHandler !== "undefined") {
                             accountHandler.currentUserPhone = ""
                         }
