@@ -56,6 +56,10 @@ public:
     QString vouchersToString() const;          // luu CSV
     void vouchersFromString(const QString &s); // doc CSV
 
+    // Doc sdt
+    Q_INVOKABLE bool loadByPhone(const QString &phone);
+    Q_INVOKABLE bool save();
+
 signals:
     void loyaltyPointsChanged();
     void phoneNumberChanged();

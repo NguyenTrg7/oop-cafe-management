@@ -89,6 +89,7 @@ bool IngredientManager::loadRecipesCSV(const QString &path)
     file.close();
     return true;
 }
+
 // F001 → ING101, F002 → ING102, ... F015 → ING115
 QString IngredientManager::resolveStockId(const QString &menuId) const{
     if (menuId.isEmpty())
@@ -117,23 +118,25 @@ bool IngredientManager::checkAvailability(const QString &menuId,
         QString stockId = resolveStockId(menuId);   // F001 → ING101
         if (!m_ingredients.contains(stockId))
             return true;   // không quản lý kho → cho bán
-        return m_ingredients[stockId].getQuantity() >= quantity;
+        return m_ingredients.value(stockId).getQuantity() >= quantity;
     }
 
+    auto sizeMap = m_recipes.value(menuId);
     QString s = size.isEmpty() ? "M" : size.toUpper();
-    if (!m_recipes[menuId].contains(s)) {
+
+    if (!sizeMap.contains(s)) {
         // fallback size đầu tiên
-        if (m_recipes[menuId].isEmpty()) return false;
-        s = m_recipes[menuId].keys().first();
+        if (sizeMap.isEmpty()) return false;
+        s = sizeMap.keys().first();
     }
 
-    const QList<RecipeItem> &recipe = m_recipes[menuId][s];
+    const QList<RecipeItem> recipe = sizeMap.value(s); // Lấy bản sao an toàn
     for (const auto &item : recipe) {
         if (!m_ingredients.contains(item.ingredientId))
             return false;
 
         double needed = item.requiredAmount * quantity;
-        if (m_ingredients[item.ingredientId].getQuantity() < needed)
+        if (m_ingredients.value(item.ingredientId).getQuantity() < needed)
             return false;
     }
     return true;
@@ -147,23 +150,25 @@ int IngredientManager::getMaxServings(const QString &menuId,
         QString stockId = resolveStockId(menuId);   // F001 → ING101
         if (!m_ingredients.contains(stockId))
             return 999;
-        return static_cast<int>(m_ingredients[stockId].getQuantity());
+        return static_cast<int>(m_ingredients.value(stockId).getQuantity());
     }
 
+    auto sizeMap = m_recipes.value(menuId);
     QString s = size.isEmpty() ? "M" : size.toUpper();
-    if (!m_recipes[menuId].contains(s)) {
-        if (m_recipes[menuId].isEmpty()) return 0;
-        s = m_recipes[menuId].keys().first();
+
+    if (!sizeMap.contains(s)) {
+        if (sizeMap.isEmpty()) return 0;
+        s = sizeMap.keys().first();
     }
 
     int maxServings = 999;
-    const QList<RecipeItem> &recipe = m_recipes[menuId][s];
+    const QList<RecipeItem> recipe = sizeMap.value(s); // Lấy bản sao an toàn
 
     for (const auto &item : recipe) {
         if (!m_ingredients.contains(item.ingredientId) || item.requiredAmount <= 0)
             return 0;
 
-        double stock = m_ingredients[item.ingredientId].getQuantity();
+        double stock = m_ingredients.value(item.ingredientId).getQuantity();
         int possible = static_cast<int>(stock / item.requiredAmount);
         if (possible < maxServings)
             maxServings = possible;
@@ -185,28 +190,31 @@ bool IngredientManager::deductIngredientsForOrder(const QString &menuId,
             qWarning() << "Không có tồn kho cho món:" << menuId << "→ bỏ qua trừ kho";
             return true;
         }
-        if (m_ingredients[stockId].getQuantity() < quantity) {
+        if (m_ingredients.value(stockId).getQuantity() < quantity) {
             qWarning() << "Không đủ tồn kho:" << menuId
                        << "cần" << quantity
-                       << "còn" << m_ingredients[stockId].getQuantity();
+                       << "còn" << m_ingredients.value(stockId).getQuantity();
             return false;
         }
-        m_ingredients[stockId].consume(quantity);
+        m_ingredients[stockId].consume(quantity); // Được phép dùng [] vì đây không phải hàm const và muốn chỉnh sửa map
         emit ingredientsChanged();
         autoSave();
         return true;
     }
 
+    auto sizeMap = m_recipes.value(menuId);
     QString s = size.isEmpty() ? "M" : size.toUpper();
-    if (!m_recipes[menuId].contains(s)) {
-        if (m_recipes[menuId].isEmpty()) {
+
+    if (!sizeMap.contains(s)) {
+        if (sizeMap.isEmpty()) {
             qWarning() << "Recipe rỗng cho" << menuId;
             return false;
         }
-        s = m_recipes[menuId].keys().first();
+        s = sizeMap.keys().first();
     }
 
-    for (const auto &item : m_recipes[menuId][s]) {
+    const QList<RecipeItem> recipe = sizeMap.value(s);
+    for (const auto &item : recipe) {
         if (m_ingredients.contains(item.ingredientId)) {
             m_ingredients[item.ingredientId].consume(item.requiredAmount * quantity);
         }

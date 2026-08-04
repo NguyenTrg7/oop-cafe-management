@@ -36,7 +36,6 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/include/IngredientManager.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/OrderHistoryItem.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/OrderHistoryManager.h"
-
 )
 
 set(LOGIC_FILES
@@ -59,6 +58,7 @@ set(LOGIC_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/src/OrderHistoryManager.cpp"
 )
 
+# Đã thêm ui/AttendanceReportPage.qml vào danh sách
 set(UI_FILES
     "ui/main.qml"
     "ui/OrderPage.qml"
@@ -71,10 +71,13 @@ set(UI_FILES
     "ui/SeatingPage.qml"
     "ui/InventoryPage.qml"
     "ui/InvoiceDialog.qml"
+    "ui/AttendanceReportPage.qml"
 )
 
 source_group("Mục Header (Headers)" FILES ${HEADER_FILES})
 source_group("Mục Logic (Sources)" FILES ${LOGIC_FILES})
+
+# Cập nhật đường dẫn tuyệt đối cho IDE hiển thị thư mục
 source_group("Mục UI (QML)" FILES
     ${UI_FILES}
     "${CMAKE_CURRENT_SOURCE_DIR}/ui/main.qml"
@@ -89,6 +92,7 @@ source_group("Mục UI (QML)" FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/ui/InventoryPage.qml"
     "${CMAKE_CURRENT_SOURCE_DIR}/ui/OrderHistoryPage.qml"
     "${CMAKE_CURRENT_SOURCE_DIR}/ui/InvoiceDialog.qml"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/AttendanceReportPage.qml"
 )
 
 # =============================================================================
@@ -99,6 +103,7 @@ qt_add_executable(GiangsCoffee
     ${HEADER_FILES}
 )
 
+# Truyền trực tiếp list ${UI_FILES} để tránh trùng lặp thủ công
 qt_add_qml_module(GiangsCoffee
     URI GiangsCoffee
     VERSION 1.0
@@ -115,6 +120,7 @@ target_link_libraries(GiangsCoffee PRIVATE
     Qt6::Qml
     Qt6::Quick
 )
+
 # Tự động copy nguyên thư mục data sang thư mục build MỖI LẦN BUILD
 add_custom_command(TARGET GiangsCoffee POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory

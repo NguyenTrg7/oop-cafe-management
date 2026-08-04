@@ -9,11 +9,14 @@ Item {
     property string selectedVoucherCode: ""
     property double voucherDiscount: 0
     property string selectedCategory: "Drink"
-    property int maxAllowedQuantity: itemData ? (itemData.maxStock !== undefined ? itemDialog.maxStock : 999) : 999
 
     property bool showingInventory: false
     property bool showingHistory: false
     property var fullMenuData: []
+
+    // Model giỏ hàng & voucher theo SĐT
+    ListModel { id: cartModel }
+    ListModel { id: phoneVoucherModel }
 
     function filterMenu() {
         var source = getMenuData(orderPageRoot.selectedCategory)
@@ -32,19 +35,12 @@ Item {
         menuGrid.model = result
     }
 
-    // Model giỏ hàng tạm thời
-    ListModel {
-        id: cartModel
-    }
-
     function formatVND(value) {
         value = Math.round(Number(value));
         return Qt.locale("vi_VN").toString(value) + " VNĐ";
     }
 
-    // Hàm chuyển đổi tên món thành tên file ảnh chuẩn
-    function getImagePath(itemName, category)
-    {
+    function getImagePath(itemName, category) {
         if (!itemName)
             return "";
 
@@ -60,7 +56,6 @@ Item {
         return "file:///" + applicationDir + "/data/" + folder + "/" + fileName + ".png";
     }
 
-    // Hàm tính tổng tiền toàn bộ giỏ hàng
     function calculateGrandTotal() {
         var total = 0;
         for (var i = 0; i < cartModel.count; i++) {
@@ -87,15 +82,13 @@ Item {
         return pts
     }
 
-    //Bill
+    // Invoice Info
     property string invoiceNumber: ""
     property string invoiceDate: ""
     property string invoiceTime: ""
 
-    function generateInvoiceNumber()
-    {
+    function generateInvoiceNumber() {
         var d = new Date()
-
         return "HD"
                 + d.getFullYear()
                 + ("0"+(d.getMonth()+1)).slice(-2)
@@ -106,28 +99,13 @@ Item {
                 + ("0"+d.getSeconds()).slice(-2)
     }
 
-    function updateInvoiceInfo()
-    {
+    function updateInvoiceInfo() {
         var d = new Date()
-
         invoiceNumber = generateInvoiceNumber()
-
-        invoiceDate =
-                ("0"+d.getDate()).slice(-2)
-                + "/"
-                + ("0"+(d.getMonth()+1)).slice(-2)
-                + "/"
-                + d.getFullYear()
-
-        invoiceTime =
-                ("0"+d.getHours()).slice(-2)
-                + ":"
-                + ("0"+d.getMinutes()).slice(-2)
-                + ":"
-                + ("0"+d.getSeconds()).slice(-2)
+        invoiceDate = ("0"+d.getDate()).slice(-2) + "/" + ("0"+(d.getMonth()+1)).slice(-2) + "/" + d.getFullYear()
+        invoiceTime = ("0"+d.getHours()).slice(-2) + ":" + ("0"+d.getMinutes()).slice(-2) + ":" + ("0"+d.getSeconds()).slice(-2)
     }
 
-    // 1. Lấy dữ liệu từ MenuManager
     function getMenuData(type) {
         if (typeof coffeeSystem !== "undefined" && coffeeSystem && coffeeSystem.menuManager) {
             return coffeeSystem.menuManager.getMenuByCategory(type);
@@ -163,7 +141,6 @@ Item {
                     Layout.bottomMargin: 6
                 }
 
-                // Nút Đồ uống
                 Button {
                     Layout.fillWidth: true
                     implicitHeight: 44
@@ -178,7 +155,6 @@ Item {
                     }
                 }
 
-                // Nút Món ăn
                 Button {
                     Layout.fillWidth: true
                     implicitHeight: 44
@@ -195,7 +171,6 @@ Item {
 
                 Rectangle { Layout.fillWidth: true; height: 1; color: "#E0D5C8"; Layout.topMargin: 8; Layout.bottomMargin: 8 }
 
-                // Nút Quản lý tồn kho
                 Button {
                     Layout.fillWidth: true
                     implicitHeight: 44
@@ -208,7 +183,6 @@ Item {
                     }
                 }
 
-                // Nút Lịch sử đơn hàng
                 Button {
                     Layout.fillWidth: true
                     implicitHeight: 44
@@ -232,13 +206,12 @@ Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            // ========== A. MENU ĐỒ UỐNG / MÓN ĂN ==========
+            // MENU ĐỒ UỐNG / MÓN ĂN
             ColumnLayout {
                 anchors.fill: parent
                 spacing: 12
                 visible: !showingInventory && !showingHistory
 
-                // Thanh tìm kiếm + lọc
                 RowLayout {
                     Layout.fillWidth: true
                     spacing: 10
@@ -261,7 +234,6 @@ Item {
                     }
                 }
 
-                // Grid món
                 GridView {
                     id: menuGrid
                     Layout.fillWidth: true
@@ -351,13 +323,14 @@ Item {
                 }
             }
 
-            // ========== B. TRANG TỒN KHO ==========
+            // TRANG TỒN KHO
             Loader {
                 id: inventoryLoader
                 anchors.fill: parent
                 active: showingInventory
                 visible: showingInventory
-                source: showingInventory ? Qt.resolvedUrl("InventoryPage.qml") : ""
+                asynchronous: true
+                source: "InventoryPage.qml"
 
                 onStatusChanged: {
                     if (status === Loader.Error)
@@ -367,13 +340,14 @@ Item {
                 }
             }
 
-            // ========== C. TRANG LỊCH SỬ ==========
+            // TRANG LỊCH SỬ
             Loader {
                 id: historyLoader
                 anchors.fill: parent
                 active: showingHistory
                 visible: showingHistory
-                source: showingHistory ? Qt.resolvedUrl("OrderHistoryPage.qml") : ""
+                asynchronous: true
+                source: "OrderHistoryPage.qml"
 
                 onStatusChanged: {
                     if (status === Loader.Error)
@@ -386,7 +360,6 @@ Item {
 
         // =====================================================================
         // CỘT BÊN PHẢI: GIỎ HÀNG & TỔNG TIỀN ĐƠN HÀNG
-        // Ẩn khi đang xem Tồn kho hoặc Lịch sử để không đè lên
         // =====================================================================
         Rectangle {
             Layout.preferredWidth: (showingInventory || showingHistory) ? 0 : 320
@@ -409,7 +382,6 @@ Item {
                     color: "#2C1D11"
                 }
 
-                // Danh sách món trong giỏ hàng
                 ListView {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
@@ -433,7 +405,6 @@ Item {
                                 Layout.fillWidth: true
                                 spacing: 2
 
-                                // Tên + size + số lượng
                                 Text {
                                     text: model.name + (model.size ? " (" + model.size + ")" : "") + " x" + model.quantity
                                     font.bold: true
@@ -442,7 +413,6 @@ Item {
                                     Layout.fillWidth: true
                                 }
 
-                                // Mức đá
                                 Text {
                                     visible: model.ice && model.ice !== "" && model.ice !== "Bình thường"
                                     text: "🧊 " + model.ice
@@ -450,7 +420,6 @@ Item {
                                     color: "#0277BD"
                                 }
 
-                                // Topping
                                 Text {
                                     visible: model.toppings && model.toppings !== "" && model.toppings !== "undefined"
                                     text: "🍒 " + model.toppings
@@ -460,7 +429,6 @@ Item {
                                     Layout.fillWidth: true
                                 }
 
-                                // Ghi chú
                                 Text {
                                     text: model.note !== "" ? "Ghi chú: " + model.note : "Không ghi chú"
                                     font.pixelSize: 10
@@ -492,7 +460,6 @@ Item {
                     color: "#D8C4B6"
                 }
 
-                // HIỂN THỊ TỔNG TIỀN VÀ NÚT TÍNH TIỀN
                 ComboBox {
                     id: voucherCombo
                     Layout.fillWidth: true
@@ -549,7 +516,6 @@ Item {
 
                 RowLayout {
                     Layout.fillWidth: true
-                    visible: true
 
                     Text {
                         text: "THANH TOÁN:"
@@ -577,44 +543,8 @@ Item {
 
                     onClicked: {
                         updateInvoiceInfo()
-
-                        var items = []
-                        for (var i = 0; i < cartModel.count; i++) {
-                            var it = cartModel.get(i)
-
-                            var tops = []
-                            if (it.toppings && it.toppings.length > 0) {
-                                for (var t = 0; t < it.toppings.length; t++) {
-                                    tops.push({
-                                        name: it.toppings[t].name || "",
-                                        price: it.toppings[t].price || 0
-                                    })
-                                }
-                            }
-
-                            items.push({
-                                id: it.id || "",
-                                name: it.name || "",
-                                size: it.size || "",
-                                quantity: it.quantity || 1,
-                                note: it.note || "",
-                                totalPrice: it.totalPrice || 0,
-                                category: it.category || "Drink",
-                                ice: it.ice || "",
-                                toppings: it.toppings || ""
-                            })
-                        }
-
-                        invoiceDialog.openWith({
-                            invoiceNumber: invoiceNumber,
-                            date: invoiceDate,
-                            time: invoiceTime,
-                            customerName: "Khách vãng lai",
-                            totalAmount: Math.max(0, calculateGrandTotal() - voucherDiscount),
-                            discount: voucherDiscount,
-                            voucherCode: selectedVoucherCode,
-                            items: items
-                        })
+                        phoneVoucherModel.clear()
+                        invoiceDialog.open()
                     }
                 }
 
@@ -646,7 +576,7 @@ Item {
     }
 
     // =========================================================================
-    // DIALOG TÙY CHỌN MÓN (giao diện mới – dễ nhìn, hiện đại)
+    // DIALOG TÙY CHỌN MÓN
     // =========================================================================
     Dialog {
         id: itemDialog
@@ -668,13 +598,11 @@ Item {
         property var availableSizes: ["S", "M", "L"]
         property int quantityValue: 1
 
-        // ===== HÀM MỞ DIALOG =====
         function openDialog(data, cat) {
             itemData = data
             category = cat
             basePrice = Number(data.price || 0)
 
-            // Size
             if (cat === "Drink" && data.sizes && data.sizes.length > 0) {
                 availableSizes = data.sizes
                 sizeSection.visible = true
@@ -685,7 +613,6 @@ Item {
                 selectedSize = "Standard"
             }
 
-            // Lấy tồn kho mới nhất từ IngredientManager
             var maxStock = 999
             if (typeof ingredientManager !== "undefined" && ingredientManager) {
                 var sz = selectedSize || "M"
@@ -694,10 +621,8 @@ Item {
                 maxStock = Number(data.maxStock)
             }
 
-            // Hết hàng → không mở dialog
             if (maxStock <= 0) {
                 console.warn("Hết hàng:", data.name)
-                // Có thể hiện thông báo ở đây
                 return
             }
 
@@ -709,7 +634,6 @@ Item {
             tfNote.text = ""
             selectedIce = "Bình thường"
 
-            // Reset topping
             for (var i = 0; i < toppingRepeater.count; i++) {
                 if (toppingRepeater.itemAt(i))
                     toppingRepeater.itemAt(i).checked = false
@@ -722,7 +646,6 @@ Item {
         function updatePrice() {
             var extra = 0
 
-            // Phụ thu size
             if (category === "Drink" && itemData && itemData.sizes) {
                 var list = itemData.sizes
                 var current = selectedSize
@@ -734,7 +657,6 @@ Item {
                 }
             }
 
-            // Cộng tiền topping
             var toppingExtra = 0
             for (var i = 0; i < toppingRepeater.count; i++) {
                 var btn = toppingRepeater.itemAt(i)
@@ -752,7 +674,6 @@ Item {
             border.width: 1
         }
 
-        // ===== HEADER =====
         header: Rectangle {
             height: 96
             color: "transparent"
@@ -788,7 +709,6 @@ Item {
             }
         }
 
-        // ===== NỘI DUNG CHÍNH (dùng contentItem để Dialog layout đúng) =====
         contentItem: Flickable {
             id: contentFlick
             clip: true
@@ -803,7 +723,6 @@ Item {
                 y: 16
                 spacing: 18
 
-                // ─── 1. KÍCH THƯỚC (pill buttons) ───
                 ColumnLayout {
                     id: sizeSection
                     Layout.fillWidth: true
@@ -844,12 +763,10 @@ Item {
                                     onClicked: {
                                         itemDialog.selectedSize = modelData
 
-                                        // Cập nhật tồn kho theo size mới
                                         if (typeof ingredientManager !== "undefined" && ingredientManager && itemDialog.itemData) {
                                             itemDialog.maxAllowedQuantity =
                                                 ingredientManager.getMaxServings(itemDialog.itemData.id, modelData)
 
-                                            // Nếu số lượng đang chọn vượt tồn → cắt xuống
                                             if (itemDialog.quantityValue > itemDialog.maxAllowedQuantity) {
                                                 itemDialog.quantityValue = Math.max(1, itemDialog.maxAllowedQuantity)
                                             }
@@ -863,7 +780,6 @@ Item {
                     }
                 }
 
-                // ─── 2. SỐ LƯỢNG (stepper to rõ) ───
                 ColumnLayout {
                     Layout.fillWidth: true
                     spacing: 10
@@ -878,7 +794,6 @@ Item {
                     Row {
                         spacing: 0
 
-                        // Nút −
                         Rectangle {
                             width: 48
                             height: 48
@@ -907,7 +822,6 @@ Item {
                             }
                         }
 
-                        // Ô số lượng — cho phép nhập bàn phím
                         TextField {
                             id: quantityField
                             width: 64
@@ -938,7 +852,6 @@ Item {
                                 }
                             }
 
-                            // Khi mất focus mà để trống / không hợp lệ → reset về 1
                             onEditingFinished: {
                                 var n = parseInt(text)
                                 if (isNaN(n) || n < 1) {
@@ -952,7 +865,6 @@ Item {
                                 }
                             }
 
-                            // Đồng bộ khi bấm − / +
                             Connections {
                                 target: itemDialog
                                 function onQuantityValueChanged() {
@@ -962,7 +874,6 @@ Item {
                             }
                         }
 
-                        // Nút +
                         Rectangle {
                             width: 48
                             height: 48
@@ -992,7 +903,6 @@ Item {
                         }
                     }
 
-                    // Cảnh báo tồn kho — chỉ hiện khi vượt quá tồn (và tồn < 999)
                     Text {
                         visible: itemDialog.maxAllowedQuantity < 999
                                  && itemDialog.quantityValue > itemDialog.maxAllowedQuantity
@@ -1003,7 +913,6 @@ Item {
                     }
                 }
 
-                // ─── 3. GHI CHÚ ───
                 ColumnLayout {
                     Layout.fillWidth: true
                     spacing: 8
@@ -1034,7 +943,6 @@ Item {
                     }
                 }
 
-                // ─── 4. MỨC ĐÁ (pill buttons) ───
                 ColumnLayout {
                     Layout.fillWidth: true
                     spacing: 10
@@ -1083,7 +991,6 @@ Item {
                     }
                 }
 
-                // ─── 5. TOPPING ───
                 ColumnLayout {
                     Layout.fillWidth: true
                     spacing: 10
@@ -1153,7 +1060,6 @@ Item {
                     }
                 }
 
-                // ─── 6. THÀNH TIỀN ───
                 Rectangle {
                     Layout.fillWidth: true
                     height: 72
@@ -1186,7 +1092,6 @@ Item {
             }
         }
 
-        // ===== FOOTER =====
         footer: Rectangle {
             height: 88
             color: "transparent"
@@ -1208,7 +1113,6 @@ Item {
 
                 Item { Layout.fillWidth: true }
 
-                // Nút Hủy
                 Rectangle {
                     width: 120
                     height: 48
@@ -1232,7 +1136,6 @@ Item {
                     }
                 }
 
-                // Nút Xác nhận
                 Rectangle {
                     width: 140
                     height: 48
@@ -1259,7 +1162,6 @@ Item {
         onAccepted: {
             if (quantityValue <= 0) return
 
-            // Lấy danh sách topping đã chọn
             var toppingNames = []
             for (var i = 0; i < toppingRepeater.count; i++) {
                 var btn = toppingRepeater.itemAt(i)
@@ -1284,65 +1186,407 @@ Item {
         }
     }
 
-    InvoiceDialog {
+    // =========================================================================
+    // DIALOG HÓA ĐƠN & THANH TOÁN (Có SĐT, QR, Trừ Kho, Lưu Lịch Sử)
+    // =========================================================================
+    Dialog {
         id: invoiceDialog
-        showFinishButton: true
+        modal: true
+        width: 620
+        height: 720
+        anchors.centerIn: parent
+        padding: 0
 
-        onFinished: {
-            console.log("=== Bắt đầu In Hóa Đơn ===")
+        background: Rectangle {
+            color: "#FFFDF9"
+            radius: 18
+            border.color: "#D8C4B6"
+        }
 
-            // Copy dữ liệu giỏ ra trước (tránh list thay đổi giữa chừng)
-            var cartCopy = []
-            for (var i = 0; i < cartModel.count; i++) {
-                var it = cartModel.get(i)
-                if (!it || !it.id) continue
-                cartCopy.push({
-                    id: it.id,
-                    size: it.size || "M",
-                    quantity: parseInt(it.quantity) || 1,
-                    name: it.name || "",
-                    note: it.note || "",
-                    totalPrice: it.totalPrice || 0,
-                    category: it.category || "Drink",
-                    ice: it.ice || "",
-                    toppings: it.toppings || ""
+        function loadVouchersForPhone(phone) {
+            phoneVoucherModel.clear()
+            selectedVoucherCode = ""
+            voucherDiscount = 0
+
+            if (!phone || !/^0\d{9}$/.test(phone) || typeof customerHandler === "undefined")
+                return
+
+            customerHandler.loadByPhone(phone)
+            var list = customerHandler.activeVouchers || []
+
+            for (var i = 0; i < list.length; i++) {
+                var v = list[i]
+                phoneVoucherModel.append({
+                    code: v.code || "",
+                    percent: v.percent || 0,
+                    display: (v.code || "") + " (" + (v.percent || 0) + "%)"
                 })
             }
+        }
 
-            try {
-                // 1. Trừ kho
-                if (typeof ingredientManager !== "undefined" && ingredientManager) {
-                    for (var k = 0; k < cartCopy.length; k++) {
-                        var item = cartCopy[k]
-                        try {
-                            ingredientManager.deductIngredientsForOrder(item.id, item.size, item.quantity)
-                        } catch (e) {
-                            console.error("Lỗi trừ kho món", item.id, e)
+        ScrollView {
+            anchors.fill: parent
+            clip: true
+            ScrollBar.vertical.policy: ScrollBar.AsNeeded
+
+            ColumnLayout {
+                width: invoiceDialog.availableWidth - 20
+                spacing: 14
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    Layout.topMargin: 20
+                    Layout.leftMargin: 20
+                    Layout.rightMargin: 20
+                    spacing: 4
+                    Text {
+                        text: "☕ GIANG'S COFFEE"
+                        font.pixelSize: 26
+                        font.bold: true
+                        color: "#6F4E37"
+                        Layout.alignment: Qt.AlignHCenter
+                    }
+                    Text {
+                        text: "Thank you for your order ❤️"
+                        color: "#888"
+                        font.pixelSize: 13
+                        Layout.alignment: Qt.AlignHCenter
+                    }
+                }
+
+                // SĐT TÍCH ĐIỂM + CHỌN VOUCHER
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.leftMargin: 20
+                    Layout.rightMargin: 20
+                    radius: 12
+                    color: "#F0FDF4"
+                    border.color: "#86EFAC"
+                    implicitHeight: 130
+
+                    ColumnLayout {
+                        anchors.fill: parent
+                        anchors.margins: 12
+                        spacing: 8
+
+                        Text {
+                            text: "📱 Số điện thoại tích điểm & dùng voucher"
+                            font.pixelSize: 13
+                            font.bold: true
+                            color: "#166534"
+                        }
+
+                        TextField {
+                            id: invoicePhoneInput
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 36
+                            placeholderText: "Nhập SĐT (để trống nếu không tích điểm)"
+                            inputMethodHints: Qt.ImhDigitsOnly
+                            font.pixelSize: 14
+                            background: Rectangle {
+                                radius: 8
+                                color: "white"
+                                border.color: parent.activeFocus ? "#16A34A" : "#BBF7D0"
+                            }
+                            validator: RegularExpressionValidator { regularExpression: /0\d{0,9}/ }
+
+                            onTextChanged: {
+                                if (text.length === 10)
+                                    invoiceDialog.loadVouchersForPhone(text.trim())
+                                else {
+                                    phoneVoucherModel.clear()
+                                    selectedVoucherCode = ""
+                                    voucherDiscount = 0
+                                }
+                            }
+                        }
+
+                        ComboBox {
+                            id: invoiceVoucherCombo
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 36
+                            enabled: phoneVoucherModel.count > 0
+                            model: phoneVoucherModel
+                            textRole: "display"
+
+                            displayText: {
+                                if (phoneVoucherModel.count === 0)
+                                    return invoicePhoneInput.text.length === 10 ? "Không có voucher" : "Nhập SĐT để xem voucher"
+                                if (currentIndex < 0) return "— Chọn voucher (nếu có) —"
+                                return phoneVoucherModel.get(currentIndex).display
+                            }
+
+                            onActivated: {
+                                if (currentIndex >= 0) {
+                                    var item = phoneVoucherModel.get(currentIndex)
+                                    selectedVoucherCode = item.code
+                                    voucherDiscount = customerHandler.applyVoucher(item.code, calculateGrandTotal())
+                                } else {
+                                    selectedVoucherCode = ""
+                                    voucherDiscount = 0
+                                }
+                            }
                         }
                     }
                 }
 
-                // 2. Lưu lịch sử
-                if (typeof orderHistoryManager !== "undefined" && orderHistoryManager) {
-                    orderHistoryManager.addOrder({
-                        invoiceNumber: invoiceNumber || "",
-                        date: invoiceDate || "",
-                        time: invoiceTime || "",
-                        customerName: "Khách vãng lai",
-                        totalAmount: Math.max(0, calculateGrandTotal() - voucherDiscount),
-                        discount: voucherDiscount || 0,
-                        voucherCode: selectedVoucherCode || "",
-                        items: cartCopy
-                    })
+                // Thông tin hóa đơn
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.leftMargin: 20
+                    Layout.rightMargin: 20
+                    implicitHeight: 80
+                    radius: 10
+                    color: "#F9F5EF"
+                    border.color: "#E6D8C8"
+                    Column {
+                        anchors.fill: parent
+                        anchors.margins: 12
+                        spacing: 4
+                        Text { text: "🧾  Mã hóa đơn:  " + invoiceNumber; font.bold: true; font.pixelSize: 13 }
+                        Text { text: "📅  Ngày: " + invoiceDate; font.pixelSize: 12 }
+                        Text { text: "🕒  Giờ: " + invoiceTime; font.pixelSize: 12 }
+                    }
                 }
 
-                // 3. Xóa giỏ + refresh
-                cartModel.clear()
-                menuGrid.model = getMenuData(orderPageRoot.selectedCategory)
+                Text {
+                    text: "CHI TIẾT ĐƠN HÀNG"
+                    font.bold: true
+                    font.pixelSize: 15
+                    color: "#6F4E37"
+                    Layout.alignment: Qt.AlignHCenter
+                }
 
-                console.log("=== Hoàn tất ===")
-            } catch (e) {
-                console.error("LỖI In Hóa Đơn:", e)
+                ListView {
+                    Layout.fillWidth: true
+                    Layout.leftMargin: 20
+                    Layout.rightMargin: 20
+                    implicitHeight: contentHeight
+                    interactive: false
+                    spacing: 8
+                    model: cartModel
+
+                    delegate: Rectangle {
+                        width: ListView.view.width
+                        implicitHeight: 70
+                        radius: 10
+                        color: "#FCFAF6"
+                        border.color: "#E7DBCF"
+
+                        RowLayout {
+                            anchors.fill: parent
+                            anchors.margins: 10
+                            spacing: 12
+
+                            Image {
+                                Layout.preferredWidth: 50
+                                Layout.preferredHeight: 50
+                                fillMode: Image.PreserveAspectCrop
+                                clip: true
+                                source: getImagePath(model.name, model.category || orderPageRoot.selectedCategory)
+                            }
+
+                            ColumnLayout {
+                                Layout.fillWidth: true
+                                spacing: 2
+                                Text {
+                                    text: name + (size !== "" ? " (" + size + ")" : "")
+                                    font.bold: true
+                                    font.pixelSize: 13
+                                    elide: Text.ElideRight
+                                }
+                                Text { text: "SL: " + quantity; font.pixelSize: 11; color: "#666" }
+                            }
+
+                            Text {
+                                text: formatVND(totalPrice)
+                                font.bold: true
+                                font.pixelSize: 13
+                                color: "#8B5A2B"
+                            }
+                        }
+                    }
+                }
+
+                // Tổng tiền
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.leftMargin: 20
+                    Layout.rightMargin: 20
+                    radius: 12
+                    color: "#FFF7ED"
+                    border.color: "#F2D9B6"
+                    implicitHeight: voucherDiscount > 0 ? 90 : 55
+
+                    ColumnLayout {
+                        anchors.fill: parent
+                        anchors.margins: 12
+                        spacing: 4
+
+                        RowLayout {
+                            visible: voucherDiscount > 0
+                            Layout.fillWidth: true
+                            Text { text: "Giảm giá voucher"; color: "#15803D"; font.bold: true }
+                            Item { Layout.fillWidth: true }
+                            Text { text: "−" + formatVND(voucherDiscount); color: "#15803D"; font.bold: true }
+                        }
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            Text {
+                                text: "💰 Tổng thanh toán"
+                                font.bold: true
+                                font.pixelSize: 15
+                                color: "#6F4E37"
+                            }
+                            Item { Layout.fillWidth: true }
+                            Text {
+                                text: formatVND(Math.max(0, calculateGrandTotal() - voucherDiscount))
+                                font.bold: true
+                                font.pixelSize: 20
+                                color: "#B45309"
+                            }
+                        }
+                    }
+                }
+
+                // Mã QR Thanh toán
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.leftMargin: 20
+                    Layout.rightMargin: 20
+                    implicitHeight: 130
+                    radius: 14
+                    color: "#FAF8F4"
+                    border.color: "#E6D8C8"
+
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.margins: 12
+                        spacing: 14
+                        Image {
+                            Layout.preferredWidth: 110
+                            Layout.preferredHeight: 110
+                            fillMode: Image.PreserveAspectFit
+                            source: "file:///" + applicationDir + "/data/ma_qr.jpg"
+                        }
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            spacing: 6
+                            Text {
+                                text: "Quét mã QR để thanh toán"
+                                font.pixelSize: 14
+                                font.bold: true
+                                color: "#6F4E37"
+                                wrapMode: Text.WordWrap
+                            }
+                            Text {
+                                text: "Sử dụng app ngân hàng hoặc ví điện tử."
+                                font.pixelSize: 12
+                                color: "#666"
+                                wrapMode: Text.WordWrap
+                            }
+                        }
+                    }
+                }
+
+                // Thao tác
+                RowLayout {
+                    Layout.fillWidth: true
+                    Layout.leftMargin: 20
+                    Layout.rightMargin: 20
+                    Layout.bottomMargin: 20
+                    spacing: 12
+                    Item { Layout.fillWidth: true }
+
+                    Button {
+                        text: "Đóng"
+                        implicitWidth: 110
+                        implicitHeight: 40
+                        onClicked: invoiceDialog.close()
+                    }
+
+                    Button {
+                        text: "In Hóa Đơn"
+                        implicitWidth: 170
+                        implicitHeight: 40
+                        highlighted: true
+
+                        onClicked: {
+                            var phone = invoicePhoneInput.text.trim()
+
+                            // Copy dữ liệu giỏ hàng
+                            var cartCopy = []
+                            for (var i = 0; i < cartModel.count; i++) {
+                                var it = cartModel.get(i)
+                                if (!it || !it.id) continue
+                                cartCopy.push({
+                                    id: it.id,
+                                    size: it.size || "M",
+                                    quantity: parseInt(it.quantity) || 1,
+                                    name: it.name || "",
+                                    note: it.note || "",
+                                    totalPrice: it.totalPrice || 0,
+                                    category: it.category || "Drink",
+                                    ice: it.ice || "",
+                                    toppings: it.toppings || ""
+                                })
+                            }
+
+                            // 1. Dùng voucher
+                            if (selectedVoucherCode !== "" && typeof customerHandler !== "undefined") {
+                                customerHandler.useVoucher(selectedVoucherCode)
+                                customerHandler.save()
+                            }
+
+                            // 2. Tích điểm cho SĐT
+                            if (phone !== "" && /^0\d{9}$/.test(phone)) {
+                                var earned = calculateLoyaltyPoints()
+                                if (earned > 0 && typeof customerHandler !== "undefined") {
+                                    customerHandler.loadByPhone(phone)
+                                    customerHandler.addPoints(earned)
+                                    customerHandler.save()
+                                }
+                            }
+
+                            // 3. Trừ kho nguyên liệu
+                            if (typeof ingredientManager !== "undefined" && ingredientManager) {
+                                for (var k = 0; k < cartCopy.length; k++) {
+                                    var item = cartCopy[k]
+                                    try {
+                                        ingredientManager.deductIngredientsForOrder(item.id, item.size, item.quantity)
+                                    } catch (e) {
+                                        console.error("Lỗi trừ kho món", item.id, e)
+                                    }
+                                }
+                            }
+
+                            // 4. Lưu vào lịch sử đơn hàng
+                            if (typeof orderHistoryManager !== "undefined" && orderHistoryManager) {
+                                orderHistoryManager.addOrder({
+                                    invoiceNumber: invoiceNumber || "",
+                                    date: invoiceDate || "",
+                                    time: invoiceTime || "",
+                                    customerName: phone !== "" ? ("Khách SĐT: " + phone) : "Khách vãng lai",
+                                    totalAmount: Math.max(0, calculateGrandTotal() - voucherDiscount),
+                                    discount: voucherDiscount || 0,
+                                    voucherCode: selectedVoucherCode || "",
+                                    items: cartCopy
+                                })
+                            }
+
+                            // Reset & Cập nhật UI
+                            selectedVoucherCode = ""
+                            voucherDiscount = 0
+                            phoneVoucherModel.clear()
+                            invoicePhoneInput.text = ""
+                            cartModel.clear()
+                            menuGrid.model = getMenuData(orderPageRoot.selectedCategory)
+
+                            invoiceDialog.close()
+                        }
+                    }
+                }
             }
         }
     }
