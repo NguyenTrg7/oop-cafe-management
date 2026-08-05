@@ -251,7 +251,7 @@ void Customer::resetToGuest()
 
 static QString loyaltyFilePath()
 {
-    return QCoreApplication::applicationDirPath() + "/data/loyalty.csv";
+    return QCoreApplication::applicationDirPath() + "/saves/loyalty.csv";
 }
 
 bool Customer::loadByPhone(const QString &phone)

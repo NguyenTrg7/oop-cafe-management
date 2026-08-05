@@ -6,10 +6,22 @@ Item {
     id: root
     anchors.fill: parent
 
-    property string mode: "morning"          // "morning" | "evening"
-    property string filterType: "All"        // "All" | "Drink" | "Food"
+    property string mode: "morning"
+    property string filterType: "All"
 
-    // Hàm lọc nguyên liệu theo loại (dựa vào ID)
+    function syncNavBar() {
+        var win = typeof appWindow !== "undefined" ? appWindow : (typeof ApplicationWindow !== "undefined" ? ApplicationWindow.window : null)
+        if (win) {
+            if (typeof win.setCurrentPage === "function") win.setCurrentPage("InventoryPage.qml", "Tồn Kho Nguyên Liệu")
+            else if (typeof win.updateNavigation === "function") win.updateNavigation("InventoryPage.qml", "Tồn Kho Nguyên Liệu")
+            if (win.pageTitle !== undefined) win.pageTitle = "Tồn Kho Nguyên Liệu"
+        }
+    }
+
+    onVisibleChanged: {
+        if (visible) syncNavBar()
+    }
+
     function getFilteredIngredients() {
         if (typeof ingredientManager === "undefined") return []
 
@@ -19,9 +31,9 @@ Item {
         var result = []
         for (var i = 0; i < all.length; i++) {
             var id = all[i].id || ""
-            if (filterType === "Drink" && id.startsWith("ING0"))   // ING001 → ING024
+            if (filterType === "Drink" && id.startsWith("ING0"))
                 result.push(all[i])
-            else if (filterType === "Food" && id.startsWith("ING1")) // ING101 → ...
+            else if (filterType === "Food" && id.startsWith("ING1"))
                 result.push(all[i])
         }
         return result
@@ -32,7 +44,6 @@ Item {
         anchors.margins: 20
         spacing: 12
 
-        // ===== HEADER =====
         RowLayout {
             Layout.fillWidth: true
 
@@ -49,12 +60,10 @@ Item {
                 text: "← Quay lại"
                 onClicked: {
                     Qt.callLater(function() {
-                        // Nếu đang nằm trong Loader của OrderPage
                         if (typeof orderPageRoot !== "undefined") {
                             orderPageRoot.showingInventory = false
                             orderPageRoot.showingHistory = false
                         }
-                        // fallback cho trường hợp push StackView
                         else if (StackView.view) {
                             StackView.view.pop()
                         }
@@ -63,14 +72,10 @@ Item {
             }
         }
 
-        // ===== CHỌN MODE + LỌC LOẠI =====
         RowLayout {
             spacing: 10
 
-            // --- Nhóm Đầu ngày / Cuối ngày ---
-            ButtonGroup {
-                id: modeGroup
-            }
+            ButtonGroup { id: modeGroup }
 
             Button {
                 text: "Đầu ngày"
@@ -87,12 +92,9 @@ Item {
                 onClicked: mode = "evening"
             }
 
-            Item { width: 24 }   // khoảng cách
+            Item { width: 24 }
 
-            // --- Nhóm lọc loại nguyên liệu ---
-            ButtonGroup {
-                id: filterGroup
-            }
+            ButtonGroup { id: filterGroup }
 
             Button {
                 text: "Tất cả"
@@ -126,7 +128,6 @@ Item {
             }
         }
 
-        // ===== HEADER CỘT (thẳng hàng) =====
         Rectangle {
             Layout.fillWidth: true
             height: 36
@@ -169,11 +170,10 @@ Item {
                     Layout.preferredWidth: 110
                     horizontalAlignment: Text.AlignHCenter
                 }
-                Item { Layout.preferredWidth: 100 } // chỗ nút
+                Item { Layout.preferredWidth: 100 }
             }
         }
 
-        // ===== DANH SÁCH =====
         ListView {
             id: ingredientList
             Layout.fillWidth: true
@@ -196,7 +196,6 @@ Item {
                     anchors.rightMargin: 16
                     spacing: 12
 
-                    // Tên
                     Text {
                         text: modelData.name
                         font.bold: true
@@ -206,7 +205,6 @@ Item {
                         Layout.preferredWidth: 280
                     }
 
-                    // Ngưỡng tối thiểu
                     Text {
                         text: modelData.minThreshold + " " + modelData.unit
                         font.pixelSize: 13
@@ -214,7 +212,6 @@ Item {
                         Layout.preferredWidth: 140
                     }
 
-                    // Tồn hiện tại
                     Text {
                         text: modelData.quantity + " " + modelData.unit
                         font.pixelSize: 13
@@ -224,7 +221,6 @@ Item {
                         horizontalAlignment: Text.AlignHCenter
                     }
 
-                    // Ô nhập
                     TextField {
                         id: qtyField
                         Layout.preferredWidth: 100
@@ -235,7 +231,6 @@ Item {
                         selectByMouse: true
                     }
 
-                    // Nút Cập nhật
                     Button {
                         text: "Cập nhật"
                         Layout.preferredWidth: 90
@@ -253,7 +248,6 @@ Item {
             }
         }
 
-        // ===== NÚT LƯU FILE =====
         Button {
             text: "💾 Lưu tồn kho ra file"
             Layout.fillWidth: true
@@ -261,14 +255,12 @@ Item {
             highlighted: true
             onClicked: {
                 if (typeof ingredientManager !== "undefined") {
-                    // Gọi setQuantity 1 lần để kích hoạt autoSave
                     var list = ingredientManager.getAllIngredients()
                     console.log("Số nguyên liệu trong memory:", list.length)
                     for (var i = 0; i < list.length; i++) {
                         if (list[i].id && list[i].id.indexOf("ING1") === 0)
                             console.log(list[i].id, list[i].name, list[i].quantity)
                     }
-                    // Ép save bằng cách set lại cùng số lượng
                     for (var j = 0; j < list.length; j++) {
                         if (list[j].id && list[j].id.indexOf("ING1") === 0)
                             ingredientManager.setQuantity(list[j].id, list[j].quantity)
@@ -279,7 +271,6 @@ Item {
         }
     }
 
-    // Tự refresh khi có thay đổi
     Connections {
         target: typeof ingredientManager !== "undefined" ? ingredientManager : null
         function onIngredientsChanged() {
@@ -288,6 +279,7 @@ Item {
     }
 
     Component.onCompleted: {
+        syncNavBar()
         ingredientList.model = getFilteredIngredients()
     }
 }

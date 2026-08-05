@@ -8,6 +8,21 @@ Item {
 
     property string selectedInvoice: ""
 
+    function syncNavBar() {
+        var win = typeof appWindow !== "undefined" ? appWindow : (typeof ApplicationWindow !== "undefined" ? ApplicationWindow.window : null)
+        if (win) {
+            if (typeof win.setCurrentPage === "function") win.setCurrentPage("OrderHistoryPage.qml", "Lịch Sử Đơn Hàng")
+            else if (typeof win.updateNavigation === "function") win.updateNavigation("OrderHistoryPage.qml", "Lịch Sử Đơn Hàng")
+            if (win.pageTitle !== undefined) win.pageTitle = "Lịch Sử Đơn Hàng"
+        }
+    }
+
+    onVisibleChanged: {
+        if (visible) syncNavBar()
+    }
+
+    Component.onCompleted: syncNavBar()
+
     function formatVND(value) {
         value = Math.round(Number(value) || 0)
         return Qt.locale("vi_VN").toString(value) + " VNĐ"
@@ -18,7 +33,6 @@ Item {
         anchors.margins: 20
         spacing: 15
 
-        // ===== HEADER =====
         RowLayout {
             Layout.fillWidth: true
 
@@ -44,7 +58,6 @@ Item {
             }
         }
 
-        // ===== DANH SÁCH ĐƠN HÀNG =====
         ListView {
             id: historyList
             Layout.fillWidth: true
@@ -110,7 +123,6 @@ Item {
                 }
             }
 
-            // Placeholder khi chưa có đơn
             Text {
                 anchors.centerIn: parent
                 visible: historyList.count === 0
@@ -121,13 +133,11 @@ Item {
         }
     }
 
-    // ===== DÙNG LẠI COMPONENT HÓA ĐƠN =====
     InvoiceDialog {
         id: invoiceDialog
         showFinishButton: false
     }
 
-    // Tự động refresh khi có đơn mới
     Connections {
         target: typeof orderHistoryManager !== "undefined" ? orderHistoryManager : null
         function onHistoryChanged() {

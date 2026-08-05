@@ -4,12 +4,27 @@ import QtQuick.Layouts 1.15
 
 Page {
     id: managerPage
+    title: "Trung Tâm Quản Lý"
     background: Rectangle { color: "#F8FAFC" }
+
+    function syncNavBar() {
+        var win = typeof appWindow !== "undefined" ? appWindow : (typeof ApplicationWindow !== "undefined" ? ApplicationWindow.window : null)
+        if (win) {
+            if (typeof win.setCurrentPage === "function") win.setCurrentPage("ManagerPage.qml", "Trung Tâm Quản Lý")
+            else if (typeof win.updateNavigation === "function") win.updateNavigation("ManagerPage.qml", "Trung Tâm Quản Lý")
+            if (win.pageTitle !== undefined) win.pageTitle = "Trung Tâm Quản Lý"
+        }
+    }
+
+    StackView.onActivating: syncNavBar()
 
     property string totalRevenueText: "0 VNĐ"
     property string totalEmpText: "0"
 
-    Component.onCompleted: refreshStats()
+    Component.onCompleted: {
+        syncNavBar()
+        refreshStats()
+    }
 
     function refreshStats() {
         var rev = 0;
@@ -35,7 +50,6 @@ Page {
         totalEmpText = empCount + " Nhân sự"
     }
 
-    // Hàm chuyển trang đa năng: Tự động tìm appWindow hoặc StackView để điều hướng
     function openPage(pageUrl) {
         if (typeof appWindow !== "undefined" && typeof appWindow.switchPage === "function") {
             appWindow.switchPage(pageUrl);
@@ -48,6 +62,7 @@ Page {
         }
     }
 
+    // Component Nút bấm Dashboard (Layout.preferredWidth: 0 giúp chia đều 50/50 tuyệt đối)
     component DashboardButton: Button {
         id: control
         property string iconText: "📦"
@@ -55,7 +70,12 @@ Page {
         property string descText: "Mô tả chức năng"
 
         Layout.fillWidth: true
+        Layout.preferredWidth: 0
         Layout.preferredHeight: 85
+        leftPadding: 16
+        rightPadding: 16
+        topPadding: 12
+        bottomPadding: 12
 
         HoverHandler {
             cursorShape: Qt.PointingHandCursor
@@ -64,41 +84,39 @@ Page {
         background: Rectangle {
             color: control.pressed ? "#F1F5F9" : (control.hovered ? "#F8FAFC" : "#FFFFFF")
             radius: 12
-            border.color: control.hovered ? "#93C5FD" : "#E2E8F0"
-            border.width: 1
-
-            Rectangle {
-                anchors.fill: parent
-                anchors.margins: -1
-                anchors.topMargin: 2
-                color: "transparent"
-                border.color: "#0F000000"
-                radius: 13
-                z: -1
-            }
+            border.color: control.hovered ? "#0284C7" : "#E2E8F0"
+            border.width: control.hovered ? 2 : 1
         }
 
         contentItem: RowLayout {
-            anchors.fill: parent
-            anchors.margins: 15
-            spacing: 15
+            spacing: 12
 
-            Text {
-                text: control.iconText
-                font.pixelSize: 28
+            Item {
+                Layout.preferredWidth: 40
+                Layout.preferredHeight: 40
                 Layout.alignment: Qt.AlignVCenter
+
+                Text {
+                    anchors.centerIn: parent
+                    text: control.iconText
+                    font.pixelSize: 26
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
             }
 
             ColumnLayout {
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignVCenter
-                spacing: 2
+                spacing: 3
 
                 Text {
                     text: control.titleText
                     font.bold: true
                     font.pixelSize: 15
                     color: "#1E293B"
+                    elide: Text.ElideRight
+                    Layout.fillWidth: true
                 }
                 Text {
                     text: control.descText
@@ -112,73 +130,109 @@ Page {
     }
 
     ScrollView {
+        id: scrollView
         anchors.fill: parent
-        contentWidth: availableWidth
         clip: true
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
-        ColumnLayout {
-            width: parent.width
-            anchors.margins: 25
-            spacing: 25
-
-            RowLayout {
-                Layout.fillWidth: true
-                Layout.leftMargin: 25
-                Layout.rightMargin: 25
-                Layout.topMargin: 20
-
-                ColumnLayout {
-                    spacing: 4
-                    Label {
-                        text: "📊 TRUNG TÂM QUẢN LÝ"
-                        font.pixelSize: 24
-                        font.bold: true
-                        color: "#0369A1"
-                    }
-                    Label {
-                        text: "Hệ thống quản trị viên Giang's Coffee"
-                        font.pixelSize: 14
-                        color: "#64748B"
-                    }
-                }
-                Item { Layout.fillWidth: true }
-            }
-
-            RowLayout {
-                Layout.fillWidth: true
-                Layout.leftMargin: 25
-                Layout.rightMargin: 25
-                spacing: 15
-
-                Rectangle {
-                    Layout.fillWidth: true; height: 95
-                    color: "#E0F2FE"; radius: 12
-                    border.color: "#BAE6FD"
-                    Column {
-                        anchors.centerIn: parent; spacing: 5
-                        Text { text: "Tổng Doanh Thu"; color: "#0369A1"; font.pixelSize: 13; font.bold: true }
-                        Text { text: totalRevenueText; color: "#0284C7"; font.pixelSize: 20; font.bold: true }
-                    }
-                }
-
-                Rectangle {
-                    Layout.fillWidth: true; height: 95
-                    color: "#DCFCE7"; radius: 12
-                    border.color: "#BBF7D0"
-                    Column {
-                        anchors.centerIn: parent; spacing: 5
-                        Text { text: "Nhân Sự Hệ Thống"; color: "#15803D"; font.pixelSize: 13; font.bold: true }
-                        Text { text: totalEmpText; color: "#16A34A"; font.pixelSize: 20; font.bold: true }
-                    }
-                }
-            }
+        Item {
+            width: scrollView.availableWidth
+            implicitHeight: mainLayout.implicitHeight + 40
 
             ColumnLayout {
-                Layout.fillWidth: true
-                Layout.leftMargin: 25
-                Layout.rightMargin: 25
-                spacing: 15
+                id: mainLayout
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.leftMargin: 24
+                anchors.rightMargin: 24
+                anchors.topMargin: 20
+                spacing: 20
 
+                // Header tiêu đề
+                RowLayout {
+                    Layout.fillWidth: true
+
+                    ColumnLayout {
+                        spacing: 4
+                        Label {
+                            text: "📊 TRUNG TÂM QUẢN LÝ"
+                            font.pixelSize: 24
+                            font.bold: true
+                            color: "#0369A1"
+                        }
+                        Label {
+                            text: "Hệ thống quản trị viên Giang's Coffee"
+                            font.pixelSize: 14
+                            color: "#64748B"
+                        }
+                    }
+                    Item { Layout.fillWidth: true }
+                }
+
+                // Thống kê Doanh thu & Nhân sự (Chia 50/50)
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 15
+
+                    Rectangle {
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: 0
+                        Layout.preferredHeight: 95
+                        color: "#E0F2FE"
+                        radius: 12
+                        border.color: "#BAE6FD"
+
+                        ColumnLayout {
+                            anchors.centerIn: parent
+                            spacing: 5
+                            Text {
+                                text: "Tổng Doanh Thu"
+                                color: "#0369A1"
+                                font.pixelSize: 13
+                                font.bold: true
+                                Layout.alignment: Qt.AlignHCenter
+                            }
+                            Text {
+                                text: totalRevenueText
+                                color: "#0284C7"
+                                font.pixelSize: 20
+                                font.bold: true
+                                Layout.alignment: Qt.AlignHCenter
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: 0
+                        Layout.preferredHeight: 95
+                        color: "#DCFCE7"
+                        radius: 12
+                        border.color: "#BBF7D0"
+
+                        ColumnLayout {
+                            anchors.centerIn: parent
+                            spacing: 5
+                            Text {
+                                text: "Nhân Sự Hệ Thống"
+                                color: "#15803D"
+                                font.pixelSize: 13
+                                font.bold: true
+                                Layout.alignment: Qt.AlignHCenter
+                            }
+                            Text {
+                                text: totalEmpText
+                                color: "#16A34A"
+                                font.pixelSize: 20
+                                font.bold: true
+                                Layout.alignment: Qt.AlignHCenter
+                            }
+                        }
+                    }
+                }
+
+                // Nhóm Hoạt động & Bán hàng
                 Label {
                     text: "Hoạt động & Bán hàng"
                     font.pixelSize: 16
@@ -208,6 +262,7 @@ Page {
                     }
                 }
 
+                // Nhóm Quản trị Hệ thống
                 Label {
                     text: "Quản trị Hệ thống & Dữ liệu"
                     font.pixelSize: 16
@@ -238,7 +293,7 @@ Page {
 
                     DashboardButton {
                         iconText: "📈"
-                        titleText: "Báo Cáo Tài Chính"
+                        titleText: "Quản Lý Tài Chính"
                         descText: "Kiểm soát dòng tiền thu/chi, lợi nhuận"
                         onClicked: openPage("FinancePage.qml")
                     }
@@ -251,8 +306,6 @@ Page {
                     }
                 }
             }
-
-            Item { Layout.fillHeight: true; Layout.minimumHeight: 30 }
         }
     }
 }

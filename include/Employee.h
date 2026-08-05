@@ -3,14 +3,27 @@
 
 #include "User.h"
 #include <QString>
+#include <QVariantMap>
 
 class Employee : public User {
     Q_OBJECT
+    Q_PROPERTY(QString phone READ getPhone WRITE setPhone NOTIFY employeeChanged)
+    Q_PROPERTY(double salary READ getSalary WRITE setSalary NOTIFY employeeChanged)
+    Q_PROPERTY(QString gender READ getGender WRITE setGender NOTIFY employeeChanged)
+    Q_PROPERTY(QString jobRole READ getJobRole WRITE setJobRole NOTIFY employeeChanged)
+    Q_PROPERTY(QString dob READ getDob WRITE setDob NOTIFY employeeChanged)
+    Q_PROPERTY(QString cccd READ getCccd WRITE setCccd NOTIFY employeeChanged)
+    Q_PROPERTY(QString shiftDate READ getShiftDate WRITE setShiftDate NOTIFY employeeChanged)
+    Q_PROPERTY(QString shiftTime READ getShiftTime WRITE setShiftTime NOTIFY employeeChanged)
+    Q_PROPERTY(QString avatar READ getAvatar WRITE setAvatar NOTIFY employeeChanged)
+    Q_PROPERTY(QString cccdFront READ getCccdFront WRITE setCccdFront NOTIFY employeeChanged)
+    Q_PROPERTY(QString cccdBack READ getCccdBack WRITE setCccdBack NOTIFY employeeChanged)
+
 private:
     QString m_phone;
-    double m_salary;       // Lương cơ bản theo giờ (VNĐ/h)
-    QString m_gender;      // Giới tính: Nam, Nữ, Khác
-    QString m_jobRole;     // Phân loại: Full-time, Part-time, Bảo vệ (Full-time)
+    double m_salary{0.0};
+    QString m_gender;
+    QString m_jobRole;
     QString m_dob;
     QString m_cccd;
     QString m_shiftDate;
@@ -20,20 +33,20 @@ private:
     QString m_cccdBack;
 
 public:
-    Employee(const QString& id = "",
-             const QString& phone = "",
-             const QString& name = "",
-             double salary = 0.0,
-             const QString& gender = "Nam",
-             const QString& jobRole = "Part-time",
-             const QString& dob = "01/01/2000",
-             const QString& cccd = "",
-             const QString& shiftDate = "",
-             const QString& shiftTime = "",
-             const QString& avatar = "",
-             const QString& cccdFront = "",
-             const QString& cccdBack = "",
-             QObject *parent = nullptr);
+    explicit Employee(const QString& id = "",
+                      const QString& phone = "",
+                      const QString& name = "",
+                      double salary = 0.0,
+                      const QString& gender = "Nam",
+                      const QString& jobRole = "Part-time",
+                      const QString& dob = "01/01/2000",
+                      const QString& cccd = "",
+                      const QString& shiftDate = "",
+                      const QString& shiftTime = "",
+                      const QString& avatar = "",
+                      const QString& cccdFront = "",
+                      const QString& cccdBack = "",
+                      QObject *parent = nullptr);
 
     ~Employee() override = default;
 
@@ -50,34 +63,30 @@ public:
     QString getCccdFront() const { return m_cccdFront; }
     QString getCccdBack() const { return m_cccdBack; }
 
-    /**
-     * HÀM TÍNH LƯƠNG HOÀN CHỈNH THEO LUẬT LAO ĐỘNG & QUY ĐỊNH QUÁN:
-     * - Giờ làm bình thường (<= 8h/ngày, <= 48h/tuần): Lương 100% (x1.0)
-     * - Giờ tăng ca ngày thường (T2 - T7): Lương 150% (x1.5)
-     * - Giờ tăng ca Ngày nghỉ/Chủ Nhật: Lương 200% (x2.0)
-     * Quán mở cửa 7h30-21h30 (Nhân viên 7h-22h) => Không có ca đêm.
-     */
-    double calculateSalary(double normalHours, double weekdayOtHours, double sundayOtHours) const {
-        return (normalHours * m_salary)
-        + (weekdayOtHours * m_salary * 1.5)
-            + (sundayOtHours * m_salary * 2.0);
-    }
-
     // Setters
-    void setPhone(const QString& phone) { m_phone = phone; }
-    void setSalary(double salary) { m_salary = salary; }
-    void setGender(const QString& gender) { m_gender = gender; }
-    void setJobRole(const QString& jobRole) { m_jobRole = jobRole; }
-    void setDob(const QString& dob) { m_dob = dob; }
-    void setCccd(const QString& cccd) { m_cccd = cccd; }
-    void setShiftDate(const QString& date) { m_shiftDate = date; }
-    void setShiftTime(const QString& time) { m_shiftTime = time; }
-    void setAvatar(const QString& avatar) { m_avatar = avatar; }
-    void setCccdFront(const QString& path) { m_cccdFront = path; }
-    void setCccdBack(const QString& path) { m_cccdBack = path; }
+    void setPhone(const QString& phone);
+    void setSalary(double salary);
+    void setGender(const QString& gender);
+    void setJobRole(const QString& jobRole);
+    void setDob(const QString& dob);
+    void setCccd(const QString& cccd);
+    void setShiftDate(const QString& date);
+    void setShiftTime(const QString& time);
+    void setAvatar(const QString& avatar);
+    void setCccdFront(const QString& path);
+    void setCccdBack(const QString& path);
+
+    // Chuyển đổi dữ liệu sang QVariantMap phục vụ giao diện QML
+    Q_INVOKABLE QVariantMap toVariantMap() const;
+
+    // Tính lương theo đúng quy định Luật Lao động
+    double calculateSalary(double normalHours, double weekdayOtHours, double sundayOtHours) const;
 
     QString role() const override { return m_jobRole; }
     void displayInfo() const override;
+
+signals:
+    void employeeChanged();
 };
 
 #endif // EMPLOYEE_H

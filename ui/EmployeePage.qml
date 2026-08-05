@@ -6,7 +6,19 @@ Page {
     id: employeePage
     title: "Trang Nhân Viên"
 
-    property string currentAction: "" // Trạng thái: "CHECK_IN" hoặc "CHECK_OUT"
+    property string currentAction: ""
+
+    function syncNavBar() {
+        var win = typeof appWindow !== "undefined" ? appWindow : (typeof ApplicationWindow !== "undefined" ? ApplicationWindow.window : null)
+        if (win) {
+            if (typeof win.setCurrentPage === "function") win.setCurrentPage("EmployeePage.qml", "Ca Làm Nhân Viên")
+            else if (typeof win.updateNavigation === "function") win.updateNavigation("EmployeePage.qml", "Ca Làm Nhân Viên")
+            if (win.pageTitle !== undefined) win.pageTitle = "Trang Nhân Viên"
+        }
+    }
+
+    StackView.onActivating: syncNavBar()
+    Component.onCompleted: syncNavBar()
 
     Rectangle {
         anchors.fill: parent
@@ -31,12 +43,10 @@ Page {
                 Layout.alignment: Qt.AlignHCenter
             }
 
-            // HÀNG NÚT BẤM CHECK-IN / CHECK-OUT
             RowLayout {
                 spacing: 20
                 Layout.alignment: Qt.AlignHCenter
 
-                // Nút Check-in
                 Button {
                     id: btnCheckIn
                     implicitWidth: 185
@@ -70,7 +80,6 @@ Page {
                     }
                 }
 
-                // Nút Check-out
                 Button {
                     id: btnCheckOut
                     implicitWidth: 185
@@ -105,7 +114,6 @@ Page {
                 }
             }
 
-            // Dòng hiển thị trạng thái điểm danh
             Text {
                 id: statusText
                 text: ""
@@ -118,9 +126,6 @@ Page {
         }
     }
 
-    // ==========================================
-    // BẢNG XÁC NHẬN SỐ ĐIỆN THOẠI (POPUP MODAL)
-    // ==========================================
     Popup {
         id: confirmDialog
         width: 380
@@ -249,7 +254,6 @@ Page {
                             return
                         }
 
-                        // 1. Xác minh danh tính Nhân viên
                         var isValid = false;
                         var employeeName = "";
                         var phoneToRecord = inputStr;
@@ -280,7 +284,6 @@ Page {
                             return
                         }
 
-                        // 2. KIỂM TRA CA LÀM TRONG NGÀY
                         var todayStr = Qt.formatDateTime(new Date(), "dd/MM/yyyy")
                         var hasShiftToday = false
 
@@ -302,7 +305,6 @@ Page {
                             return
                         }
 
-                        // 3. KIỂM TRA TRẠNG THÁI CHECK-IN TRƯỚC KHI CHECK-OUT
                         if (typeof coffeeSystem !== "undefined" && coffeeSystem.loadAttendance) {
                             var attendanceList = coffeeSystem.loadAttendance()
                             var lastAction = ""
@@ -326,7 +328,6 @@ Page {
                             }
                         }
 
-                        // 4. GHI NHẬN ĐIỂM DANH & HIỂN THỊ THÔNG BÁO TẠI TRANG
                         var currentTime = Qt.formatDateTime(new Date(), "hh:mm dd/MM/yyyy")
                         var displayName = employeeName !== "" ? employeeName : ("SĐT " + phoneToRecord)
 

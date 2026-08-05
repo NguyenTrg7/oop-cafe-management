@@ -10,7 +10,6 @@ Dialog {
     anchors.centerIn: parent
     padding: 0
 
-    // ===== Dữ liệu truyền vào =====
     property string invoiceNumber: ""
     property string invoiceDate: ""
     property string invoiceTime: ""
@@ -18,12 +17,11 @@ Dialog {
     property double totalAmount: 0
     property double discount: 0
     property string voucherCode: ""
-    property var items: []          // ListModel hoặc mảng [{name, size, quantity, note, totalPrice, category}, ...]
+    property var items: []
 
-    // Có hiện nút "In Hóa Đơn" hay chỉ xem (dùng cho lịch sử)
     property bool showFinishButton: true
 
-    signal finished()               // phát khi bấm "In Hóa Đơn"
+    signal finished()
     signal closed()
 
     function formatVND(value) {
@@ -40,10 +38,9 @@ Dialog {
                                .replace(/\s+/g, "_")
                                .replace(/[^a-z0-9_]/g, "")
         var folder = (category === "Food") ? "Food" : "Drink"
-        return "file:///" + applicationDir + "/data/" + folder + "/" + fileName + ".png"
+        return "file:///" + applicationDir + "/saves/" + folder + "/" + fileName + ".png"
     }
 
-    // Hàm mở với dữ liệu
     function openWith(data) {
         invoiceNumber = data.invoiceNumber || ""
         invoiceDate   = data.date || data.invoiceDate || ""
@@ -73,7 +70,6 @@ Dialog {
             width: scroll.availableWidth - 10
             spacing: 15
 
-            // Header quán
             ColumnLayout {
                 Layout.fillWidth: true
                 Layout.topMargin: 20
@@ -96,7 +92,6 @@ Dialog {
                 }
             }
 
-            // Thông tin hóa đơn
             Rectangle {
                 Layout.fillWidth: true
                 Layout.leftMargin: 20
@@ -140,7 +135,6 @@ Dialog {
                 Layout.alignment: Qt.AlignHCenter
             }
 
-            // Danh sách món
             ListView {
                 id: itemList
                 Layout.fillWidth: true
@@ -163,7 +157,6 @@ Dialog {
                         anchors.margins: 10
                         spacing: 12
 
-                        // Ảnh món
                         Image {
                             Layout.preferredWidth: 50
                             Layout.preferredHeight: 50
@@ -180,13 +173,11 @@ Dialog {
                             }
                         }
 
-                        // Thông tin món
                         ColumnLayout {
                             id: columnItem
                             Layout.fillWidth: true
                             spacing: 3
 
-                            // Tên + Size
                             Text {
                                 text: (modelData.name || "") + (modelData.size ? " (" + modelData.size + ")" : "")
                                 font.bold: true
@@ -196,31 +187,27 @@ Dialog {
                                 Layout.fillWidth: true
                             }
 
-                            // Số lượng
                             Text {
                                 text: "SL: " + (modelData.quantity || 1)
                                 font.pixelSize: 11
                                 color: "#666666"
                             }
 
-                            // Mức đá
                             Text {
                                 visible: modelData.ice && modelData.ice !== "" && modelData.ice !== "Bình thường"
                                 text: "🧊 " + modelData.ice
                                 font.pixelSize: 11
                                 color: "#0277BD"
                             }
-                            // Topping
                             Text {
                                 visible: modelData.toppings && modelData.toppings !== "" && modelData.toppings !== "undefined"
-                                text: "🍒 " + modelData.toppings          // ← chỉ cộng chuỗi, không duyệt mảng
+                                text: "🍒 " + modelData.toppings
                                 font.pixelSize: 11
                                 color: "#6A1B9A"
                                 wrapMode: Text.WordWrap
                                 Layout.fillWidth: true
                             }
 
-                            // Ghi chú
                             Text {
                                 visible: modelData.note && modelData.note !== ""
                                 text: "📝 " + modelData.note
@@ -231,7 +218,6 @@ Dialog {
                             }
                         }
 
-                        // Giá
                         Text {
                             text: formatVND(modelData.totalPrice)
                             font.bold: true
@@ -243,7 +229,6 @@ Dialog {
                 }
             }
 
-            // Voucher
             Text {
                 Layout.fillWidth: true
                 Layout.leftMargin: 20
@@ -255,7 +240,6 @@ Dialog {
                 color: "#2E7D32"
             }
 
-            // Tổng tiền
             Rectangle {
                 Layout.fillWidth: true
                 Layout.leftMargin: 20
@@ -284,7 +268,7 @@ Dialog {
                     }
                 }
             }
-            // ----- 5. MÃ QR + LỜI CẢM ƠN -----
+
             Rectangle {
                 Layout.fillWidth: true
                 Layout.leftMargin: 20
@@ -303,7 +287,7 @@ Dialog {
                         Layout.preferredWidth: 115
                         Layout.preferredHeight: 115
                         fillMode: Image.PreserveAspectFit
-                        source: "file:///" + applicationDir + "/data/ma_qr.jpg"
+                        source: "file:///" + applicationDir + "/saves/ma_qr.jpg"
                     }
 
                     ColumnLayout {
@@ -340,7 +324,6 @@ Dialog {
                 }
             }
 
-            // Nút
             RowLayout {
                 Layout.fillWidth: true
                 Layout.leftMargin: 20

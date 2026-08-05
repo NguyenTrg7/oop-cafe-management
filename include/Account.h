@@ -1,10 +1,9 @@
 #ifndef ACCOUNT_H
 #define ACCOUNT_H
 
-#include "Customer.h"
 #include <QObject>
 #include <QString>
-#include <string>
+#include "Customer.h"
 
 class Account : public QObject
 {
@@ -13,14 +12,17 @@ class Account : public QObject
 
 public:
     explicit Account(QObject *parent = nullptr);
-    ~Account();
+    ~Account() override = default;
 
-    QString currentUserPhone() const { return m_currentUserPhone; }
+    QString currentUserPhone() const;
     void setCurrentUserPhone(const QString &phone);
 
+    // Băm mật khẩu bằng SHA-256
+    static QString hashPassword(const QString &password);
+
+    // Xác thực tài khoản với mã hóa SHA-256
     Q_INVOKABLE QString authenticate(const QString &username, const QString &password);
 
-    Customer *m_customerHandler = nullptr;
     Q_INVOKABLE void setCustomerHandler(Customer *customer);
     Q_INVOKABLE bool saveCustomerLoyalty();
 
@@ -28,9 +30,10 @@ signals:
     void currentUserPhoneChanged();
 
 private:
-    std::string m_csvFilePath;
     QString m_currentUserPhone;
+    Customer *m_customerHandler{nullptr};
 
+    static QString getAccountFilePath();
     void initFile();
 };
 

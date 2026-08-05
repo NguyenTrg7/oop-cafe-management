@@ -1,6 +1,10 @@
 #include "Account.h"
+#include "GiangCoffeeSystem.h"
 #include <QCoreApplication>
+#include <QDir>
 #include <QFile>
+#include <QTextStream>
+#include <QCryptographicHash>
 #include <fstream>
 #include <sstream>
 
@@ -8,11 +12,18 @@ Account::Account(QObject *parent)
     : QObject(parent)
     , m_currentUserPhone("")
 {
-    m_csvFilePath = (QCoreApplication::applicationDirPath() + "/accounts.csv").toStdString();
     initFile();
 }
 
-Account::~Account() {}
+QString Account::getAccountFilePath()
+{
+    return GiangCoffeeSystem::getSaveFilePath("accounts.csv");
+}
+
+QString Account::currentUserPhone() const
+{
+    return m_currentUserPhone;
+}
 
 void Account::setCurrentUserPhone(const QString &phone)
 {
@@ -22,65 +33,79 @@ void Account::setCurrentUserPhone(const QString &phone)
     }
 }
 
+QString Account::hashPassword(const QString &password)
+{
+    QByteArray hashed = QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Sha256);
+    return QString::fromLatin1(hashed.toHex());
+}
+
 void Account::initFile()
 {
-    std::ifstream checkFile(m_csvFilePath);
+    QString path = getAccountFilePath();
+    QFile checkFile(path);
     bool hasAdmin = false;
     bool hasEmployee = false;
 
-    if (checkFile.is_open()) {
-        std::string line;
-        while (std::getline(checkFile, line)) {
-            if (line.empty()) continue;
-            if (line.back() == '\r') line.pop_back();
-            std::stringstream ss(line);
-            std::string dbUser;
-            if (std::getline(ss, dbUser, ',')) {
-                if (dbUser == "admin") hasAdmin = true;
-                if (dbUser == "nhanvien") hasEmployee = true;
+    if (checkFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QTextStream in(&checkFile);
+        while (!in.atEnd()) {
+            QString line = in.readLine().trimmed();
+            if (line.isEmpty()) continue;
+            QStringList fields = line.split(",");
+            if (!fields.isEmpty()) {
+                if (fields[0] == "admin") hasAdmin = true;
+                if (fields[0] == "nhanvien") hasEmployee = true;
             }
         }
         checkFile.close();
     }
 
-    // Khởi tạo luôn 2 tài khoản mặc định
+    // Khởi tạo tài khoản mặc định được băm mật khẩu SHA-256
     if (!hasAdmin || !hasEmployee) {
-        std::ofstream outFile(m_csvFilePath, std::ios::trunc);
-        if (outFile.is_open()) {
-            outFile << "admin,chuquanlatoi,manager\n";
-            outFile << "nhanvien,toilanhanvien,staff\n";
-            outFile.close();
+        if (checkFile.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
+            QTextStream out(&checkFile);
+            if (!hasAdmin) {
+                // admin / chuquanlatoi (SHA-256)
+                out << "admin," << hashPassword("chuquanlatoi") << ",manager\n";
+            }
+            if (!hasEmployee) {
+                // nhanvien / toilanhanvien (SHA-256)
+                out << "nhanvien," << hashPassword("toilanhanvien") << ",staff\n";
+            }
+            checkFile.close();
         }
     }
 }
 
 QString Account::authenticate(const QString &username, const QString &password)
 {
-    std::string inputUser = username.toStdString();
-    std::string inputPass = password.toStdString();
-
-    std::ifstream file(m_csvFilePath);
-    if (!file.is_open())
+    QString path = getAccountFilePath();
+    QFile file(path);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return "FILE_ERROR";
 
-    std::string line;
+    QString inputUser = username.trimmed();
+    QString inputHash = hashPassword(password);
     bool userExists = false;
 
-    while (std::getline(file, line)) {
-        if (line.empty()) continue;
-        if (line.back() == '\r') line.pop_back();
+    QTextStream in(&file);
+    while (!in.atEnd()) {
+        QString line = in.readLine().trimmed();
+        if (line.isEmpty()) continue;
 
-        std::stringstream ss(line);
-        std::string dbUser, dbPass, dbRole;
+        QStringList fields = line.split(",");
+        if (fields.size() >= 3) {
+            QString dbUser = fields[0].trimmed();
+            QString dbPass = fields[1].trimmed();
+            QString dbRole = fields[2].trimmed();
 
-        if (std::getline(ss, dbUser, ',') && std::getline(ss, dbPass, ',')
-            && std::getline(ss, dbRole)) {
             if (dbUser == inputUser) {
                 userExists = true;
-                if (dbPass == inputPass) {
+                // So sánh chuỗi SHA-256
+                if (dbPass == inputHash || dbPass == password) {
                     file.close();
                     setCurrentUserPhone(username);
-                    return QString::fromStdString(dbRole);
+                    return dbRole;
                 }
             }
         }
@@ -88,8 +113,6 @@ QString Account::authenticate(const QString &username, const QString &password)
     file.close();
     return userExists ? QString("WRONG_PASSWORD") : QString("NOT_REGISTERED");
 }
-
-Customer *m_customerHandler = nullptr;
 
 void Account::setCustomerHandler(Customer *customer)
 {

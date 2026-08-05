@@ -3,17 +3,31 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 Page {
+    id: attendancePage
     title: "Báo Cáo Điểm Danh"
     background: Rectangle { color: "#F8FAFC" }
 
+    function syncNavBar() {
+        var win = typeof appWindow !== "undefined" ? appWindow : (typeof ApplicationWindow !== "undefined" ? ApplicationWindow.window : null)
+        if (win) {
+            if (typeof win.setCurrentPage === "function") win.setCurrentPage("AttendanceReportPage.qml", "Báo Cáo Điểm Danh")
+            else if (typeof win.updateNavigation === "function") win.updateNavigation("AttendanceReportPage.qml", "Báo Cáo Điểm Danh")
+            if (win.pageTitle !== undefined) win.pageTitle = "Báo Cáo Điểm Danh"
+        }
+    }
+
+    StackView.onActivating: syncNavBar()
+
     ListModel { id: attendanceModel }
 
-    Component.onCompleted: loadAttendanceData()
+    Component.onCompleted: {
+        syncNavBar()
+        loadAttendanceData()
+    }
 
     function loadAttendanceData() {
         attendanceModel.clear()
         if (typeof coffeeSystem !== "undefined") {
-            // Lấy danh sách nhân viên để ánh xạ Tên
             var employees = []
             if (coffeeSystem.loadEmployees) {
                 employees = coffeeSystem.loadEmployees()
@@ -32,7 +46,6 @@ Page {
                 var data = coffeeSystem.loadAttendance()
                 for (var i = 0; i < data.length; i++) {
                     var record = data[i]
-                    // Thêm thuộc tính employeeName vào model
                     record.employeeName = getEmployeeName(record.identifier)
                     attendanceModel.append(record)
                 }

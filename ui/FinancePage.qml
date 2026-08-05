@@ -6,21 +6,37 @@ Page {
     id: financePage
     title: "Quản Lý Tài Chính"
 
+    function syncNavBar() {
+        var win = typeof appWindow !== "undefined" ? appWindow : (typeof ApplicationWindow !== "undefined" ? ApplicationWindow.window : null)
+        if (win) {
+            if (typeof win.setCurrentPage === "function") win.setCurrentPage("FinancePage.qml", "Báo Cáo Tài Chính")
+            else if (typeof win.updateNavigation === "function") win.updateNavigation("FinancePage.qml", "Báo Cáo Tài Chính")
+            if (win.pageTitle !== undefined) win.pageTitle = "Quản Lý Tài Chính"
+        }
+    }
+
+    StackView.onActivating: syncNavBar()
+
     ListModel { id: financeModel }
     property double totalRevenue: 0.0
     property double totalExpense: 0.0
 
-    Component.onCompleted: refreshFinance()
+    Component.onCompleted: {
+        syncNavBar()
+        refreshFinance()
+    }
 
     function refreshFinance() {
         financeModel.clear()
         totalRevenue = 0.0
         totalExpense = 0.0
-        var data = coffeeSystem.loadFinance()
-        for (var i = 0; i < data.length; i++) {
-            financeModel.append(data[i])
-            if (data[i].type === "Thu") totalRevenue += data[i].amount
-            else if (data[i].type === "Chi") totalExpense += data[i].amount
+        if (typeof coffeeSystem !== "undefined" && coffeeSystem.loadFinance) {
+            var data = coffeeSystem.loadFinance()
+            for (var i = 0; i < data.length; i++) {
+                financeModel.append(data[i])
+                if (data[i].type === "Thu") totalRevenue += data[i].amount
+                else if (data[i].type === "Chi") totalExpense += data[i].amount
+            }
         }
     }
 
@@ -29,7 +45,6 @@ Page {
         anchors.margins: 20
         spacing: 15
 
-        // Thống kê tổng quan
         RowLayout {
             Layout.fillWidth: true
             spacing: 20
@@ -62,7 +77,6 @@ Page {
             }
         }
 
-        // Bảng lịch sử giao dịch
         ListView {
             Layout.fillWidth: true
             Layout.fillHeight: true

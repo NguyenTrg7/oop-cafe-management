@@ -11,22 +11,22 @@
 #include "Customer.h"
 #include "EmployeeModel.h"
 #include "GiangCoffeeSystem.h"   // Import Header Singleton xử lý Menu
-#include "IngredientManager.h"   // Thêm từ Source 4
-#include "OrderHistoryManager.h" // Thêm từ Source 4
+#include "IngredientManager.h"
+#include "OrderHistoryManager.h"
 
-// Hàm hỗ trợ tìm kiếm file dữ liệu
-QString findDataFile(const QString &relativePath)
+// Fallback nếu không chạy từ CMake
+#ifndef SAVE_DIR_PATH
+#define SAVE_DIR_PATH "./saves"
+#endif
+
+// Hàm hỗ trợ lấy đường dẫn file nằm trong thư mục saves
+QString getSavePath(const QString &fileName)
 {
-    QString path = QCoreApplication::applicationDirPath() + "/" + relativePath;
-    if (!QFile::exists(path)) {
-        QDir sourceDir(QCoreApplication::applicationDirPath());
-        sourceDir.cdUp();
-        sourceDir.cdUp();
-        QString altPath = sourceDir.filePath(relativePath);
-        if (QFile::exists(altPath))
-            return altPath;
+    QDir dir(SAVE_DIR_PATH);
+    if (!dir.exists()) {
+        dir.mkpath("."); // Tự động tạo thư mục saves nếu chưa có
     }
-    return path;
+    return dir.filePath(fileName);
 }
 
 int main(int argc, char *argv[])
@@ -37,9 +37,6 @@ int main(int argc, char *argv[])
     std::cout << "            HE THONG QUAN LY GIANG COFFEE v1.0            \n";
     std::cout << "   Du an phat trien boi Nhom 3: Nguyen, Quang, Thanh, Giang, Khuong\n";
     std::cout << "========================================================\n";
-
-    // Set thư mục gốc
-    QDir::setCurrent(QCoreApplication::applicationDirPath());
 
     QQmlApplicationEngine engine;
 
@@ -57,10 +54,10 @@ int main(int argc, char *argv[])
     // ==========================================
     GiangCoffeeSystem *systemInstance = GiangCoffeeSystem::getInstance();
 
-    QString drinkPath = findDataFile("data/drink.csv");
-    QString foodPath = findDataFile("data/food.csv");
+    QString drinkPath = getSavePath("drink.csv");
+    QString foodPath  = getSavePath("food.csv");
 
-    // Nạp dữ liệu từ CSV
+    // Nạp dữ liệu từ CSV trong thư mục saves
     systemInstance->getMenuManager()->loadDrinksCSV(drinkPath);
     systemInstance->getMenuManager()->loadFoodsCSV(foodPath);
 
@@ -70,24 +67,9 @@ int main(int argc, char *argv[])
     IngredientManager ingManager;
     systemInstance->getMenuManager()->setIngredientManager(&ingManager);
 
-    // Tạo thư mục data cạnh file .exe
-    QString dataDir = QCoreApplication::applicationDirPath() + "/data";
-    QDir().mkpath(dataDir);
-
-    QString drinkIngPath = dataDir + "/IngredientDrink.csv";
-    QString foodIngPath  = dataDir + "/IngredientFood.csv";
-    QString recipesPath  = findDataFile("data/Recipes.csv");
-
-    // Tự động copy file mặc định nếu chưa tồn tại
-    auto ensureFile = [](const QString &dest, const QString &srcName) {
-        if (!QFile::exists(dest)) {
-            QString src = findDataFile(srcName);
-            if (QFile::exists(src))
-                QFile::copy(src, dest);
-        }
-    };
-    ensureFile(drinkIngPath, "data/IngredientDrink.csv");
-    ensureFile(foodIngPath,  "data/IngredientFood.csv");
+    QString drinkIngPath = getSavePath("IngredientDrink.csv");
+    QString foodIngPath  = getSavePath("IngredientFood.csv");
+    QString recipesPath  = getSavePath("Recipes.csv");
 
     ingManager.loadIngredientsCSV(drinkIngPath, true);
     ingManager.loadIngredientsCSV(foodIngPath, false);
@@ -97,13 +79,13 @@ int main(int argc, char *argv[])
     // ==========================================
     // 4. XỬ LÝ LỊCH SỬ ĐƠN HÀNG (ORDER HISTORY MANAGER)
     // ==========================================
-    QString historyPath = findDataFile("data/OrderHistory.csv");
+    QString historyPath = getSavePath("OrderHistory.csv");
     OrderHistoryManager *historyManager = new OrderHistoryManager();
     historyManager->setSavePath(historyPath);
     historyManager->loadFromCSV(historyPath);
 
     // ==========================================
-    // 5. ĐĂNG KÝ QML CONTEXT PROPERTIES (TỔNG HỢP & DỌC SẠCH TRÙNG)
+    // 5. ĐĂNG KÝ QML CONTEXT PROPERTIES
     // ==========================================
     engine.rootContext()->setContextProperty("accountHandler", &accountHandler);
     engine.rootContext()->setContextProperty("customerHandler", &customerHandler);
@@ -128,7 +110,6 @@ int main(int argc, char *argv[])
         },
         Qt::QueuedConnection);
 
-    // Giữ duy nhất 1 lệnh load để tránh crash/hiển thị 2 cửa sổ
     engine.load(url);
 
     return app.exec();

@@ -10,17 +10,25 @@ Rectangle {
         GradientStop { position: 1.0; color: "#F0F9FF" }
     }
 
-    // Tự động xoá dữ liệu các ô nhập khi trang được active lại (Back từ trang khác về)
+    function syncNavBar() {
+        var win = typeof appWindow !== "undefined" ? appWindow : (typeof ApplicationWindow !== "undefined" ? ApplicationWindow.window : null)
+        if (win) {
+            if (typeof win.setCurrentPage === "function") win.setCurrentPage("LoginPage.qml", "Đăng Nhập")
+            else if (typeof win.updateNavigation === "function") win.updateNavigation("LoginPage.qml", "Đăng Nhập")
+            if (win.pageTitle !== undefined) win.pageTitle = "Đăng Nhập"
+        }
+    }
+
     StackView.onActivating: {
+        syncNavBar()
         clearFields()
         if (typeof accountHandler !== "undefined") {
             accountHandler.setCurrentUserPhone("")
         }
     }
 
-    // ==========================================
-    // HIỆU ỨNG TUYẾT RƠI
-    // ==========================================
+    Component.onCompleted: syncNavBar()
+
     Item {
         id: snowContainer
         anchors.fill: parent
@@ -66,9 +74,6 @@ Rectangle {
         }
     }
 
-    // ==========================================
-    // LOGIC XỬ LÝ - CHỈ ĐĂNG NHẬP
-    // ==========================================
     function clearFields() {
         loginUserInput.text = ""
         loginPassInput.text = ""
@@ -80,18 +85,15 @@ Rectangle {
         var user = loginUserInput.text.trim()
         var pass = loginPassInput.text
 
-        // 1. Kiểm tra rỗng
         if (user === "" || pass === "") {
             loginErrorText.text = qsTr("Vui lòng nhập đủ tên đăng nhập và mật khẩu!")
             loginErrorText.visible = true
             return
         }
 
-        // 2. Lấy kết quả từ C++
         var result = accountHandler.authenticate(user, pass)
-        var role = String(result).toLowerCase() // Chuẩn hóa chữ thường
+        var role = String(result).toLowerCase()
 
-        // 3. KIỂM TRA LỖI VÀ CHUYỂN TRANG
         if (result === "NOT_REGISTERED") {
             loginErrorText.text = qsTr("Tài khoản không tồn tại!")
             loginErrorText.color = "#E53935"
@@ -106,7 +108,6 @@ Rectangle {
 
             var targetPage = (role === "manager") ? "ManagerPage.qml" : "EmployeePage.qml"
 
-            // Gọi đúng StackView đang chứa trang này để push
             if (StackView.view) {
                 StackView.view.push(targetPage)
             } else {
@@ -122,9 +123,6 @@ Rectangle {
         }
     }
 
-    // ==========================================
-    // KHUNG GIAO DIỆN
-    // ==========================================
     Rectangle {
         id: glassBox
         width: 380
@@ -148,7 +146,6 @@ Rectangle {
                 anchors.horizontalCenter: parent.horizontalCenter
             }
 
-            // Form Đăng nhập
             Column {
                 id: loginForm
                 spacing: 15
