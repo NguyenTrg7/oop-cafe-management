@@ -5,8 +5,8 @@ import QtQuick.Layouts 1.15
 ApplicationWindow {
     id: appWindow
     visible: true
-    width: 1180
-    height: 760
+    width: 1280
+    height: 800
     minimumWidth: 1024
     minimumHeight: 700
     title: qsTr("Giang's Coffee - Management System")
@@ -15,19 +15,33 @@ ApplicationWindow {
     property color colorPrimary: "#0369A1"
     property color colorText: "#1E293B"
 
-    property string currentActivePage: ""
-
-    // Biến lưu trạng thái ghim Sidebar
+    property string currentActivePage: "OrderPage.qml"
     property bool sidebarPinned: false
 
-    // BỘ NHỚ ĐỆM (CACHE): Giữ trạng thái các trang để chuyển đổi tức thì, không bị giật lag
     property var pageCache: ({})
 
     background: Rectangle { color: colorBackground }
 
-    // Phụ thuộc 100% vào accountHandler từ C++
-    property bool isAdmin: typeof accountHandler !== "undefined" && accountHandler.currentUserPhone === "admin"
-    property bool isStaff: typeof accountHandler !== "undefined" && accountHandler.currentUserPhone !== "admin" && accountHandler.currentUserPhone !== ""
+    // Đã kiểm tra null an toàn cho accountHandler
+    property bool isAdmin: typeof accountHandler !== "undefined" && accountHandler !== null && accountHandler.currentUserPhone === "admin"
+    property bool isStaff: typeof accountHandler !== "undefined" && accountHandler !== null && accountHandler.currentUserPhone !== "admin" && accountHandler.currentUserPhone !== ""
+
+    function getBaseName(url) {
+        if (!url) return "";
+        var str = url.toString();
+        var parts = str.split("/");
+        return parts[parts.length - 1];
+    }
+
+    // Đồng bộ trạng thái Sidebar Nav & Title khi sub-tab hoặc trang con thay đổi
+    function updateNavigation(pageUrl, pageTitle) {
+        currentActivePage = pageUrl;
+        if (pageTitle && pageTitle !== "") {
+            appWindow.title = "Giang's Coffee - " + pageTitle;
+        } else {
+            appWindow.title = "Giang's Coffee - Management System";
+        }
+    }
 
     StackView {
         id: stackView
@@ -36,12 +50,11 @@ ApplicationWindow {
     }
 
     // =========================================================================
-    // HÀM CHUYỂN TRANG TỐI ƯU HIỆU NĂNG
+    // HÀM CHUYỂN TRANG TỐI ƯU HIỆU NĂNG & ĐỒNG BỘ TRẠNG THÁI NAV BAR
     // =========================================================================
     function switchPage(pageUrl) {
-        if (currentActivePage === pageUrl) return;
+        if (getBaseName(currentActivePage) === getBaseName(pageUrl)) return;
 
-        // Xử lý riêng khi Đăng xuất: Xoá sạch bộ nhớ đệm, tháo ghim
         if (pageUrl === "LoginPage.qml") {
             sidebarPinned = false;
             currentActivePage = "";
@@ -52,17 +65,12 @@ ApplicationWindow {
             }
             pageCache = {};
             stackView.replace(null, pageUrl, StackView.Immediate);
+            appWindow.title = "Giang's Coffee - Đăng nhập";
             return;
-        }
-
-        // Tự động ghim thanh điều hướng khi vừa từ trang đăng nhập vào
-        if (currentActivePage === "") {
-            sidebarPinned = true;
         }
 
         currentActivePage = pageUrl;
 
-        // Nếu trang chưa từng được mở -> Khởi tạo và đưa vào Cache
         if (!pageCache[pageUrl]) {
             var component = Qt.createComponent(pageUrl);
             if (component.status === Component.Ready) {
@@ -73,11 +81,16 @@ ApplicationWindow {
             }
         }
 
-        // Kéo trang từ Cache ra và hiển thị ngay lập tức
         var targetItem = pageCache[pageUrl];
         stackView.replace(null, targetItem, StackView.Immediate);
 
-        // KÍCH HOẠT LÀM MỚI DỮ LIỆU
+        // ĐỒNG BỘ: Cập nhật tiêu đề cửa sổ dựa trên title của trang đang active
+        if (typeof targetItem.title !== "undefined" && targetItem.title !== "") {
+            appWindow.title = "Giang's Coffee - " + targetItem.title;
+        } else {
+            appWindow.title = "Giang's Coffee - Management System";
+        }
+
         if (typeof targetItem.refreshData === "function") {
             targetItem.refreshData();
         }
@@ -86,12 +99,9 @@ ApplicationWindow {
         }
     }
 
-    // ---------------------------------------------------
-    // KHU VỰC BẮT SỰ KIỆN RÊ CHUỘT MEP TRÁI
-    // ---------------------------------------------------
     MouseArea {
         id: edgeHoverArea
-        width: 30
+        width: 10
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.bottom: parent.bottom
@@ -102,7 +112,7 @@ ApplicationWindow {
     }
 
     // ---------------------------------------------------
-    // SIDEBAR - THANH ĐIỀU HƯỚNG BÊN TRÁI
+    // SIDEBAR NAVIGATION (Đã tích hợp ScrollView chứa cả nút Đăng xuất)
     // ---------------------------------------------------
     Rectangle {
         id: sideBar
@@ -124,9 +134,6 @@ ApplicationWindow {
             NumberAnimation { duration: 250; easing.type: Easing.OutQuart }
         }
 
-        // =========================================================
-        // NÚT MŨI TÊN NHÔ RA Ở MẾP SIDEBAR
-        // =========================================================
         Rectangle {
             id: toggleHandle
             width: 32
@@ -162,15 +169,13 @@ ApplicationWindow {
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
                 enabled: (isAdmin || isStaff)
-                onClicked: {
-                    sidebarPinned = !sidebarPinned
-                }
+                onClicked: sidebarPinned = !sidebarPinned
             }
         }
 
         ColumnLayout {
             anchors.fill: parent
-            anchors.margins: 15
+            anchors.margins: 12
             spacing: 10
 
             Label {
@@ -179,17 +184,19 @@ ApplicationWindow {
                 font.bold: true
                 color: "#FFFFFF"
                 Layout.alignment: Qt.AlignHCenter
-                Layout.topMargin: 20
-                Layout.bottomMargin: 20
+                Layout.topMargin: 5
+                Layout.bottomMargin: 5
             }
 
+            // Vùng chứa tất cả menu + nút Đăng xuất (Tự động cuộn khi cửa sổ thu nhỏ height)
             ScrollView {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 clip: true
+                ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
                 ColumnLayout {
-                    width: parent.width
+                    width: parent.width - 6
                     spacing: 8
 
                     component MenuButton : Button {
@@ -198,11 +205,11 @@ ApplicationWindow {
                         property string targetPage: ""
                         property bool checkAccess: true
 
-                        property bool isActive: appWindow.currentActivePage === targetPage
+                        property bool isActive: appWindow.getBaseName(appWindow.currentActivePage) === appWindow.getBaseName(targetPage)
 
                         visible: checkAccess
                         Layout.fillWidth: true
-                        implicitHeight: 45
+                        implicitHeight: 44
 
                         HoverHandler {
                             cursorShape: Qt.PointingHandCursor
@@ -221,10 +228,10 @@ ApplicationWindow {
                             anchors.leftMargin: 10
                             Text { text: parent.parent.iconStr; font.pixelSize: 18; color: "white" }
                             Text {
-                                text: parent.parent.btnText;
-                                font.pixelSize: 15;
-                                font.bold: true;
-                                color: "white";
+                                text: parent.parent.btnText
+                                font.pixelSize: 15
+                                font.bold: true
+                                color: "white"
                                 Layout.fillWidth: true
                             }
                         }
@@ -236,123 +243,46 @@ ApplicationWindow {
                         }
                     }
 
-                    // ---------- PHÂN QUYỀN MENU CHUNG ----------
-                    MenuButton {
-                        iconStr: "🏠"
-                        btnText: "Trang Chủ Quản Lý"
-                        targetPage: "ManagerPage.qml"
-                        checkAccess: isAdmin
-                    }
+                    MenuButton { iconStr: "🏠"; btnText: "Trang Chủ Quản Lý"; targetPage: "ManagerPage.qml"; checkAccess: isAdmin }
+                    MenuButton { iconStr: "🕒"; btnText: "Điểm Danh Ca Làm"; targetPage: "EmployeePage.qml"; checkAccess: isStaff && !isAdmin }
+                    MenuButton { iconStr: "🛒"; btnText: "Bán Hàng (Order)"; targetPage: "OrderPage.qml"; checkAccess: isAdmin || isStaff }
+                    MenuButton { iconStr: "📦"; btnText: "Quản Lý Kho Hàng"; targetPage: "InventoryPage.qml"; checkAccess: isAdmin || isStaff }
+                    MenuButton { iconStr: "📜"; btnText: "Lịch Sử Đơn Hàng"; targetPage: "OrderHistoryPage.qml"; checkAccess: isAdmin || isStaff }
+                    MenuButton { iconStr: "🪑"; btnText: "Sơ Đồ Bàn"; targetPage: "SeatingPage.qml"; checkAccess: isAdmin || isStaff }
+                    MenuButton { iconStr: "🎁"; btnText: "Loyalty (Tích điểm)"; targetPage: "LoyaltyPage.qml"; checkAccess: isAdmin || isStaff }
 
-                    MenuButton {
-                        iconStr: "🕒"
-                        btnText: "Điểm Danh Ca Làm"
-                        targetPage: "EmployeePage.qml"
-                        checkAccess: isStaff && !isAdmin
-                    }
+                    Rectangle { Layout.fillWidth: true; height: 1; color: "#38BDF8"; Layout.topMargin: 6; Layout.bottomMargin: 6; visible: isAdmin }
 
-                    MenuButton {
-                        iconStr: "🛒"
-                        btnText: "Bán Hàng (Order)"
-                        targetPage: "OrderPage.qml"
-                        checkAccess: isAdmin || isStaff
-                    }
+                    MenuButton { iconStr: "🔐"; btnText: "Quản Lý Nhân Sự"; targetPage: "EmployeeManagementPage.qml"; checkAccess: isAdmin }
+                    MenuButton { iconStr: "📋"; btnText: "Báo Cáo Điểm Danh"; targetPage: "AttendanceReportPage.qml"; checkAccess: isAdmin }
+                    MenuButton { iconStr: "📈"; btnText: "Quản Lý Tài Chính"; targetPage: "FinancePage.qml"; checkAccess: isAdmin }
 
-                    // [THÊM MỚI] Menu Quản lý Kho Hàng
-                    MenuButton {
-                        iconStr: "📦"
-                        btnText: "Quản Lý Kho Hàng"
-                        targetPage: "InventoryPage.qml"
-                        checkAccess: isAdmin || isStaff
-                    }
+                    Rectangle { Layout.fillWidth: true; height: 1; color: "#38BDF8"; Layout.topMargin: 8; Layout.bottomMargin: 8 }
 
-                    // [THÊM MỚI] Menu Lịch sử Đơn Hàng
-                    MenuButton {
-                        iconStr: "📜"
-                        btnText: "Lịch Sử Đơn Hàng"
-                        targetPage: "OrderHistoryPage.qml"
-                        checkAccess: isAdmin || isStaff
-                    }
-
-                    MenuButton {
-                        iconStr: "🪑"
-                        btnText: "Sơ Đồ Bàn"
-                        targetPage: "SeatingPage.qml"
-                        checkAccess: isAdmin || isStaff
-                    }
-
-                    MenuButton {
-                        iconStr: "🎁"
-                        btnText: "Loyalty (Tích điểm)"
-                        targetPage: "LoyaltyPage.qml"
-                        checkAccess: isAdmin || isStaff
-                    }
-
-                    // ---------- MENU DÀNH RIÊNG CHO QUẢN LÝ ----------
-                    Rectangle {
+                    // Nút Đăng xuất đưa vào đây để luôn cuộn tới được khi màn hình nhỏ
+                    Button {
                         Layout.fillWidth: true
-                        height: 1
-                        color: "#38BDF8"
-                        Layout.topMargin: 10
-                        Layout.bottomMargin: 10
-                        visible: isAdmin
-                    }
+                        implicitHeight: 44
 
-                    MenuButton {
-                        iconStr: "🔐"
-                        btnText: "Quản Lý Nhân Sự"
-                        targetPage: "EmployeeManagementPage.qml"
-                        checkAccess: isAdmin
-                    }
+                        HoverHandler { cursorShape: Qt.PointingHandCursor }
 
-                    MenuButton {
-                        iconStr: "📋"
-                        btnText: "Báo Cáo Điểm Danh"
-                        targetPage: "AttendanceReportPage.qml"
-                        checkAccess: isAdmin
-                    }
+                        background: Rectangle { color: parent.pressed ? "#B91C1C" : "#DC2626"; radius: 8 }
 
-                    MenuButton {
-                        iconStr: "📈"
-                        btnText: "Quản Lý Tài Chính"
-                        targetPage: "FinancePage.qml"
-                        checkAccess: isAdmin
+                        contentItem: Text {
+                            text: "🚪 Đăng xuất";
+                            color: "white";
+                            font.bold: true;
+                            font.pixelSize: 15;
+                            horizontalAlignment: Text.AlignHCenter;
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                        onClicked: logoutDialog.open()
                     }
                 }
-            }
-
-            Item { Layout.fillHeight: true }
-
-            Button {
-                Layout.fillWidth: true
-                implicitHeight: 45
-
-                HoverHandler {
-                    cursorShape: Qt.PointingHandCursor
-                }
-
-                background: Rectangle {
-                    color: parent.pressed ? "#B91C1C" : "#DC2626"
-                    radius: 8
-                }
-
-                contentItem: Text {
-                    text: "🚪 Đăng xuất"
-                    color: "white"
-                    font.bold: true
-                    font.pixelSize: 15
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
-
-                onClicked: logoutDialog.open()
             }
         }
     }
 
-    // ---------------------------------------------------
-    // POPUP XÁC NHẬN ĐĂNG XUẤT
-    // ---------------------------------------------------
     Dialog {
         id: logoutDialog
         width: 320
@@ -361,57 +291,28 @@ ApplicationWindow {
         anchors.centerIn: parent
         title: "Xác nhận"
 
-        background: Rectangle {
-            color: "#FFFFFF"
-            radius: 12
-            border.color: "#E2E8F0"
-        }
-
-        header: Item {
-            height: 40
-            Text {
-                text: "Xác nhận đăng xuất"
-                font.bold: true
-                font.pixelSize: 16
-                color: "#1E293B"
-                anchors.centerIn: parent
-            }
-        }
+        background: Rectangle { color: "#FFFFFF"; radius: 12; border.color: "#E2E8F0" }
+        header: Item { height: 40; Text { text: "Xác nhận đăng xuất"; font.bold: true; font.pixelSize: 16; color: "#1E293B"; anchors.centerIn: parent } }
 
         ColumnLayout {
-            anchors.fill: parent
-            anchors.margins: 10
-            spacing: 20
-
-            Text {
-                text: "Bạn có chắc chắn muốn đăng xuất?"
-                font.pixelSize: 14
-                color: "#475569"
-                Layout.alignment: Qt.AlignHCenter
-            }
+            anchors.fill: parent; anchors.margins: 10; spacing: 20
+            Text { text: "Bạn có chắc chắn muốn đăng xuất?"; font.pixelSize: 14; color: "#475569"; Layout.alignment: Qt.AlignHCenter }
 
             RowLayout {
-                Layout.fillWidth: true
-                spacing: 15
-
+                Layout.fillWidth: true; spacing: 15
                 Button {
-                    text: "Không"
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 40
+                    text: "Không"; Layout.fillWidth: true; Layout.preferredHeight: 40
                     background: Rectangle { color: "#F1F5F9"; radius: 6 }
                     contentItem: Text { text: parent.text; color: "#1E293B"; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                     onClicked: logoutDialog.close()
                 }
-
                 Button {
-                    text: "Có, đăng xuất"
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 40
+                    text: "Có, đăng xuất"; Layout.fillWidth: true; Layout.preferredHeight: 40
                     background: Rectangle { color: "#DC2626"; radius: 6 }
                     contentItem: Text { text: parent.text; color: "white"; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                     onClicked: {
                         logoutDialog.close()
-                        if (typeof accountHandler !== "undefined") {
+                        if (typeof accountHandler !== "undefined" && accountHandler !== null) {
                             accountHandler.currentUserPhone = ""
                         }
                         appWindow.switchPage("LoginPage.qml")

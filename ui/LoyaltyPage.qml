@@ -4,7 +4,20 @@ import QtQuick.Layouts 1.15
 
 Page {
     id: loyaltyPage
+    title: "Tích Điểm & Voucher"
     background: Rectangle { color: "#F8FAFC" }
+
+    function syncNavBar() {
+        var win = typeof appWindow !== "undefined" ? appWindow : (typeof ApplicationWindow !== "undefined" ? ApplicationWindow.window : null)
+        if (win) {
+            if (typeof win.setCurrentPage === "function") win.setCurrentPage("LoyaltyPage.qml", "Chương Trình Khuyến Mãi")
+            else if (typeof win.updateNavigation === "function") win.updateNavigation("LoyaltyPage.qml", "Chương Trình Khuyến Mãi")
+            if (win.pageTitle !== undefined) win.pageTitle = "Tích Điểm & Voucher"
+        }
+    }
+
+    StackView.onActivating: syncNavBar()
+    Component.onCompleted: syncNavBar()
 
     property var customer: typeof customerHandler !== "undefined" ? customerHandler : null
     property string currentPhone: ""
@@ -63,18 +76,12 @@ Page {
         contentWidth: availableWidth
         ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
-        // FIX: ColumnLayout is now the direct child of ScrollView instead of being
-        // wrapped in an Item with a manually-bound height. That manual
-        // "height: contentColumn.implicitHeight" binding on the wrapper Item
-        // wasn't reliably recomputing when the Repeater's item count changed,
-        // so the scrollable area never grew enough to show the voucher list.
         ColumnLayout {
             id: contentColumn
             width: Math.min(scroll.availableWidth, 560)
             anchors.horizontalCenter: parent.horizontalCenter
             spacing: 20
 
-            // ===== HEADER =====
             ColumnLayout {
                 Layout.fillWidth: true
                 spacing: 4
@@ -94,7 +101,6 @@ Page {
                 }
             }
 
-            // ===== Ô NHẬP SỐ ĐIỆN THOẠI =====
             Rectangle {
                 Layout.fillWidth: true
                 height: 60
@@ -141,7 +147,6 @@ Page {
                 }
             }
 
-            // ===== THẺ ĐIỂM =====
             Rectangle {
                 visible: currentPhone !== ""
                 Layout.fillWidth: true
@@ -176,7 +181,6 @@ Page {
                 }
             }
 
-            // ===== ĐỔI ĐIỂM LẤY VOUCHER =====
             Label {
                 visible: currentPhone !== ""
                 text: "Đổi điểm lấy voucher"
@@ -282,8 +286,6 @@ Page {
                 Layout.topMargin: 8
             }
 
-            // Bound to activeVoucherModel (kept in sync by refreshActiveVouchers())
-            // instead of the raw customer.activeVouchers property.
             Repeater {
                 model: activeVoucherModel
 

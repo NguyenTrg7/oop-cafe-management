@@ -58,7 +58,6 @@ set(LOGIC_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/src/OrderHistoryManager.cpp"
 )
 
-# Đã thêm ui/AttendanceReportPage.qml vào danh sách
 set(UI_FILES
     "ui/main.qml"
     "ui/OrderPage.qml"
@@ -72,44 +71,27 @@ set(UI_FILES
     "ui/InventoryPage.qml"
     "ui/InvoiceDialog.qml"
     "ui/AttendanceReportPage.qml"
+    "ui/OrderHistoryPage.qml"
 )
 
+# Phân nhóm file hiển thị trên Tree structure của IDE (Visual Studio / CLion / Qt Creator)
 source_group("Mục Header (Headers)" FILES ${HEADER_FILES})
 source_group("Mục Logic (Sources)" FILES ${LOGIC_FILES})
-
-# Cập nhật đường dẫn tuyệt đối cho IDE hiển thị thư mục
-source_group("Mục UI (QML)" FILES
-    ${UI_FILES}
-    "${CMAKE_CURRENT_SOURCE_DIR}/ui/main.qml"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ui/OrderPage.qml"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ui/LoyaltyPage.qml"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ui/LoginPage.qml"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ui/ManagerPage.qml"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ui/EmployeePage.qml"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ui/EmployeeManagementPage.qml"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ui/FinancePage.qml"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ui/SeatingPage.qml"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ui/InventoryPage.qml"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ui/OrderHistoryPage.qml"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ui/InvoiceDialog.qml"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ui/AttendanceReportPage.qml"
-)
+source_group("Mục UI (QML)" FILES ${UI_FILES})
 
 # =============================================================================
 # CẤU HÌNH BUILD
 # =============================================================================
+
 qt_add_executable(GiangsCoffee
     ${LOGIC_FILES}
     ${HEADER_FILES}
 )
 
-# Truyền trực tiếp list ${UI_FILES} để tránh trùng lặp thủ công
 qt_add_qml_module(GiangsCoffee
     URI GiangsCoffee
     VERSION 1.0
     QML_FILES ${UI_FILES}
-    QML_FILES ui/SeatingPage.qml
-    QML_FILES ui/OrderHistoryPage.qml
 )
 
 target_include_directories(GiangsCoffee PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
@@ -121,9 +103,23 @@ target_link_libraries(GiangsCoffee PRIVATE
     Qt6::Quick
 )
 
-# Tự động copy nguyên thư mục data sang thư mục build MỖI LẦN BUILD
-add_custom_command(TARGET GiangsCoffee POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CMAKE_CURRENT_SOURCE_DIR}/data"
-        "${CMAKE_CURRENT_BINARY_DIR}/data"
-)
+# =============================================================================
+# CẤU HÌNH THƯ MỤC LƯU TRỮ (SAVE)
+# =============================================================================
+
+# 1. Định nghĩa thư mục saves nằm TRỰC TIẾP bên trong thư mục dự án gốc (oop-cafe-management/saves)
+set(SAVE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/saves")
+
+# 2. Chuẩn hóa đường dẫn thành dạng Unix '/' để tránh lỗi escape character dấu '\' trên Windows
+file(TO_CMAKE_PATH "${SAVE_DIR}" SAVE_DIR_CLEAN)
+
+# 3. Truyền đường dẫn đã chuẩn hóa vào C++ dưới dạng Macro chuỗi
+target_compile_definitions(GiangsCoffee PRIVATE SAVE_DIR_PATH="${SAVE_DIR_CLEAN}")
+
+# 4. Chỉ tự động tạo thư mục saves và chép dữ liệu khởi tạo từ data/ LẦN ĐẦU TIÊN (nếu thư mục saves chưa tồn tại)
+if(NOT EXISTS "${SAVE_DIR_CLEAN}")
+    file(MAKE_DIRECTORY "${SAVE_DIR_CLEAN}")
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/data")
+        file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/data/" DESTINATION "${SAVE_DIR_CLEAN}")
+    endif()
+endif()

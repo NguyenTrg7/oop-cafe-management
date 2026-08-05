@@ -34,8 +34,8 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     QHash<int, QByteArray> roleNames() const override;
 
-    Q_INVOKABLE void addEmployee(const QString& id, const QString& phone, const QString& name, double salary, const QString& dob, const QString& cccd, const QString& shiftDate, const QString& shiftTime, const QString& avatar, const QString& cccdFront, const QString& cccdBack);
-    Q_INVOKABLE void updateEmployee(int index, const QString& id, const QString& phone, const QString& name, double salary, const QString& dob, const QString& cccd, const QString& shiftDate, const QString& shiftTime, const QString& avatar, const QString& cccdFront, const QString& cccdBack);
+    Q_INVOKABLE void addEmployee(const QString& id, const QString& phone, const QString& name, double salary, const QString& gender, const QString& jobRole, const QString& dob, const QString& cccd, const QString& shiftDate, const QString& shiftTime, const QString& avatar, const QString& cccdFront, const QString& cccdBack);
+    Q_INVOKABLE void updateEmployee(int index, const QString& id, const QString& phone, const QString& name, double salary, const QString& gender, const QString& jobRole, const QString& dob, const QString& cccd, const QString& shiftDate, const QString& shiftTime, const QString& avatar, const QString& cccdFront, const QString& cccdBack);
     Q_INVOKABLE void removeEmployee(int index);
     Q_INVOKABLE bool checkInCheckOut(const QString& phone, const QString& shiftDate, const QString& shiftTime);
 

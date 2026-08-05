@@ -1,4 +1,5 @@
 #include "EmployeeModel.h"
+#include "GiangCoffeeSystem.h"
 #include <QCoreApplication>
 #include <QUrl>
 #include <fstream>
@@ -8,14 +9,12 @@ EmployeeModel::EmployeeModel(Account *accountHandler, QObject *parent)
     : QAbstractListModel(parent)
     , m_accountHandler(accountHandler)
 {
-    // Đồng bộ đường dẫn với GiangCoffeeSystem
-    QString defaultPath = QCoreApplication::applicationDirPath() + "/data/Employee.csv";
+    QString defaultPath = GiangCoffeeSystem::getSaveFilePath("Employee.csv");
     importCSV(defaultPath);
 }
 
 EmployeeModel::~EmployeeModel()
 {
-    QString defaultPath = QCoreApplication::applicationDirPath() + "/data/Employee.csv";
     qDeleteAll(m_employees);
     m_employees.clear();
 }
@@ -37,8 +36,8 @@ QVariant EmployeeModel::data(const QModelIndex &index, int role) const
     case PhoneRole: return emp->getPhone();
     case NameRole: return emp->getName();
     case SalaryRole: return emp->getSalary();
-    case DobRole: return emp->getDob();
     case JobRoleRole: return emp->getJobRole();
+    case DobRole: return emp->getDob();
     case CccdRole: return emp->getCccd();
     case ShiftDateRole: return emp->getShiftDate();
     case ShiftTimeRole: return emp->getShiftTime();
@@ -56,8 +55,8 @@ QHash<int, QByteArray> EmployeeModel::roleNames() const
     roles[PhoneRole] = "phone";
     roles[NameRole] = "name";
     roles[SalaryRole] = "salary";
-    roles[DobRole] = "dob";
     roles[JobRoleRole] = "jobRole";
+    roles[DobRole] = "dob";
     roles[CccdRole] = "cccd";
     roles[ShiftDateRole] = "shiftDate";
     roles[ShiftTimeRole] = "shiftTime";
@@ -67,17 +66,17 @@ QHash<int, QByteArray> EmployeeModel::roleNames() const
     return roles;
 }
 
-void EmployeeModel::addEmployee(const QString &id, const QString &phone, const QString &name, double salary, const QString &dob, const QString &cccd, const QString &shiftDate, const QString &shiftTime, const QString &avatar, const QString &cccdFront, const QString &cccdBack)
+void EmployeeModel::addEmployee(const QString &id, const QString &phone, const QString &name, double salary, const QString &gender, const QString &jobRole, const QString &dob, const QString &cccd, const QString &shiftDate, const QString &shiftTime, const QString &avatar, const QString &cccdFront, const QString &cccdBack)
 {
     beginInsertRows(QModelIndex(), m_employees.count(), m_employees.count());
-    m_employees.append(new Employee(id, phone, name, salary, dob, cccd, shiftDate, shiftTime, avatar, cccdFront, cccdBack));
+    m_employees.append(new Employee(id, phone, name, salary, gender, jobRole, dob, cccd, shiftDate, shiftTime, avatar, cccdFront, cccdBack));
     endInsertRows();
 
-    QString defaultPath = QCoreApplication::applicationDirPath() + "/data/Employee.csv";
+    QString defaultPath = GiangCoffeeSystem::getSaveFilePath("Employee.csv");
     exportCSV(defaultPath);
 }
 
-void EmployeeModel::updateEmployee(int index, const QString &id, const QString &phone, const QString &name, double salary, const QString &dob, const QString &cccd, const QString &shiftDate, const QString &shiftTime, const QString &avatar, const QString &cccdFront, const QString &cccdBack)
+void EmployeeModel::updateEmployee(int index, const QString &id, const QString &phone, const QString &name, double salary, const QString &gender, const QString &jobRole, const QString &dob, const QString &cccd, const QString &shiftDate, const QString &shiftTime, const QString &avatar, const QString &cccdFront, const QString &cccdBack)
 {
     if (index < 0 || index >= m_employees.size()) return;
     Employee *emp = m_employees[index];
@@ -85,6 +84,8 @@ void EmployeeModel::updateEmployee(int index, const QString &id, const QString &
     emp->setPhone(phone);
     emp->setName(name);
     emp->setSalary(salary);
+    emp->setGender(gender);
+    emp->setJobRole(jobRole);
     emp->setDob(dob);
     emp->setCccd(cccd);
     emp->setShiftDate(shiftDate);
@@ -94,7 +95,7 @@ void EmployeeModel::updateEmployee(int index, const QString &id, const QString &
     emp->setCccdBack(cccdBack);
     emit dataChanged(createIndex(index, 0), createIndex(index, 0));
 
-    QString defaultPath = QCoreApplication::applicationDirPath() + "/data/Employee.csv";
+    QString defaultPath = GiangCoffeeSystem::getSaveFilePath("Employee.csv");
     exportCSV(defaultPath);
 }
 
@@ -106,7 +107,7 @@ void EmployeeModel::removeEmployee(int index)
     delete emp;
     endRemoveRows();
 
-    QString defaultPath = QCoreApplication::applicationDirPath() + "/data/Employee.csv";
+    QString defaultPath = GiangCoffeeSystem::getSaveFilePath("Employee.csv");
     exportCSV(defaultPath);
 }
 
@@ -117,7 +118,7 @@ bool EmployeeModel::checkInCheckOut(const QString &phone, const QString &shiftDa
             m_employees[i]->setShiftDate(shiftDate);
             m_employees[i]->setShiftTime(shiftTime);
             emit dataChanged(createIndex(i, 0), createIndex(i, 0));
-            QString defaultPath = QCoreApplication::applicationDirPath() + "/data/Employee.csv";
+            QString defaultPath = GiangCoffeeSystem::getSaveFilePath("Employee.csv");
             exportCSV(defaultPath);
             return true;
         }
@@ -146,20 +147,21 @@ void EmployeeModel::importCSV(const QString &filePath)
         if (isFirstLine) { isFirstLine = false; continue; }
 
         std::stringstream ss(line);
-        std::string id, name, phone, salaryStr, shiftDate, shiftTime;
+        std::string id, name, phone, salaryStr, gender, jobRole, shiftDate, shiftTime;
 
-        // Tương thích với CSV của GiangCoffeeSystem
         std::getline(ss, id, ',');
         std::getline(ss, name, ',');
         std::getline(ss, phone, ',');
         std::getline(ss, salaryStr, ',');
+        std::getline(ss, gender, ',');
+        std::getline(ss, jobRole, ',');
         std::getline(ss, shiftDate, ',');
         std::getline(ss, shiftTime, ',');
 
         if (!id.empty()) {
             double salary = 0.0;
             if (!salaryStr.empty()) salary = std::stod(salaryStr);
-            m_employees.append(new Employee(QString::fromStdString(id), QString::fromStdString(phone), QString::fromStdString(name), salary, "", "", QString::fromStdString(shiftDate), QString::fromStdString(shiftTime)));
+            m_employees.append(new Employee(QString::fromStdString(id), QString::fromStdString(phone), QString::fromStdString(name), salary, QString::fromStdString(gender), QString::fromStdString(jobRole), "", "", QString::fromStdString(shiftDate), QString::fromStdString(shiftTime)));
         }
     }
     file.close();
@@ -174,11 +176,11 @@ void EmployeeModel::exportCSV(const QString &filePath)
     std::ofstream file(localPath.toStdString());
     if (!file.is_open()) return;
 
-    // Header chuẩn với GiangCoffeeSystem
-    file << "ID,Name,Phone,Salary,ShiftDate,ShiftTime\n";
+    file << "ID,Name,Phone,Salary,Gender,JobRole,ShiftDate,ShiftTime\n";
     for (Employee *emp : m_employees) {
         file << emp->getId().toStdString() << "," << emp->getName().toStdString() << ","
              << emp->getPhone().toStdString() << "," << emp->getSalary() << ","
+             << emp->getGender().toStdString() << "," << emp->getJobRole().toStdString() << ","
              << emp->getShiftDate().toStdString() << "," << emp->getShiftTime().toStdString() << "\n";
     }
     file.close();

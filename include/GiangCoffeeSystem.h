@@ -19,6 +19,7 @@
 class GiangCoffeeSystem : public QObject {
     Q_OBJECT
     Q_PROPERTY(MenuManager* menuManager READ getMenuManager CONSTANT)
+
 private:
     explicit GiangCoffeeSystem(QObject *parent = nullptr);
     static GiangCoffeeSystem* m_instance;
@@ -31,13 +32,10 @@ private:
     QList<Supplier> m_suppliers;
     QList<Order*> m_orders;
     QList<Seating> m_tables;
-    QList<Account> m_accounts;
-    QList<QString> m_receipts;
 
     void updateEmployeeInShifts(const QString &id, const QString &newName, const QString &newPhone);
     void deleteEmployeeShifts(const QString &id);
 
-    // Các hàm phụ trợ kiểm tra giới hạn giờ làm
     double parseShiftDurationHours(const QString &timeStr);
     double getNetWorkingHours(const QString &timeStr);
     bool validateShiftTimeBounds(const QString &timeStr);
@@ -45,12 +43,14 @@ private:
 public:
     static GiangCoffeeSystem* getInstance();
     MenuManager* getMenuManager() const { return m_menuManager; }
-    ~GiangCoffeeSystem();
+    ~GiangCoffeeSystem() override;
+
+    // Helper trỏ đường dẫn đồng nhất tới thư mục save/
+    static QString getSaveFilePath(const QString &fileName);
 
     Q_INVOKABLE void addEmployee(Employee* emp);
     Q_INVOKABLE void removeEmployee(const QString& empID);
 
-    // Bổ sung hàm tính lương hàng tháng hoàn chỉnh theo Luật Lao động
     Q_INVOKABLE QVariantList calculateMonthlyPayroll(int month, int year);
 
     Q_INVOKABLE void addItem(const Menu& item);
@@ -75,12 +75,37 @@ public:
     Q_INVOKABLE QVariantList getSeatingList() const;
 
     Q_INVOKABLE void generateReport(const QDateTime& date);
-
     Q_INVOKABLE double checkDiscount(const QString& code, double totalAmount);
+
     Q_INVOKABLE QVariantList loadEmployees();
 
-    Q_INVOKABLE bool addEmployeeCSV(const QString &id, const QString &name, const QString &phone, double salary, const QString &gender, const QString &jobRole, const QString &shiftDate, const QString &shiftTime);
-    Q_INVOKABLE bool updateEmployeeCSV(const QString &id, const QString &name, const QString &phone, double salary, const QString &gender, const QString &jobRole, const QString &shiftDate, const QString &shiftTime);
+    Q_INVOKABLE bool addEmployeeCSV(const QString &id,
+                                    const QString &name,
+                                    const QString &phone,
+                                    double salary,
+                                    const QString &gender,
+                                    const QString &jobRole,
+                                    const QString &dob = "01/01/2000",
+                                    const QString &cccd = "",
+                                    const QString &shiftDate = "",
+                                    const QString &shiftTime = "",
+                                    const QString &avatar = "",
+                                    const QString &cccdFront = "",
+                                    const QString &cccdBack = "");
+
+    Q_INVOKABLE bool updateEmployeeCSV(const QString &id,
+                                       const QString &name,
+                                       const QString &phone,
+                                       double salary,
+                                       const QString &gender,
+                                       const QString &jobRole,
+                                       const QString &dob = "01/01/2000",
+                                       const QString &cccd = "",
+                                       const QString &shiftDate = "",
+                                       const QString &shiftTime = "",
+                                       const QString &avatar = "",
+                                       const QString &cccdFront = "",
+                                       const QString &cccdBack = "");
 
     Q_INVOKABLE QVariantList loadFinance();
     Q_INVOKABLE bool addTransactionCSV(const QString& date, const QString& type, double amount, const QString& note);
