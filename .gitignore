@@ -82,6 +82,8 @@ CMakeLists.txt.user*
 .uic/
 /build*/
 /.qtcreator/
+saves/*
+!saves/.gitkeep
 
 # --- Bổ sung cấu hình bổ trợ cho CMake & Qt6 ---
 CMakeCache.txt
