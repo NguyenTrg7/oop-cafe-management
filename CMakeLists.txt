@@ -107,8 +107,9 @@ target_link_libraries(GiangsCoffee PRIVATE
 # CẤU HÌNH THƯ MỤC LƯU TRỮ (SAVE)
 # =============================================================================
 
-# 1. Định nghĩa thư mục saves nằm TRỰC TIẾP bên trong thư mục dự án gốc (oop-cafe-management/saves)
+# 1. Định nghĩa thư mục saves và data nằm trong thư mục dự án gốc
 set(SAVE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/saves")
+set(DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data")
 
 # 2. Chuẩn hóa đường dẫn thành dạng Unix '/' để tránh lỗi escape character dấu '\' trên Windows
 file(TO_CMAKE_PATH "${SAVE_DIR}" SAVE_DIR_CLEAN)
@@ -116,10 +117,24 @@ file(TO_CMAKE_PATH "${SAVE_DIR}" SAVE_DIR_CLEAN)
 # 3. Truyền đường dẫn đã chuẩn hóa vào C++ dưới dạng Macro chuỗi
 target_compile_definitions(GiangsCoffee PRIVATE SAVE_DIR_PATH="${SAVE_DIR_CLEAN}")
 
-# 4. Chỉ tự động tạo thư mục saves và chép dữ liệu khởi tạo từ data/ LẦN ĐẦU TIÊN (nếu thư mục saves chưa tồn tại)
+# 4. Tự động tạo thư mục saves (nếu chưa có) và copy LẦN LƯỢT các file/folder từ data/
+# (Nếu saves đã có nhưng thiếu file/folder gốc nào đó, nó sẽ tự động copy bù vào mà không ghi đè file cũ)
 if(NOT EXISTS "${SAVE_DIR_CLEAN}")
     file(MAKE_DIRECTORY "${SAVE_DIR_CLEAN}")
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/data")
-        file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/data/" DESTINATION "${SAVE_DIR_CLEAN}")
-    endif()
+    message(STATUS "Created directory: ${SAVE_DIR_CLEAN}")
+endif()
+
+if(EXISTS "${DATA_DIR}")
+    file(GLOB DATA_ITEMS "${DATA_DIR}/*")
+
+    foreach(ITEM ${DATA_ITEMS})
+        get_filename_component(ITEM_NAME "${ITEM}" NAME)
+        set(DEST_ITEM "${SAVE_DIR_CLEAN}/${ITEM_NAME}")
+
+        # Nếu file/folder chưa tồn tại trong saves/, copy từ data/ sang
+        if(NOT EXISTS "${DEST_ITEM}")
+            message(STATUS "Copying original data: ${ITEM_NAME} -> saves/")
+            file(COPY "${ITEM}" DESTINATION "${SAVE_DIR_CLEAN}")
+        endif()
+    endforeach()
 endif()
