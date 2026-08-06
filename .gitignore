@@ -82,7 +82,10 @@ CMakeLists.txt.user*
 .uic/
 /build*/
 /.qtcreator/
+<<<<<<< HEAD
+=======
 saves/*
+>>>>>>> afe6c00c3135d8e2393b4c103e548335d72df726
 
 # --- Bổ sung cấu hình bổ trợ cho CMake & Qt6 ---
 CMakeCache.txt

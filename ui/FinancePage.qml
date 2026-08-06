@@ -10,12 +10,15 @@ Page {
     // PROPERTIES & DATA MODELS
     // -------------------------------------------------------------------------
     ListModel { id: rawFinanceModel }      // Chứa toàn bộ dữ liệu từ CSV
-    ListModel { id: filteredFinanceModel } // Dữ liệu đã lọc
+    ListModel { id: filteredFinanceModel } // Dữ liệu đã lọc theo Thời gian & Tìm kiếm
 
     property double totalRevenue: 0.0
     property double totalExpense: 0.0
     property double netProfit: 0.0
-    property double budgetTarget: 50000000.0
+    property double budgetTarget: 50000000.0 // Ngân sách mặc định: 50 triệu VNĐ
+
+    // Loại biểu đồ: 0: Cột đôi (Thu vs Chi), 1: Cột đơn (Lợi nhuận), 2: Đường (Xu hướng)
+    property int selectedChartType: 0
 
     // Dữ liệu dùng cho vẽ biểu đồ
     property var chartLabels: []
@@ -81,18 +84,21 @@ Page {
                 rawFinanceModel.append(data[i]);
             }
         }
-        Qt.callLater(applyFilters);
+        applyFilters();
     }
 
     function applyFilters() {
+        filteredFinanceModel.clear();
+        totalRevenue = 0.0;
+        totalExpense = 0.0;
+
         var m_mode = cbViewMode.currentIndex; // 0: Tuần, 1: Tháng, 2: Năm
         var m_year = parseInt(cbYear.currentText);
-        // Fallback an toàn nếu UI chưa kịp map text của ComboBox
         if (isNaN(m_year)) m_year = new Date().getFullYear();
 
         var m_month = cbMonth.currentIndex; // 0-11
         var m_week = cbWeek.currentIndex; // 0-3
-        var m_measure = cbYearMeasure.currentIndex; // 0: Tháng, 1: Quý
+        var m_measure = cbYearMeasure.currentIndex; // 0: Theo Tháng, 1: Theo Quý
 
         var labels = [];
         var rev = [];
@@ -105,7 +111,6 @@ Page {
         var curY = now.getFullYear();
         var curM = now.getMonth();
         var curD = now.getDate();
-        // Mốc so sánh ngày hiện tại (Bỏ qua giờ phút giây)
         var today = new Date(curY, curM, curD);
 
         // 1. THIẾT LẬP TRỤC X & XÁC ĐỊNH MỐC TƯƠNG LAI
@@ -147,12 +152,12 @@ Page {
             }
         }
 
-        // 2. TÍNH TOÁN DỮ LIỆU CHO BIỂU ĐỒ & TỔNG QUAN
-        var totalRevChart = 0.0;
-        var totalExpChart = 0.0;
+        // 2. TÍNH TOÁN DỮ LIỆU CHO BIỂU ĐỒ & LỌC DANH SÁCH
+        var searchTxt = searchInput.text ? searchInput.text.toLowerCase().trim() : "";
+        var typeFilter = typeFilterCombo.currentIndex; // 0: Tất cả, 1: Thu, 2: Chi
 
-        for (var i = 0; i < rawFinanceModel.count; i++) {
-            var item = rawFinanceModel.get(i);
+        for (var idx = 0; idx < rawFinanceModel.count; idx++) {
+            var item = rawFinanceModel.get(idx);
             var itemDate = parseDateStr(item.date);
             var dYear = itemDate.getFullYear();
             var dMonth = itemDate.getMonth();
@@ -182,13 +187,19 @@ Page {
                 }
             }
 
-            if (matchPeriod) {
+            var matchType = (typeFilter === 0) || (typeFilter === 1 && item.type === "Thu") || (typeFilter === 2 && item.type === "Chi");
+            var itemNote = item.note ? item.note.toString().toLowerCase() : "";
+            var itemDateStr = item.date ? item.date.toString() : "";
+            var matchSearch = searchTxt === "" || itemNote.indexOf(searchTxt) !== -1 || itemDateStr.indexOf(searchTxt) !== -1;
+
+            if (matchPeriod && matchType && matchSearch) {
+                filteredFinanceModel.append(item);
                 var amount = Number(item.amount);
                 if (item.type === "Thu") {
-                    totalRevChart += amount;
+                    totalRevenue += amount;
                     if (bucketIndex >= 0 && bucketIndex < numBuckets) rev[bucketIndex] += amount;
                 } else if (item.type === "Chi") {
-                    totalExpChart += amount;
+                    totalExpense += amount;
                     if (bucketIndex >= 0 && bucketIndex < numBuckets) exp[bucketIndex] += amount;
                 }
             }
@@ -198,8 +209,6 @@ Page {
             profit[j] = rev[j] - exp[j];
         }
 
-        totalRevenue = totalRevChart;
-        totalExpense = totalExpChart;
         netProfit = totalRevenue - totalExpense;
 
         financePage.chartLabels = labels;
@@ -208,39 +217,6 @@ Page {
         financePage.chartProfit = profit;
         financePage.chartIsFuture = isFuture;
 
-        // 3. LỌC DỮ LIỆU DANH SÁCH LỊCH SỬ BÊN DƯỚI
-        filteredFinanceModel.clear();
-        var searchTxt = searchInput.text ? searchInput.text.toLowerCase().trim() : "";
-        var typeFilter = typeFilterCombo.currentIndex;
-
-        for (var idx = 0; idx < rawFinanceModel.count; idx++) {
-            var fItem = rawFinanceModel.get(idx);
-            var fDate = parseDateStr(fItem.date);
-            var fdYear = fDate.getFullYear();
-            var fdMonth = fDate.getMonth();
-            var fdDate = fDate.getDate();
-
-            var fMatchPeriod = false;
-            if (m_mode === 0) {
-                var sDay = m_week * 7 + 1;
-                var eDay = (m_week === 3) ? 31 : (sDay + 6);
-                if (fdYear === m_year && fdMonth === m_month && fdDate >= sDay && fdDate <= eDay) fMatchPeriod = true;
-            } else if (m_mode === 1) {
-                if (fdYear === m_year && fdMonth === m_month) fMatchPeriod = true;
-            } else if (m_mode === 2) {
-                if (fdYear === m_year) fMatchPeriod = true;
-            }
-
-            var fMatchType = (typeFilter === 0) || (typeFilter === 1 && fItem.type === "Thu") || (typeFilter === 2 && fItem.type === "Chi");
-            var fNote = fItem.note ? fItem.note.toString().toLowerCase() : "";
-            var fMatchSearch = searchTxt === "" || fNote.indexOf(searchTxt) !== -1;
-
-            if (fMatchPeriod && fMatchType && fMatchSearch) {
-                filteredFinanceModel.append(fItem);
-            }
-        }
-
-        // Ép vẽ lại biểu đồ
         chartCanvas.requestPaint();
     }
 
@@ -391,7 +367,7 @@ Page {
             }
         }
 
-        // --- KHU VỰC BIỂU ĐỒ (CHART CANVAS) KẾT HỢP HAI TRỤC ---
+        // --- KHU VỰC BIỂU ĐỒ (CHART CANVAS) ---
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 250
@@ -399,180 +375,167 @@ Page {
             radius: 10
             border.color: "#E2E8F0"
 
-            Canvas {
-                id: chartCanvas
+            ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: 10
+                anchors.margins: 12
+                spacing: 5
 
-                // Đảm bảo Canvas resize sẽ kích hoạt vẽ lại
-                onWidthChanged: requestPaint()
-                onHeightChanged: requestPaint()
+                RowLayout {
+                    Layout.fillWidth: true
+                    Text { text: "📈 Biểu Đồ Trực Quan Tài Chính"; font.bold: true; font.pixelSize: 14; color: "#334155" }
+                    Item { Layout.fillWidth: true }
 
-                onPaint: {
-                    var ctx = getContext("2d");
-                    ctx.clearRect(0, 0, width, height);
-
-                    var w = width;
-                    var h = height;
-
-                    var labels = financePage.chartLabels;
-                    var revData = financePage.chartRev;
-                    var expData = financePage.chartExp;
-                    var profitData = financePage.chartProfit;
-                    var isFuture = financePage.chartIsFuture;
-
-                    if (labels.length === 0) return;
-
-                    // 1. TÍNH TOÁN GIỚI HẠN TRỤC TRÁI (Cho Cột Thu / Chi)
-                    var maxBar = 10;
-                    for (var i = 0; i < labels.length; i++) {
-                        if (!isFuture[i]) {
-                            maxBar = Math.max(maxBar, revData[i], expData[i]);
+                    ComboBox {
+                        id: chartTypeCombo
+                        model: ["📊 Cột Đôi (Thu vs Chi)", "📶 Cột Đơn (Lợi Nhuận)", "📉 Đường (Xu Hướng)"]
+                        currentIndex: financePage.selectedChartType
+                        onCurrentIndexChanged: {
+                            financePage.selectedChartType = currentIndex;
+                            chartCanvas.requestPaint();
                         }
                     }
-                    maxBar *= 1.2;
+                }
 
-                    // 2. TÍNH TOÁN GIỚI HẠN TRỤC PHẢI (Cho Đường Lợi Nhuận)
-                    var pMax = -Infinity;
-                    var pMin = Infinity;
-                    var hasValidProfit = false;
+                Canvas {
+                    id: chartCanvas
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
 
-                    for (var i = 0; i < labels.length; i++) {
-                        if (!isFuture[i]) {
-                            pMax = Math.max(pMax, profitData[i]);
-                            pMin = Math.min(pMin, profitData[i]);
-                            hasValidProfit = true;
+                    onWidthChanged: requestPaint()
+                    onHeightChanged: requestPaint()
+
+                    onPaint: {
+                        var ctx = getContext("2d");
+                        ctx.clearRect(0, 0, width, height);
+
+                        var w = width;
+                        var h = height;
+
+                        var labels = financePage.chartLabels;
+                        var revData = financePage.chartRev;
+                        var expData = financePage.chartExp;
+                        var profitData = financePage.chartProfit;
+                        var isFuture = financePage.chartIsFuture;
+
+                        if (labels.length === 0) return;
+
+                        // 1. TÍNH TOÁN GIỚI HẠN TRỤC TRÁI (Cho Cột Thu / Chi)
+                        var maxBar = 10;
+                        for (var i = 0; i < labels.length; i++) {
+                            if (!isFuture[i]) {
+                                maxBar = Math.max(maxBar, revData[i], expData[i]);
+                            }
                         }
-                    }
+                        maxBar *= 1.2;
 
-                    if (!hasValidProfit) { pMax = 100; pMin = 0; }
-                    if (pMin > 0) pMin = 0; // Đảm bảo số 0 được căn thẳng dưới đáy nếu lợi nhuận luôn dương
-                    if (pMax === pMin) { pMax += 100; pMin -= 100; }
+                        // 2. TÍNH TOÁN GIỚI HẠN TRỤC PHẢI (Cho Đường Lợi Nhuận)
+                        var pMax = -Infinity;
+                        var pMin = Infinity;
+                        var hasValidProfit = false;
 
-                    // Thêm khoảng đệm cho biên độ Lợi nhuận
-                    var pRange = pMax - pMin;
-                    pMax += pRange * 0.1;
-                    if (pMin < 0) pMin -= pRange * 0.1;
-                    pRange = pMax - pMin;
-
-                    var paddingLeft = 55;
-                    var paddingRight = 55;
-                    var paddingTop = 40;
-                    var paddingBottom = 30;
-                    var chartW = w - paddingLeft - paddingRight;
-                    var chartH = h - paddingTop - paddingBottom;
-                    var stepX = chartW / labels.length;
-
-                    // 3. VẼ LƯỚI GRID & NHÃN HAI TRỤC (AXES LABELS)
-                    ctx.strokeStyle = "#E2E8F0";
-                    ctx.lineWidth = 1;
-                    ctx.font = "10px sans-serif";
-
-                    for (var gl = 0; gl <= 4; gl++) {
-                        var yPos = h - paddingBottom - (gl * chartH / 4);
-
-                        // Vẽ lưới ngang
-                        ctx.beginPath();
-                        ctx.moveTo(paddingLeft, yPos);
-                        ctx.lineTo(w - paddingRight, yPos);
-                        ctx.stroke();
-
-                        // Label trục trái (Thu/Chi)
-                        var leftVal = gl * maxBar / 4;
-                        ctx.textAlign = "right";
-                        ctx.fillStyle = "#64748B";
-                        ctx.fillText(formatAxisNumber(leftVal), paddingLeft - 8, yPos + 4);
-
-                        // Label trục phải (Lợi nhuận)
-                        var rightVal = pMin + gl * pRange / 4;
-                        ctx.textAlign = "left";
-                        ctx.fillStyle = "#0284C7"; // Màu xanh lam đồng bộ với đường
-                        ctx.fillText(formatAxisNumber(rightVal), w - paddingRight + 8, yPos + 4);
-                    }
-
-                    // Vẽ Đơn vị ở trên đỉnh các trục
-                    ctx.textAlign = "right";
-                    ctx.fillStyle = "#64748B";
-                    ctx.fillText("(VNĐ)", paddingLeft, paddingTop - 15);
-
-                    ctx.textAlign = "left";
-                    ctx.fillStyle = "#0284C7";
-                    ctx.fillText("(VNĐ)", w - paddingRight, paddingTop - 15);
-
-                    // 4. VẼ BIỂU ĐỒ CỘT THU/CHI VÀ GOM TỌA ĐỘ ĐIỂM LỢI NHUẬN
-                    ctx.textAlign = "center";
-                    var barW = stepX * 0.25;
-                    if (barW > 30) barW = 30;
-                    var profitPointsX = [];
-                    var profitPointsY = [];
-
-                    for (var b = 0; b < labels.length; b++) {
-                        var xCenter = paddingLeft + b * stepX + stepX / 2;
-
-                        if (!isFuture[b]) {
-                            // Cột Thu
-                            var hRev = (revData[b] / maxBar) * chartH;
-                            ctx.fillStyle = "#22C55E";
-                            ctx.fillRect(xCenter - barW - 1, h - paddingBottom - hRev, barW, hRev);
-
-                            // Cột Chi
-                            var hExp = (expData[b] / maxBar) * chartH;
-                            ctx.fillStyle = "#EF4444";
-                            ctx.fillRect(xCenter + 1, h - paddingBottom - hExp, barW, hExp);
-
-                            // Tọa độ đường Lợi Nhuận
-                            var hProf = ((profitData[b] - pMin) / pRange) * chartH;
-                            profitPointsX.push(xCenter);
-                            profitPointsY.push(h - paddingBottom - hProf);
+                        for (var j = 0; j < labels.length; j++) {
+                            if (!isFuture[j]) {
+                                pMax = Math.max(pMax, profitData[j]);
+                                pMin = Math.min(pMin, profitData[j]);
+                                hasValidProfit = true;
+                            }
                         }
 
-                        // Nhãn mốc thời gian trục X (Hiển thị toàn bộ cả tương lai)
-                        ctx.fillStyle = "#334155";
-                        ctx.fillText(labels[b], xCenter, h - 10);
-                    }
+                        if (!hasValidProfit) { pMax = 100; pMin = 0; }
+                        if (pMin > 0) pMin = 0;
+                        if (pMax === pMin) { pMax += 100; pMin -= 100; }
 
-                    // 5. VẼ ĐƯỜNG LỢI NHUẬN (Chỉ vẽ các điểm không phải mốc tương lai)
-                    if (profitPointsX.length > 0) {
-                        ctx.beginPath();
-                        ctx.strokeStyle = "#0284C7";
-                        ctx.lineWidth = 2.5;
-                        for (var p = 0; p < profitPointsX.length; p++) {
-                            if (p === 0) ctx.moveTo(profitPointsX[p], profitPointsY[p]);
-                            else ctx.lineTo(profitPointsX[p], profitPointsY[p]);
-                        }
-                        ctx.stroke();
+                        var pRange = pMax - pMin;
+                        pMax += pRange * 0.1;
+                        if (pMin < 0) pMin -= pRange * 0.1;
+                        pRange = pMax - pMin;
 
-                        // Vẽ dấu chấm trên đường
-                        for (var pt = 0; pt < profitPointsX.length; pt++) {
-                            ctx.fillStyle = "#0369A1";
+                        var paddingLeft = 55;
+                        var paddingRight = 55;
+                        var paddingTop = 30;
+                        var paddingBottom = 30;
+                        var chartW = w - paddingLeft - paddingRight;
+                        var chartH = h - paddingTop - paddingBottom;
+                        var stepX = chartW / labels.length;
+
+                        // 3. VẼ LƯỚI GRID & NHÃN HAI TRỤC
+                        ctx.strokeStyle = "#E2E8F0";
+                        ctx.lineWidth = 1;
+                        ctx.font = "10px sans-serif";
+
+                        for (var gl = 0; gl <= 4; gl++) {
+                            var yPos = h - paddingBottom - (gl * chartH / 4);
+
                             ctx.beginPath();
-                            ctx.arc(profitPointsX[pt], profitPointsY[pt], 4, 0, 2 * Math.PI);
-                            ctx.fill();
+                            ctx.moveTo(paddingLeft, yPos);
+                            ctx.lineTo(w - paddingRight, yPos);
+                            ctx.stroke();
+
+                            var leftVal = gl * maxBar / 4;
+                            ctx.textAlign = "right";
+                            ctx.fillStyle = "#64748B";
+                            ctx.fillText(formatAxisNumber(leftVal), paddingLeft - 8, yPos + 4);
+
+                            var rightVal = pMin + gl * pRange / 4;
+                            ctx.textAlign = "left";
+                            ctx.fillStyle = "#0284C7";
+                            ctx.fillText(formatAxisNumber(rightVal), w - paddingRight + 8, yPos + 4);
+                        }
+
+                        // 4. VẼ BIỂU ĐỒ CỘT THU/CHI
+                        ctx.textAlign = "center";
+                        var barW = stepX * 0.25;
+                        if (barW > 30) barW = 30;
+                        var profitPointsX = [];
+                        var profitPointsY = [];
+
+                        for (var b = 0; b < labels.length; b++) {
+                            var xCenter = paddingLeft + b * stepX + stepX / 2;
+
+                            if (!isFuture[b]) {
+                                if (financePage.selectedChartType === 0) {
+                                    var hRev = (revData[b] / maxBar) * chartH;
+                                    ctx.fillStyle = "#22C55E";
+                                    ctx.fillRect(xCenter - barW - 1, h - paddingBottom - hRev, barW, hRev);
+
+                                    var hExp = (expData[b] / maxBar) * chartH;
+                                    ctx.fillStyle = "#EF4444";
+                                    ctx.fillRect(xCenter + 1, h - paddingBottom - hExp, barW, hExp);
+                                } else if (financePage.selectedChartType === 1) {
+                                    var pVal = profitData[b];
+                                    var hBar = (Math.abs(pVal) / maxBar) * chartH;
+                                    ctx.fillStyle = pVal >= 0 ? "#0284C7" : "#E11D48";
+                                    ctx.fillRect(xCenter - barW, h - paddingBottom - hBar, barW * 2, hBar);
+                                }
+
+                                var hProf = ((profitData[b] - pMin) / pRange) * chartH;
+                                profitPointsX.push(xCenter);
+                                profitPointsY.push(h - paddingBottom - hProf);
+                            }
+
+                            ctx.fillStyle = "#334155";
+                            ctx.fillText(labels[b], xCenter, h - 10);
+                        }
+
+                        // 5. VẼ ĐƯỜNG LỢI NHUẬN (Nếu chọn dạng Đường)
+                        if (financePage.selectedChartType === 2 && profitPointsX.length > 0) {
+                            ctx.beginPath();
+                            ctx.strokeStyle = "#0284C7";
+                            ctx.lineWidth = 2.5;
+                            for (var p = 0; p < profitPointsX.length; p++) {
+                                if (p === 0) ctx.moveTo(profitPointsX[p], profitPointsY[p]);
+                                else ctx.lineTo(profitPointsX[p], profitPointsY[p]);
+                            }
+                            ctx.stroke();
+
+                            for (var pt = 0; pt < profitPointsX.length; pt++) {
+                                ctx.fillStyle = "#0369A1";
+                                ctx.beginPath();
+                                ctx.arc(profitPointsX[pt], profitPointsY[pt], 4, 0, 2 * Math.PI);
+                                ctx.fill();
+                            }
                         }
                     }
-
-                    // 6. VẼ CHÚ THÍCH (LEGEND)
-                    ctx.font = "12px sans-serif";
-                    ctx.textAlign = "left";
-                    var lx = paddingLeft + 10;
-                    var ly = 10;
-
-                    ctx.fillStyle = "#22C55E";
-                    ctx.fillRect(lx, ly, 15, 15);
-                    ctx.fillStyle = "#334155";
-                    ctx.fillText("Thu", lx + 20, ly + 12);
-
-                    ctx.fillStyle = "#EF4444";
-                    ctx.fillRect(lx + 60, ly, 15, 15);
-                    ctx.fillStyle = "#334155";
-                    ctx.fillText("Chi", lx + 80, ly + 12);
-
-                    ctx.fillStyle = "#0284C7";
-                    ctx.beginPath();
-                    ctx.arc(lx + 130, ly + 7, 5, 0, 2 * Math.PI);
-                    ctx.fill();
-                    ctx.fillStyle = "#334155";
-                    ctx.fillText("Lợi nhuận ròng", lx + 140, ly + 12);
                 }
             }
         }
@@ -599,7 +562,7 @@ Page {
 
                     TextField {
                         id: searchInput
-                        placeholderText: "🔍 Tìm theo ghi chú..."
+                        placeholderText: "🔍 Tìm theo ghi chú, ngày..."
                         Layout.preferredWidth: 220
                         onTextChanged: Qt.callLater(applyFilters)
                     }
@@ -611,7 +574,7 @@ Page {
                     }
                 }
 
-                // Tiêu đề Bảng
+                // Tiêu đề Bảng (Header)
                 Rectangle {
                     Layout.fillWidth: true
                     height: 35
@@ -631,9 +594,9 @@ Page {
                     }
                 }
 
-                // Danh sách
+                // Danh sách Giao dịch
                 ListView {
-                    id: historyListView // <--- THÊM ID CHO LISTVIEW
+                    id: historyListView
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     model: filteredFinanceModel
@@ -641,7 +604,6 @@ Page {
                     spacing: 4
 
                     delegate: Rectangle {
-                        // Thay vì dùng parent.width, ta gọi trực tiếp id của ListView
                         width: historyListView.width
                         height: 40
                         color: index % 2 === 0 ? "#FFFFFF" : "#F8FAFC"
@@ -654,8 +616,10 @@ Page {
                             anchors.rightMargin: 15
                             spacing: 10
 
+                            // Cột 1: Thời gian
                             Text { text: model.date; Layout.preferredWidth: 120; color: "#334155"; font.pixelSize: 13 }
 
+                            // Cột 2: Loại giao dịch
                             Item {
                                 Layout.preferredWidth: 90
                                 Layout.fillHeight: true
@@ -675,6 +639,7 @@ Page {
                                 }
                             }
 
+                            // Cột 3: Số tiền
                             Text {
                                 text: (model.type === "Thu" ? "+" : "-") + formatMoney(model.amount) + " VNĐ"
                                 font.bold: true
@@ -683,6 +648,7 @@ Page {
                                 font.pixelSize: 13
                             }
 
+                            // Cột 4: Ghi chú
                             Text { text: model.note; color: "#475569"; Layout.fillWidth: true; elide: Text.ElideRight; font.pixelSize: 13 }
                         }
                     }
