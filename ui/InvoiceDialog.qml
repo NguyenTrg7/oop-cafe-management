@@ -30,31 +30,31 @@ Dialog {
     }
 
     function getImagePath(itemName, category) {
-        if (!itemName)
-            return "";
+            if (!itemName)
+                return "";
 
-        var fileName = itemName.toLowerCase()
-                               .normalize("NFD")
-                               .replace(/[\u0300-\u036f]/g, "")
-                               .replace(/[đĐ]/g, "d")
-                               .replace(/\s+/g, "_")
-                               .replace(/[^a-z0-9_]/g, "");
+            var fileName = itemName.toLowerCase()
+                                   .normalize("NFD")
+                                   .replace(/[\u0300-\u036f]/g, "")
+                                   .replace(/[đĐ]/g, "d")
+                                   .replace(/\s+/g, "_")
+                                   .replace(/[^a-z0-9_]/g, "");
 
-        var folder = category === "Food" ? "Food" : "Drink";
+            var folder = category === "Food" ? "Food" : "Drink";
 
-        // Ưu tiên dùng đường dẫn từ main.cpp
-        if (typeof savesDirUrl !== "undefined" && savesDirUrl) {
-            return savesDirUrl + folder + "/" + fileName + ".png";
+            // Ưu tiên dùng đường dẫn từ main.cpp
+            if (typeof savesDirUrl !== "undefined" && savesDirUrl) {
+                return savesDirUrl + folder + "/" + fileName + ".png";
+            }
+
+            // Fallback (nếu chưa sửa main)
+            var appDir = (typeof applicationDir !== "undefined" && applicationDir) ? applicationDir : "";
+            appDir = appDir.replace(/\\/g, "/");
+            if (appDir.length > 0 && !appDir.endsWith("/"))
+                appDir += "/";
+
+            return "file:///" + appDir + "saves/" + folder + "/" + fileName + ".png";
         }
-
-        // Fallback (nếu chưa sửa main)
-        var appDir = (typeof applicationDir !== "undefined" && applicationDir) ? applicationDir : "";
-        appDir = appDir.replace(/\\/g, "/");
-        if (appDir.length > 0 && !appDir.endsWith("/"))
-            appDir += "/";
-
-        return "file:///" + appDir + "data/" + folder + "/" + fileName + ".png";
-    }
 
     function openWith(data) {
         invoiceNumber = data.invoiceNumber || ""

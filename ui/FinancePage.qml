@@ -17,12 +17,29 @@ Page {
     property double netProfit: 0.0
     property double budgetTarget: 50000000.0 // Ngân sách mặc định: 50 triệu VNĐ
 
-    // Bộ lọc thời gian: 0: Hôm nay, 1: Tháng , 2: Quý , 3: Năm , 4: Tất cả
-    property int selectedPeriodIndex: 1
     // Loại biểu đồ: 0: Cột đôi (Thu vs Chi), 1: Cột đơn (Lợi nhuận), 2: Đường (Xu hướng)
     property int selectedChartType: 0
 
-    Component.onCompleted: refreshFinance()
+    // Dữ liệu dùng cho vẽ biểu đồ
+    property var chartLabels: []
+    property var chartRev: []
+    property var chartExp: []
+    property var chartProfit: []
+    property var chartIsFuture: [] // Mảng cờ đánh dấu các mốc ở tương lai
+
+    Component.onCompleted: {
+        // Init years model
+        var currentYear = new Date().getFullYear();
+        var years = [];
+        for (var i = currentYear - 5; i <= currentYear + 5; i++) {
+            years.push(i.toString());
+        }
+        cbYear.model = years;
+        cbYear.currentIndex = 5; // Focus vào năm hiện tại
+        cbMonth.currentIndex = new Date().getMonth();
+
+        refreshFinance();
+    }
 
     // -------------------------------------------------------------------------
     // XỬ LÝ LOGIC TÍNH TOÁN & LỌC DỮ LIỆU
@@ -31,6 +48,16 @@ Page {
         if (val === undefined || val === null || isNaN(val)) return "0";
         var num = Math.round(val);
         return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    function formatAxisNumber(val) {
+        if (val === undefined || val === null || isNaN(val)) return "0";
+        var absVal = Math.abs(val);
+        var sign = val < 0 ? "-" : "";
+        if (absVal >= 1000000000) return sign + (absVal / 1000000000).toFixed(1).replace(/\.0$/, '') + "b";
+        if (absVal >= 1000000) return sign + (absVal / 1000000).toFixed(1).replace(/\.0$/, '') + "m";
+        if (absVal >= 1000) return sign + (absVal / 1000).toFixed(1).replace(/\.0$/, '') + "k";
+        return sign + Math.round(absVal).toString();
     }
 
     function parseDateStr(dateStr) {
@@ -51,9 +78,11 @@ Page {
         rawFinanceModel.clear();
         filteredFinanceModel.clear();
 
-        var data = coffeeSystem.loadFinance();
-        for (var i = 0; i < data.length; i++) {
-            rawFinanceModel.append(data[i]);
+        if (typeof coffeeSystem !== "undefined" && coffeeSystem.loadFinance) {
+            var data = coffeeSystem.loadFinance();
+            for (var i = 0; i < data.length; i++) {
+                rawFinanceModel.append(data[i]);
+            }
         }
         applyFilters();
     }
@@ -63,38 +92,101 @@ Page {
         totalRevenue = 0.0;
         totalExpense = 0.0;
 
-        var now = new Date();
-        var curDay = now.getDate();
-        var curMonth = now.getMonth();
-        var curYear = now.getFullYear();
-        var curQuarter = Math.floor(curMonth / 3);
+        var m_mode = cbViewMode.currentIndex; // 0: Tuần, 1: Tháng, 2: Năm
+        var m_year = parseInt(cbYear.currentText);
+        if (isNaN(m_year)) m_year = new Date().getFullYear();
 
+        var m_month = cbMonth.currentIndex; // 0-11
+        var m_week = cbWeek.currentIndex; // 0-3
+        var m_measure = cbYearMeasure.currentIndex; // 0: Theo Tháng, 1: Theo Quý
+
+        var labels = [];
+        var rev = [];
+        var exp = [];
+        var profit = [];
+        var isFuture = [];
+        var numBuckets = 0;
+
+        var now = new Date();
+        var curY = now.getFullYear();
+        var curM = now.getMonth();
+        var curD = now.getDate();
+        var today = new Date(curY, curM, curD);
+
+        // 1. THIẾT LẬP TRỤC X & XÁC ĐỊNH MỐC TƯƠNG LAI
+        if (m_mode === 0) {
+            numBuckets = 7;
+            var startDay = m_week * 7 + 1;
+            for (var i = 0; i < 7; i++) {
+                var dayDate = startDay + i;
+                var dObj = new Date(m_year, m_month, dayDate);
+                labels.push("Ngày " + dayDate);
+                rev.push(0); exp.push(0); profit.push(0);
+                isFuture.push(dObj > today);
+            }
+        } else if (m_mode === 1) {
+            numBuckets = 4;
+            labels = ["Tuần 1", "Tuần 2", "Tuần 3", "Tuần 4"];
+            for (var iw = 0; iw < 4; iw++) {
+                var wStart = new Date(m_year, m_month, iw * 7 + 1);
+                rev.push(0); exp.push(0); profit.push(0);
+                isFuture.push(wStart > today);
+            }
+        } else if (m_mode === 2) {
+            if (m_measure === 0) { // Năm chia theo tháng
+                numBuckets = 12;
+                labels = ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12"];
+                for (var m = 0; m < 12; m++) {
+                    rev.push(0); exp.push(0); profit.push(0);
+                    var mStart = new Date(m_year, m, 1);
+                    isFuture.push(mStart > today);
+                }
+            } else { // Năm chia theo quý
+                numBuckets = 4;
+                labels = ["Quý 1", "Quý 2", "Quý 3", "Quý 4"];
+                for (var q = 0; q < 4; q++) {
+                    rev.push(0); exp.push(0); profit.push(0);
+                    var qStart = new Date(m_year, q * 3, 1);
+                    isFuture.push(qStart > today);
+                }
+            }
+        }
+
+        // 2. TÍNH TOÁN DỮ LIỆU CHO BIỂU ĐỒ & LỌC DANH SÁCH
         var searchTxt = searchInput.text ? searchInput.text.toLowerCase().trim() : "";
         var typeFilter = typeFilterCombo.currentIndex; // 0: Tất cả, 1: Thu, 2: Chi
 
-        for (var i = 0; i < rawFinanceModel.count; i++) {
-            var item = rawFinanceModel.get(i);
+        for (var idx = 0; idx < rawFinanceModel.count; idx++) {
+            var item = rawFinanceModel.get(idx);
             var itemDate = parseDateStr(item.date);
-            var itemDay = itemDate.getDate();
-            var itemMonth = itemDate.getMonth();
-            var itemYear = itemDate.getFullYear();
-            var itemQuarter = Math.floor(itemMonth / 3);
+            var dYear = itemDate.getFullYear();
+            var dMonth = itemDate.getMonth();
+            var dDate = itemDate.getDate();
 
-            // 1. Kiểm tra bộ lọc thời gian
             var matchPeriod = false;
-            if (selectedPeriodIndex === 0) { // Hôm nay
-                matchPeriod = (itemDay === curDay && itemMonth === curMonth && itemYear === curYear);
-            } else if (selectedPeriodIndex === 1) { // Tháng này
-                matchPeriod = (itemMonth === curMonth && itemYear === curYear);
-            } else if (selectedPeriodIndex === 2) { // Quý này
-                matchPeriod = (itemQuarter === curQuarter && itemYear === curYear);
-            } else if (selectedPeriodIndex === 3) { // Năm nay
-                matchPeriod = (itemYear === curYear);
-            } else { // Tất cả
-                matchPeriod = true;
+            var bucketIndex = -1;
+
+            if (m_mode === 0) {
+                var startDayW = m_week * 7 + 1;
+                var endDayW = (m_week === 3) ? 31 : (startDayW + 6);
+                if (dYear === m_year && dMonth === m_month && dDate >= startDayW && dDate <= endDayW) {
+                    matchPeriod = true;
+                    bucketIndex = Math.min(dDate - startDayW, 6);
+                }
+            } else if (m_mode === 1) {
+                if (dYear === m_year && dMonth === m_month) {
+                    matchPeriod = true;
+                    bucketIndex = Math.floor((dDate - 1) / 7);
+                    if (bucketIndex > 3) bucketIndex = 3;
+                }
+            } else if (m_mode === 2) {
+                if (dYear === m_year) {
+                    matchPeriod = true;
+                    if (m_measure === 0) bucketIndex = dMonth;
+                    else bucketIndex = Math.floor(dMonth / 3);
+                }
             }
 
-            // 2. Kiểm tra bộ lọc loại & tìm kiếm
             var matchType = (typeFilter === 0) || (typeFilter === 1 && item.type === "Thu") || (typeFilter === 2 && item.type === "Chi");
             var itemNote = item.note ? item.note.toString().toLowerCase() : "";
             var itemDateStr = item.date ? item.date.toString() : "";
@@ -102,12 +194,29 @@ Page {
 
             if (matchPeriod && matchType && matchSearch) {
                 filteredFinanceModel.append(item);
-                if (item.type === "Thu") totalRevenue += Number(item.amount);
-                else if (item.type === "Chi") totalExpense += Number(item.amount);
+                var amount = Number(item.amount);
+                if (item.type === "Thu") {
+                    totalRevenue += amount;
+                    if (bucketIndex >= 0 && bucketIndex < numBuckets) rev[bucketIndex] += amount;
+                } else if (item.type === "Chi") {
+                    totalExpense += amount;
+                    if (bucketIndex >= 0 && bucketIndex < numBuckets) exp[bucketIndex] += amount;
+                }
             }
         }
 
+        for (var j = 0; j < numBuckets; j++) {
+            profit[j] = rev[j] - exp[j];
+        }
+
         netProfit = totalRevenue - totalExpense;
+
+        financePage.chartLabels = labels;
+        financePage.chartRev = rev;
+        financePage.chartExp = exp;
+        financePage.chartProfit = profit;
+        financePage.chartIsFuture = isFuture;
+
         chartCanvas.requestPaint();
     }
 
@@ -145,43 +254,57 @@ Page {
             }
         }
 
-        // --- BỘ LỌC THỜI GIAN ---
+        // --- BỘ LỌC THỜI GIAN & CHẾ ĐỘ XEM BIỂU ĐỒ ---
         Rectangle {
             Layout.fillWidth: true
-            height: 45
+            height: 55
             color: "#FFFFFF"
             radius: 8
             border.color: "#E2E8F0"
 
             RowLayout {
                 anchors.fill: parent
-                anchors.margins: 5
-                spacing: 5
+                anchors.margins: 10
+                spacing: 10
 
-                Repeater {
-                    model: ["📅 Hôm Nay", "📆 Tháng Này", "📊 Quý Này", "📈 Năm Nay", "🌐 Tất Cả"]
-                    delegate: Button {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        text: modelData
-                        flat: true
-                        background: Rectangle {
-                            color: financePage.selectedPeriodIndex === index ? "#0369A1" : "transparent"
-                            radius: 6
-                        }
-                        contentItem: Text {
-                            text: parent.text
-                            color: financePage.selectedPeriodIndex === index ? "#FFFFFF" : "#475569"
-                            font.bold: financePage.selectedPeriodIndex === index
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                        }
-                        onClicked: {
-                            financePage.selectedPeriodIndex = index;
-                            applyFilters();
-                        }
-                    }
+                Text { text: "Chế độ xem:"; font.bold: true; color: "#334155"; font.pixelSize: 13 }
+                ComboBox {
+                    id: cbViewMode
+                    model: ["Tuần", "Tháng", "Năm"]
+                    currentIndex: 1
+                    onCurrentIndexChanged: Qt.callLater(applyFilters)
                 }
+
+                Text { text: "Khảo sát:"; font.bold: true; color: "#334155"; font.pixelSize: 13; Layout.leftMargin: 15 }
+
+                ComboBox {
+                    id: cbYear
+                    onCurrentIndexChanged: Qt.callLater(applyFilters)
+                    onCurrentTextChanged: Qt.callLater(applyFilters)
+                }
+
+                ComboBox {
+                    id: cbMonth
+                    model: ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"]
+                    visible: cbViewMode.currentIndex < 2
+                    onCurrentIndexChanged: Qt.callLater(applyFilters)
+                }
+
+                ComboBox {
+                    id: cbWeek
+                    model: ["Tuần 1", "Tuần 2", "Tuần 3", "Tuần 4"]
+                    visible: cbViewMode.currentIndex === 0
+                    onCurrentIndexChanged: Qt.callLater(applyFilters)
+                }
+
+                ComboBox {
+                    id: cbYearMeasure
+                    model: ["Theo Tháng", "Theo Quý"]
+                    visible: cbViewMode.currentIndex === 2
+                    onCurrentIndexChanged: Qt.callLater(applyFilters)
+                }
+
+                Item { Layout.fillWidth: true }
             }
         }
 
@@ -247,7 +370,7 @@ Page {
         // --- KHU VỰC BIỂU ĐỒ (CHART CANVAS) ---
         Rectangle {
             Layout.fillWidth: true
-            Layout.preferredHeight: 220
+            Layout.preferredHeight: 250
             color: "#FFFFFF"
             radius: 10
             border.color: "#E2E8F0"
@@ -278,6 +401,9 @@ Page {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
 
+                    onWidthChanged: requestPaint()
+                    onHeightChanged: requestPaint()
+
                     onPaint: {
                         var ctx = getContext("2d");
                         ctx.clearRect(0, 0, width, height);
@@ -285,85 +411,128 @@ Page {
                         var w = width;
                         var h = height;
 
-                        var categories = ["Kỳ 1", "Kỳ 2", "Kỳ 3", "Kỳ 4", "Kỳ 5"];
-                        var revData = [totalRevenue * 0.15, totalRevenue * 0.25, totalRevenue * 0.2, totalRevenue * 0.3, totalRevenue * 0.1];
-                        var expData = [totalExpense * 0.2, totalExpense * 0.15, totalExpense * 0.3, totalExpense * 0.2, totalExpense * 0.15];
+                        var labels = financePage.chartLabels;
+                        var revData = financePage.chartRev;
+                        var expData = financePage.chartExp;
+                        var profitData = financePage.chartProfit;
+                        var isFuture = financePage.chartIsFuture;
 
-                        var maxVal = 100;
-                        for (var i = 0; i < 5; i++) {
-                            maxVal = Math.max(maxVal, revData[i], expData[i], Math.abs(revData[i] - expData[i]));
+                        if (labels.length === 0) return;
+
+                        // 1. TÍNH TOÁN GIỚI HẠN TRỤC TRÁI (Cho Cột Thu / Chi)
+                        var maxBar = 10;
+                        for (var i = 0; i < labels.length; i++) {
+                            if (!isFuture[i]) {
+                                maxBar = Math.max(maxBar, revData[i], expData[i]);
+                            }
                         }
-                        maxVal *= 1.2;
+                        maxBar *= 1.2;
 
-                        ctx.strokeStyle = "#F1F5F9";
-                        ctx.lineWidth = 1;
-                        for (var gl = 0; gl <= 4; gl++) {
-                            var yPos = h - 30 - (gl * (h - 50) / 4);
-                            ctx.beginPath();
-                            ctx.moveTo(40, yPos);
-                            ctx.lineTo(w - 10, yPos);
-                            ctx.stroke();
+                        // 2. TÍNH TOÁN GIỚI HẠN TRỤC PHẢI (Cho Đường Lợi Nhuận)
+                        var pMax = -Infinity;
+                        var pMin = Infinity;
+                        var hasValidProfit = false;
+
+                        for (var j = 0; j < labels.length; j++) {
+                            if (!isFuture[j]) {
+                                pMax = Math.max(pMax, profitData[j]);
+                                pMin = Math.min(pMin, profitData[j]);
+                                hasValidProfit = true;
+                            }
                         }
 
-                        var paddingLeft = 50;
+                        if (!hasValidProfit) { pMax = 100; pMin = 0; }
+                        if (pMin > 0) pMin = 0;
+                        if (pMax === pMin) { pMax += 100; pMin -= 100; }
+
+                        var pRange = pMax - pMin;
+                        pMax += pRange * 0.1;
+                        if (pMin < 0) pMin -= pRange * 0.1;
+                        pRange = pMax - pMin;
+
+                        var paddingLeft = 55;
+                        var paddingRight = 55;
+                        var paddingTop = 30;
                         var paddingBottom = 30;
-                        var chartW = w - paddingLeft - 20;
-                        var chartH = h - paddingBottom - 20;
-                        var stepX = chartW / categories.length;
+                        var chartW = w - paddingLeft - paddingRight;
+                        var chartH = h - paddingTop - paddingBottom;
+                        var stepX = chartW / labels.length;
 
-                        ctx.font = "11px sans-serif";
-                        ctx.textAlign = "center"; // Căn giữa nhãn dưới cột
+                        // 3. VẼ LƯỚI GRID & NHÃN HAI TRỤC
+                        ctx.strokeStyle = "#E2E8F0";
+                        ctx.lineWidth = 1;
+                        ctx.font = "10px sans-serif";
 
-                        if (financePage.selectedChartType === 0) {
-                            var barW = stepX * 0.25;
-                            for (var b = 0; b < categories.length; b++) {
-                                var xCenter = paddingLeft + b * stepX + stepX / 2;
+                        for (var gl = 0; gl <= 4; gl++) {
+                            var yPos = h - paddingBottom - (gl * chartH / 4);
 
-                                var hRev = (revData[b] / maxVal) * chartH;
-                                ctx.fillStyle = "#22C55E";
-                                ctx.fillRect(xCenter - barW - 2, h - paddingBottom - hRev, barW, hRev);
-
-                                var hExp = (expData[b] / maxVal) * chartH;
-                                ctx.fillStyle = "#EF4444";
-                                ctx.fillRect(xCenter + 2, h - paddingBottom - hExp, barW, hExp);
-
-                                ctx.fillStyle = "#64748B";
-                                ctx.fillText(categories[b], xCenter, h - 8);
-                            }
-                        } else if (financePage.selectedChartType === 1) {
-                            var barW1 = stepX * 0.4;
-                            for (var c = 0; c < categories.length; c++) {
-                                var xC = paddingLeft + c * stepX + stepX / 2;
-                                var pVal = revData[c] - expData[c];
-                                var hBar = (Math.abs(pVal) / maxVal) * chartH;
-                                ctx.fillStyle = pVal >= 0 ? "#0284C7" : "#E11D48";
-                                ctx.fillRect(xC - barW1 / 2, h - paddingBottom - hBar, barW1, hBar);
-
-                                ctx.fillStyle = "#64748B";
-                                ctx.fillText(categories[c], xC, h - 8);
-                            }
-                        } else if (financePage.selectedChartType === 2) {
                             ctx.beginPath();
-                            ctx.strokeStyle = "#16A34A";
-                            ctx.lineWidth = 3;
-                            for (var l = 0; l < categories.length; l++) {
-                                var xL = paddingLeft + l * stepX + stepX / 2;
-                                var yL = h - paddingBottom - ((revData[l] / maxVal) * chartH);
-                                if (l === 0) ctx.moveTo(xL, yL);
-                                else ctx.lineTo(xL, yL);
+                            ctx.moveTo(paddingLeft, yPos);
+                            ctx.lineTo(w - paddingRight, yPos);
+                            ctx.stroke();
+
+                            var leftVal = gl * maxBar / 4;
+                            ctx.textAlign = "right";
+                            ctx.fillStyle = "#64748B";
+                            ctx.fillText(formatAxisNumber(leftVal), paddingLeft - 8, yPos + 4);
+
+                            var rightVal = pMin + gl * pRange / 4;
+                            ctx.textAlign = "left";
+                            ctx.fillStyle = "#0284C7";
+                            ctx.fillText(formatAxisNumber(rightVal), w - paddingRight + 8, yPos + 4);
+                        }
+
+                        // 4. VẼ BIỂU ĐỒ CỘT THU/CHI
+                        ctx.textAlign = "center";
+                        var barW = stepX * 0.25;
+                        if (barW > 30) barW = 30;
+                        var profitPointsX = [];
+                        var profitPointsY = [];
+
+                        for (var b = 0; b < labels.length; b++) {
+                            var xCenter = paddingLeft + b * stepX + stepX / 2;
+
+                            if (!isFuture[b]) {
+                                if (financePage.selectedChartType === 0) {
+                                    var hRev = (revData[b] / maxBar) * chartH;
+                                    ctx.fillStyle = "#22C55E";
+                                    ctx.fillRect(xCenter - barW - 1, h - paddingBottom - hRev, barW, hRev);
+
+                                    var hExp = (expData[b] / maxBar) * chartH;
+                                    ctx.fillStyle = "#EF4444";
+                                    ctx.fillRect(xCenter + 1, h - paddingBottom - hExp, barW, hExp);
+                                } else if (financePage.selectedChartType === 1) {
+                                    var pVal = profitData[b];
+                                    var hBar = (Math.abs(pVal) / maxBar) * chartH;
+                                    ctx.fillStyle = pVal >= 0 ? "#0284C7" : "#E11D48";
+                                    ctx.fillRect(xCenter - barW, h - paddingBottom - hBar, barW * 2, hBar);
+                                }
+
+                                var hProf = ((profitData[b] - pMin) / pRange) * chartH;
+                                profitPointsX.push(xCenter);
+                                profitPointsY.push(h - paddingBottom - hProf);
+                            }
+
+                            ctx.fillStyle = "#334155";
+                            ctx.fillText(labels[b], xCenter, h - 10);
+                        }
+
+                        // 5. VẼ ĐƯỜNG LỢI NHUẬN (Nếu chọn dạng Đường)
+                        if (financePage.selectedChartType === 2 && profitPointsX.length > 0) {
+                            ctx.beginPath();
+                            ctx.strokeStyle = "#0284C7";
+                            ctx.lineWidth = 2.5;
+                            for (var p = 0; p < profitPointsX.length; p++) {
+                                if (p === 0) ctx.moveTo(profitPointsX[p], profitPointsY[p]);
+                                else ctx.lineTo(profitPointsX[p], profitPointsY[p]);
                             }
                             ctx.stroke();
 
-                            for (var p = 0; p < categories.length; p++) {
-                                var xP = paddingLeft + p * stepX + stepX / 2;
-                                var yP = h - paddingBottom - ((revData[p] / maxVal) * chartH);
-                                ctx.fillStyle = "#15803D";
+                            for (var pt = 0; pt < profitPointsX.length; pt++) {
+                                ctx.fillStyle = "#0369A1";
                                 ctx.beginPath();
-                                ctx.arc(xP, yP, 4, 0, 2 * Math.PI);
+                                ctx.arc(profitPointsX[pt], profitPointsY[pt], 4, 0, 2 * Math.PI);
                                 ctx.fill();
-
-                                ctx.fillStyle = "#64748B";
-                                ctx.fillText(categories[p], xP, h - 8);
                             }
                         }
                     }
@@ -371,7 +540,7 @@ Page {
             }
         }
 
-        // --- BẢNG LỊCH SỬ TÀI CHÍNH (ĐÃ CĂN CỘT CHUẨN) ---
+        // --- BẢNG LỊCH SỬ TÀI CHÍNH ---
         Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -395,13 +564,13 @@ Page {
                         id: searchInput
                         placeholderText: "🔍 Tìm theo ghi chú, ngày..."
                         Layout.preferredWidth: 220
-                        onTextChanged: applyFilters()
+                        onTextChanged: Qt.callLater(applyFilters)
                     }
 
                     ComboBox {
                         id: typeFilterCombo
                         model: ["Tất cả loại", "🟢 Thu", "🔴 Chi"]
-                        onCurrentIndexChanged: applyFilters()
+                        onCurrentIndexChanged: Qt.callLater(applyFilters)
                     }
                 }
 
@@ -425,8 +594,9 @@ Page {
                     }
                 }
 
-                // Danh sách Giao dịch (Delegate đồng bộ 100% kích thước với Header)
+                // Danh sách Giao dịch
                 ListView {
+                    id: historyListView
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     model: filteredFinanceModel
@@ -434,7 +604,7 @@ Page {
                     spacing: 4
 
                     delegate: Rectangle {
-                        width: parent.width
+                        width: historyListView.width
                         height: 40
                         color: index % 2 === 0 ? "#FFFFFF" : "#F8FAFC"
                         radius: 4
@@ -545,8 +715,10 @@ Page {
                         var dateStr = inputDate.text.trim();
                         var noteStr = inputNote.text.trim();
 
-                        coffeeSystem.addTransactionCSV(dateStr, inputType.currentText, amt, noteStr);
-                        refreshFinance();
+                        if (typeof coffeeSystem !== "undefined" && coffeeSystem.addTransactionCSV) {
+                            coffeeSystem.addTransactionCSV(dateStr, inputType.currentText, amt, noteStr);
+                            refreshFinance();
+                        }
 
                         addTransactionDialog.close();
                         inputAmount.text = "";

@@ -61,6 +61,7 @@ public:
     Q_INVOKABLE bool saveFiltered(const QString &path, const QString &idPrefix) const;
     Q_INVOKABLE bool restoreIngredientsForOrder(const QString &menuId, const QString &size, int quantity);
 
+
 signals:
     void ingredientsChanged();   // QML lắng nghe để refresh menu
 

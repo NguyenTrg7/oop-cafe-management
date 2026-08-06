@@ -14,7 +14,6 @@ Item {
     property bool showingHistory: false
     property var fullMenuData: []
 
-
     // Model giỏ hàng & voucher theo SĐT
     ListModel { id: cartModel }
     ListModel { id: phoneVoucherModel }
@@ -67,6 +66,7 @@ Item {
 
         return "file:///" + appDir + "saves/" + folder + "/" + fileName + ".png";
     }
+
     function calculateGrandTotal() {
         var total = 0;
         for (var i = 0; i < cartModel.count; i++) {
@@ -182,29 +182,29 @@ Item {
 
                 Rectangle { Layout.fillWidth: true; height: 1; color: "#E0D5C8"; Layout.topMargin: 8; Layout.bottomMargin: 8 }
 
-                // Button {
-                //     Layout.fillWidth: true
-                //     implicitHeight: 44
-                //     text: "📦  Tồn kho"
-                //     checkable: true
-                //     checked: showingInventory
-                //     onClicked: {
-                //         showingInventory = true
-                //         showingHistory = false
-                //     }
-                // }
+                Button {
+                    Layout.fillWidth: true
+                    implicitHeight: 44
+                    text: "📦  Tồn kho"
+                    checkable: true
+                    checked: showingInventory
+                    onClicked: {
+                        showingInventory = true
+                        showingHistory = false
+                    }
+                }
 
-                // Button {
-                //     Layout.fillWidth: true
-                //     implicitHeight: 44
-                //     text: "📜  Lịch sử"
-                //     checkable: true
-                //     checked: showingHistory
-                //     onClicked: {
-                //         showingHistory = true
-                //         showingInventory = false
-                //     }
-                // }
+                Button {
+                    Layout.fillWidth: true
+                    implicitHeight: 44
+                    text: "📜  Lịch sử"
+                    checkable: true
+                    checked: showingHistory
+                    onClicked: {
+                        showingHistory = true
+                        showingInventory = false
+                    }
+                }
 
                 Item { Layout.fillHeight: true }
             }
@@ -240,7 +240,7 @@ Item {
                         Layout.preferredWidth: 180
                         model: orderPageRoot.selectedCategory === "Drink"
                                ? ["Tất cả", "Cà phê", "Cà phê pha máy", "Trà trái cây", "Trà sữa", "Đá xay", "Nước ép", "Cacao"]
-                               : ["Tất cả", "Bánh ngọt", "Bánh quy", "Dessert", "Combo"]
+                               : ["Tất cả", "Bánh ngọt", "Bánh mặn", "Pizza", "Sandwich", "Đồ ăn vặt", "Salad", "Món chính", "Combo"]
                         onCurrentTextChanged: filterMenu()
                     }
                 }
@@ -426,14 +426,14 @@ Item {
 
                                 Text {
                                     visible: model.ice && model.ice !== "" && model.ice !== "Bình thường"
-                                    text: model.ice
+                                    text: "🧊 " + model.ice
                                     font.pixelSize: 11
                                     color: "#0277BD"
                                 }
 
                                 Text {
                                     visible: model.toppings && model.toppings !== "" && model.toppings !== "undefined"
-                                    text: model.toppings
+                                    text: "🍒 " + model.toppings
                                     font.pixelSize: 11
                                     color: "#6A1B9A"
                                     elide: Text.ElideRight
@@ -464,12 +464,8 @@ Item {
                                     // Hoàn lại tồn kho
                                     if (typeof ingredientManager !== "undefined" && ingredientManager) {
                                         ingredientManager.restoreIngredientsForOrder(model.id, model.size || "M", model.quantity)
-
-                                        // Tạm thời: chỉ log + xóa khỏi giỏ (sẽ hướng dẫn bổ sung C++ bên dưới)
                                         console.log("Cần hoàn kho món:", model.id, "số lượng:", model.quantity)
                                     }
-
-
                                     menuGrid.model = getMenuData(orderPageRoot.selectedCategory)
                                 }
                             }
@@ -483,61 +479,61 @@ Item {
                     color: "#D8C4B6"
                 }
 
-                // ComboBox {
-                //     id: voucherCombo
-                //     Layout.fillWidth: true
-                //     model: {
-                //         var items = ["Không dùng voucher"]
-                //         if (typeof customerHandler !== "undefined" && customerHandler) {
-                //             var list = customerHandler.activeVouchers || []
-                //             for (var i = 0; i < list.length; i++)
-                //                 items.push(list[i].code + " (" + list[i].percent + "%)")
-                //         }
-                //         return items
-                //     }
-                //     onActivated: {
-                //         if (currentIndex <= 0) {
-                //             selectedVoucherCode = ""
-                //             voucherDiscount = 0
-                //         } else if (typeof customerHandler !== "undefined" && customerHandler) {
-                //             var list = customerHandler.activeVouchers || []
-                //             if (currentIndex - 1 < list.length) {
-                //                 var v = list[currentIndex - 1]
-                //                 selectedVoucherCode = v.code
-                //                 voucherDiscount = customerHandler.applyVoucher(v.code, calculateGrandTotal())
-                //             }
-                //         }
-                //     }
-                // }
+                ComboBox {
+                    id: voucherCombo
+                    Layout.fillWidth: true
+                    model: {
+                        var items = ["Không dùng voucher"]
+                        if (typeof customerHandler !== "undefined" && customerHandler) {
+                            var list = customerHandler.activeVouchers || []
+                            for (var i = 0; i < list.length; i++)
+                                items.push(list[i].code + " (" + list[i].percent + "%)")
+                        }
+                        return items
+                    }
+                    onActivated: {
+                        if (currentIndex <= 0) {
+                            selectedVoucherCode = ""
+                            voucherDiscount = 0
+                        } else if (typeof customerHandler !== "undefined" && customerHandler) {
+                            var list = customerHandler.activeVouchers || []
+                            if (currentIndex - 1 < list.length) {
+                                var v = list[currentIndex - 1]
+                                selectedVoucherCode = v.code
+                                voucherDiscount = customerHandler.applyVoucher(v.code, calculateGrandTotal())
+                            }
+                        }
+                    }
+                }
 
-                // Text {
-                //     visible: voucherDiscount > 0
-                //     text: "Giảm giá: " + formatVND(voucherDiscount)
-                //     color: "#2E7D32"
-                //     font.bold: true
-                //     font.pixelSize: 13
-                // }
+                Text {
+                    visible: voucherDiscount > 0
+                    text: "Giảm giá: " + formatVND(voucherDiscount)
+                    color: "#2E7D32"
+                    font.bold: true
+                    font.pixelSize: 13
+                }
 
-                // RowLayout {
-                //     Layout.fillWidth: true
+                RowLayout {
+                    Layout.fillWidth: true
 
-                //     Text {
-                //         text: "TỔNG CỘNG:"
-                //         font.bold: true
-                //         font.pixelSize: 15
-                //         color: "#2C1D11"
-                //     }
+                    Text {
+                        text: "TỔNG CỘNG:"
+                        font.bold: true
+                        font.pixelSize: 15
+                        color: "#2C1D11"
+                    }
 
-                //     Item { Layout.fillWidth: true }
+                    Item { Layout.fillWidth: true }
 
-                //     Text {
-                //         text: formatVND(calculateGrandTotal())
-                //         font.bold: true
-                //         font.pixelSize: 14
-                //         color: "#757575"
-                //         font.strikeout: voucherDiscount > 0
-                //     }
-                // }
+                    Text {
+                        text: formatVND(calculateGrandTotal())
+                        font.bold: true
+                        font.pixelSize: 14
+                        color: "#757575"
+                        font.strikeout: voucherDiscount > 0
+                    }
+                }
 
                 RowLayout {
                     Layout.fillWidth: true
@@ -573,35 +569,35 @@ Item {
                     }
                 }
 
-                // Button {
-                //     text: "⭐ Xem điểm Loyalty"
-                //     Layout.fillWidth: true
-                //     implicitHeight: 40
-                //     onClicked: {
-                //         if (typeof StackView !== "undefined" && StackView.view)
-                //             StackView.view.push("LoyaltyPage.qml")
-                //         else if (typeof stackView !== "undefined" && stackView)
-                //             stackView.push("LoyaltyPage.qml")
-                //     }
-                // }
+                Button {
+                    text: "⭐ Xem điểm Loyalty"
+                    Layout.fillWidth: true
+                    implicitHeight: 40
+                    onClicked: {
+                        if (typeof StackView !== "undefined" && StackView.view)
+                            StackView.view.push("LoyaltyPage.qml")
+                        else if (typeof stackView !== "undefined" && stackView)
+                            stackView.push("LoyaltyPage.qml")
+                    }
+                }
 
-                // Button {
-                //     text: "🪑 Xem trạng thái bàn"
-                //     Layout.fillWidth: true
-                //     implicitHeight: 40
-                //     onClicked: {
-                //         if (typeof StackView !== "undefined" && StackView.view)
-                //             StackView.view.push("SeatingPage.qml")
-                //         else if (typeof stackView !== "undefined" && stackView)
-                //             stackView.push("SeatingPage.qml")
-                //     }
-                // }
+                Button {
+                    text: "🪑 Xem trạng thái bàn"
+                    Layout.fillWidth: true
+                    implicitHeight: 40
+                    onClicked: {
+                        if (typeof StackView !== "undefined" && StackView.view)
+                            StackView.view.push("SeatingPage.qml")
+                        else if (typeof stackView !== "undefined" && stackView)
+                            stackView.push("SeatingPage.qml")
+                    }
+                }
             }
         }
     }
 
     // =========================================================================
-    // DIALOG TÙY CHỌN MÓN (Tăng kích thước, dịch chuyển lên trên & chống khuất Thành Tiền)
+    // DIALOG TÙY CHỌN MÓN
     // =========================================================================
     Dialog {
         id: itemDialog
@@ -966,7 +962,7 @@ Item {
                     visible: itemDialog.category === "Drink"
 
                     Text {
-                        text: "Mức đá"
+                        text: "🧊  Mức đá"
                         font.bold: true
                         font.pixelSize: 14
                         color: "#4E342E"
@@ -1014,7 +1010,7 @@ Item {
                     visible: itemDialog.category === "Drink"
 
                     Text {
-                        text: "Topping thêm"
+                        text: "🍒  Topping thêm"
                         font.bold: true
                         font.pixelSize: 14
                         color: "#4E342E"
@@ -1108,7 +1104,6 @@ Item {
                     }
                 }
 
-                // Khoảng đệm ở đáy giúp cuộn hết không bị khuất
                 Item {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 16
@@ -1164,7 +1159,7 @@ Item {
                     width: 120
                     height: 38
                     radius: 10
-                    color: itemDialog.isQuantityValid ? "#5D4037" : "#BDBDBD"   // xám khi không hợp lệ
+                    color: itemDialog.isQuantityValid ? "#5D4037" : "#BDBDBD"
                     opacity: itemDialog.isQuantityValid ? 1.0 : 0.6
 
                     Text {
@@ -1177,7 +1172,7 @@ Item {
 
                     MouseArea {
                         anchors.fill: parent
-                        enabled: itemDialog.isQuantityValid          // ← quan trọng
+                        enabled: itemDialog.isQuantityValid
                         cursorShape: enabled ? Qt.PointingHandCursor : Qt.ForbiddenCursor
                         onClicked: itemDialog.accept()
                     }
@@ -1189,16 +1184,16 @@ Item {
             if (quantityValue <= 0) return
 
             if (typeof ingredientManager !== "undefined" && ingredientManager && itemDialog.itemData) {
-                    var success = ingredientManager.deductIngredientsForOrder(
-                        itemDialog.itemData.id,
-                        sizeSection.visible ? selectedSize : "M",
-                        quantityValue
-                    )
-                    if (!success) {
-                        console.warn("Không đủ nguyên liệu để thêm món:", itemDialog.itemData.name)
-                        return          // không cho thêm vào giỏ nếu trừ kho thất bại
-                    }
+                var success = ingredientManager.deductIngredientsForOrder(
+                    itemDialog.itemData.id,
+                    sizeSection.visible ? selectedSize : "M",
+                    quantityValue
+                )
+                if (!success) {
+                    console.warn("Không đủ nguyên liệu để thêm món:", itemDialog.itemData.name)
+                    return
                 }
+            }
 
             var toppingNames = []
             for (var i = 0; i < toppingRepeater.count; i++) {
@@ -1221,7 +1216,6 @@ Item {
             })
 
             menuGrid.model = getMenuData(orderPageRoot.selectedCategory)
-
             close()
         }
     }
@@ -1230,24 +1224,20 @@ Item {
     // DIALOG HÓA ĐƠN & THANH TOÁN
     // =========================================================================
     Dialog {
-            id: invoiceDialog
-            modal: true
-            width: Math.min(640, orderPageRoot.width > 0 ? orderPageRoot.width - 40 : 640)
-            height: Math.min(600, orderPageRoot.height > 0 ? orderPageRoot.height - 60 : 600)
+        id: invoiceDialog
+        modal: true
+        width: Math.min(640, orderPageRoot.width > 0 ? orderPageRoot.width - 40 : 640)
+        height: Math.min(600, orderPageRoot.height > 0 ? orderPageRoot.height - 60 : 600)
+        x: Math.max(0, (orderPageRoot.width - width) / 2)
+        y: Math.max(10, Math.floor((orderPageRoot.height - height) / 2) - 40)
+        padding: 0
 
-            // Căn giữa theo chiều ngang
-            x: Math.max(0, (orderPageRoot.width - width) / 2)
+        background: Rectangle {
+            color: "#FFFDF9"
+            radius: 18
+            border.color: "#D8C4B6"
+        }
 
-            // Trừ bớt 40px để đẩy Dialog dịch lên phía trên
-            y: Math.max(10, Math.floor((orderPageRoot.height - height) / 2) - 40)
-
-            padding: 0
-
-            background: Rectangle {
-                color: "#FFFDF9"
-                radius: 18
-                border.color: "#D8C4B6"
-            }
         function loadVouchersForPhone(phone) {
             phoneVoucherModel.clear()
             selectedVoucherCode = ""
@@ -1499,7 +1489,6 @@ Item {
                     }
                 }
 
-                // KHUNG MÃ QR (NHẤN VÀO ĐỂ PHÓNG TO)
                 Rectangle {
                     Layout.fillWidth: true
                     implicitHeight: 110
@@ -1624,17 +1613,6 @@ Item {
                             }
                         }
 
-                        // if (typeof ingredientManager !== "undefined" && ingredientManager) {
-                        //     for (var k = 0; k < cartCopy.length; k++) {
-                        //         var item = cartCopy[k]
-                        //         try {
-                        //             ingredientManager.deductIngredientsForOrder(item.id, item.size, item.quantity)
-                        //         } catch (e) {
-                        //             console.error("Lỗi trừ kho món", item.id, e)
-                        //         }
-                        //     }
-                        // }
-
                         if (typeof orderHistoryManager !== "undefined" && orderHistoryManager) {
                             orderHistoryManager.addOrder({
                                 invoiceNumber: invoiceNumber || "",
@@ -1712,10 +1690,10 @@ Item {
             }
         }
     }
+
     Connections {
         target: typeof ingredientManager !== "undefined" ? ingredientManager : null
         function onIngredientsChanged() {
-            // Chỉ refresh khi đang ở trang order
             if (!showingInventory && !showingHistory) {
                 menuGrid.model = getMenuData(orderPageRoot.selectedCategory)
             }

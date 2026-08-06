@@ -96,6 +96,7 @@ int main(int argc, char *argv[])
     // Đưa sang QML
     engine.rootContext()->setContextProperty("savesDir", savesPath);
     engine.rootContext()->setContextProperty("savesDirUrl", QUrl::fromLocalFile(savesPath).toString());
+
     engine.rootContext()->setContextProperty("accountHandler", &accountHandler);
     engine.rootContext()->setContextProperty("customerHandler", &customerHandler);
     engine.rootContext()->setContextProperty("cppEmployeeModel", &employeeModel);
