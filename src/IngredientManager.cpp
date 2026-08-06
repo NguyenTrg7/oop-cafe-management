@@ -334,3 +334,39 @@ bool IngredientManager::saveFiltered(const QString &path, const QString &idPrefi
     file.close();
     return true;
 }
+
+bool IngredientManager::restoreIngredientsForOrder(const QString &menuId,
+                                                   const QString &size,
+                                                   int quantity)
+{
+    if (menuId.isEmpty() || quantity <= 0)
+        return false;
+
+    if (!m_recipes.contains(menuId)) {
+        QString stockId = resolveStockId(menuId);
+        if (!m_ingredients.contains(stockId))
+            return true;
+        m_ingredients[stockId].restock(quantity);
+        emit ingredientsChanged();
+        autoSave();
+        return true;
+    }
+
+    auto sizeMap = m_recipes.value(menuId);
+    QString s = size.isEmpty() ? "M" : size.toUpper();
+    if (!sizeMap.contains(s)) {
+        if (sizeMap.isEmpty()) return false;
+        s = sizeMap.keys().first();
+    }
+
+    const QList<RecipeItem> recipe = sizeMap.value(s);
+    for (const auto &item : recipe) {
+        if (m_ingredients.contains(item.ingredientId)) {
+            m_ingredients[item.ingredientId].restock(item.requiredAmount * quantity);
+        }
+    }
+
+    emit ingredientsChanged();
+    autoSave();
+    return true;
+}

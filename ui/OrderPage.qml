@@ -14,6 +14,7 @@ Item {
     property bool showingHistory: false
     property var fullMenuData: []
 
+
     // Model giỏ hàng & voucher theo SĐT
     ListModel { id: cartModel }
     ListModel { id: phoneVoucherModel }
@@ -53,16 +54,19 @@ Item {
 
         var folder = category === "Food" ? "Food" : "Drink";
 
-        // Chuẩn hóa đường dẫn ứng dụng
+        // Ưu tiên dùng đường dẫn từ main.cpp
+        if (typeof savesDirUrl !== "undefined" && savesDirUrl) {
+            return savesDirUrl + folder + "/" + fileName + ".png";
+        }
+
+        // Fallback (nếu chưa sửa main)
         var appDir = (typeof applicationDir !== "undefined" && applicationDir) ? applicationDir : "";
         appDir = appDir.replace(/\\/g, "/");
-        if (appDir.length > 0 && !appDir.endsWith("/")) {
+        if (appDir.length > 0 && !appDir.endsWith("/"))
             appDir += "/";
-        }
 
         return "file:///" + appDir + "saves/" + folder + "/" + fileName + ".png";
     }
-
     function calculateGrandTotal() {
         var total = 0;
         for (var i = 0; i < cartModel.count; i++) {
@@ -178,29 +182,29 @@ Item {
 
                 Rectangle { Layout.fillWidth: true; height: 1; color: "#E0D5C8"; Layout.topMargin: 8; Layout.bottomMargin: 8 }
 
-                Button {
-                    Layout.fillWidth: true
-                    implicitHeight: 44
-                    text: "📦  Tồn kho"
-                    checkable: true
-                    checked: showingInventory
-                    onClicked: {
-                        showingInventory = true
-                        showingHistory = false
-                    }
-                }
+                // Button {
+                //     Layout.fillWidth: true
+                //     implicitHeight: 44
+                //     text: "📦  Tồn kho"
+                //     checkable: true
+                //     checked: showingInventory
+                //     onClicked: {
+                //         showingInventory = true
+                //         showingHistory = false
+                //     }
+                // }
 
-                Button {
-                    Layout.fillWidth: true
-                    implicitHeight: 44
-                    text: "📜  Lịch sử"
-                    checkable: true
-                    checked: showingHistory
-                    onClicked: {
-                        showingHistory = true
-                        showingInventory = false
-                    }
-                }
+                // Button {
+                //     Layout.fillWidth: true
+                //     implicitHeight: 44
+                //     text: "📜  Lịch sử"
+                //     checkable: true
+                //     checked: showingHistory
+                //     onClicked: {
+                //         showingHistory = true
+                //         showingInventory = false
+                //     }
+                // }
 
                 Item { Layout.fillHeight: true }
             }
@@ -236,7 +240,7 @@ Item {
                         Layout.preferredWidth: 180
                         model: orderPageRoot.selectedCategory === "Drink"
                                ? ["Tất cả", "Cà phê", "Cà phê pha máy", "Trà trái cây", "Trà sữa", "Đá xay", "Nước ép", "Cacao"]
-                               : ["Tất cả", "Bánh ngọt", "Bánh mặn", "Pizza", "Sandwich", "Đồ ăn vặt", "Salad", "Món chính", "Combo"]
+                               : ["Tất cả", "Bánh ngọt", "Bánh quy", "Dessert", "Combo"]
                         onCurrentTextChanged: filterMenu()
                     }
                 }
@@ -422,14 +426,14 @@ Item {
 
                                 Text {
                                     visible: model.ice && model.ice !== "" && model.ice !== "Bình thường"
-                                    text: "🧊 " + model.ice
+                                    text: model.ice
                                     font.pixelSize: 11
                                     color: "#0277BD"
                                 }
 
                                 Text {
                                     visible: model.toppings && model.toppings !== "" && model.toppings !== "undefined"
-                                    text: "🍒 " + model.toppings
+                                    text: model.toppings
                                     font.pixelSize: 11
                                     color: "#6A1B9A"
                                     elide: Text.ElideRight
@@ -455,7 +459,19 @@ Item {
                                 text: "X"
                                 implicitWidth: 24
                                 implicitHeight: 24
-                                onClicked: cartModel.remove(index)
+                                onClicked: {
+                                    cartModel.remove(index)
+                                    // Hoàn lại tồn kho
+                                    if (typeof ingredientManager !== "undefined" && ingredientManager) {
+                                        ingredientManager.restoreIngredientsForOrder(model.id, model.size || "M", model.quantity)
+
+                                        // Tạm thời: chỉ log + xóa khỏi giỏ (sẽ hướng dẫn bổ sung C++ bên dưới)
+                                        console.log("Cần hoàn kho món:", model.id, "số lượng:", model.quantity)
+                                    }
+
+
+                                    menuGrid.model = getMenuData(orderPageRoot.selectedCategory)
+                                }
                             }
                         }
                     }
@@ -467,61 +483,61 @@ Item {
                     color: "#D8C4B6"
                 }
 
-                ComboBox {
-                    id: voucherCombo
-                    Layout.fillWidth: true
-                    model: {
-                        var items = ["Không dùng voucher"]
-                        if (typeof customerHandler !== "undefined" && customerHandler) {
-                            var list = customerHandler.activeVouchers || []
-                            for (var i = 0; i < list.length; i++)
-                                items.push(list[i].code + " (" + list[i].percent + "%)")
-                        }
-                        return items
-                    }
-                    onActivated: {
-                        if (currentIndex <= 0) {
-                            selectedVoucherCode = ""
-                            voucherDiscount = 0
-                        } else if (typeof customerHandler !== "undefined" && customerHandler) {
-                            var list = customerHandler.activeVouchers || []
-                            if (currentIndex - 1 < list.length) {
-                                var v = list[currentIndex - 1]
-                                selectedVoucherCode = v.code
-                                voucherDiscount = customerHandler.applyVoucher(v.code, calculateGrandTotal())
-                            }
-                        }
-                    }
-                }
+                // ComboBox {
+                //     id: voucherCombo
+                //     Layout.fillWidth: true
+                //     model: {
+                //         var items = ["Không dùng voucher"]
+                //         if (typeof customerHandler !== "undefined" && customerHandler) {
+                //             var list = customerHandler.activeVouchers || []
+                //             for (var i = 0; i < list.length; i++)
+                //                 items.push(list[i].code + " (" + list[i].percent + "%)")
+                //         }
+                //         return items
+                //     }
+                //     onActivated: {
+                //         if (currentIndex <= 0) {
+                //             selectedVoucherCode = ""
+                //             voucherDiscount = 0
+                //         } else if (typeof customerHandler !== "undefined" && customerHandler) {
+                //             var list = customerHandler.activeVouchers || []
+                //             if (currentIndex - 1 < list.length) {
+                //                 var v = list[currentIndex - 1]
+                //                 selectedVoucherCode = v.code
+                //                 voucherDiscount = customerHandler.applyVoucher(v.code, calculateGrandTotal())
+                //             }
+                //         }
+                //     }
+                // }
 
-                Text {
-                    visible: voucherDiscount > 0
-                    text: "Giảm giá: " + formatVND(voucherDiscount)
-                    color: "#2E7D32"
-                    font.bold: true
-                    font.pixelSize: 13
-                }
+                // Text {
+                //     visible: voucherDiscount > 0
+                //     text: "Giảm giá: " + formatVND(voucherDiscount)
+                //     color: "#2E7D32"
+                //     font.bold: true
+                //     font.pixelSize: 13
+                // }
 
-                RowLayout {
-                    Layout.fillWidth: true
+                // RowLayout {
+                //     Layout.fillWidth: true
 
-                    Text {
-                        text: "TỔNG CỘNG:"
-                        font.bold: true
-                        font.pixelSize: 15
-                        color: "#2C1D11"
-                    }
+                //     Text {
+                //         text: "TỔNG CỘNG:"
+                //         font.bold: true
+                //         font.pixelSize: 15
+                //         color: "#2C1D11"
+                //     }
 
-                    Item { Layout.fillWidth: true }
+                //     Item { Layout.fillWidth: true }
 
-                    Text {
-                        text: formatVND(calculateGrandTotal())
-                        font.bold: true
-                        font.pixelSize: 14
-                        color: "#757575"
-                        font.strikeout: voucherDiscount > 0
-                    }
-                }
+                //     Text {
+                //         text: formatVND(calculateGrandTotal())
+                //         font.bold: true
+                //         font.pixelSize: 14
+                //         color: "#757575"
+                //         font.strikeout: voucherDiscount > 0
+                //     }
+                // }
 
                 RowLayout {
                     Layout.fillWidth: true
@@ -557,29 +573,29 @@ Item {
                     }
                 }
 
-                Button {
-                    text: "⭐ Xem điểm Loyalty"
-                    Layout.fillWidth: true
-                    implicitHeight: 40
-                    onClicked: {
-                        if (typeof StackView !== "undefined" && StackView.view)
-                            StackView.view.push("LoyaltyPage.qml")
-                        else if (typeof stackView !== "undefined" && stackView)
-                            stackView.push("LoyaltyPage.qml")
-                    }
-                }
+                // Button {
+                //     text: "⭐ Xem điểm Loyalty"
+                //     Layout.fillWidth: true
+                //     implicitHeight: 40
+                //     onClicked: {
+                //         if (typeof StackView !== "undefined" && StackView.view)
+                //             StackView.view.push("LoyaltyPage.qml")
+                //         else if (typeof stackView !== "undefined" && stackView)
+                //             stackView.push("LoyaltyPage.qml")
+                //     }
+                // }
 
-                Button {
-                    text: "🪑 Xem trạng thái bàn"
-                    Layout.fillWidth: true
-                    implicitHeight: 40
-                    onClicked: {
-                        if (typeof StackView !== "undefined" && StackView.view)
-                            StackView.view.push("SeatingPage.qml")
-                        else if (typeof stackView !== "undefined" && stackView)
-                            stackView.push("SeatingPage.qml")
-                    }
-                }
+                // Button {
+                //     text: "🪑 Xem trạng thái bàn"
+                //     Layout.fillWidth: true
+                //     implicitHeight: 40
+                //     onClicked: {
+                //         if (typeof StackView !== "undefined" && StackView.view)
+                //             StackView.view.push("SeatingPage.qml")
+                //         else if (typeof stackView !== "undefined" && stackView)
+                //             stackView.push("SeatingPage.qml")
+                //     }
+                // }
             }
         }
     }
@@ -602,6 +618,7 @@ Item {
         property real basePrice: 0
         property real calculatedPrice: 0
         property int maxAllowedQuantity: 999
+        property bool isQuantityValid: quantityValue >= 1 && quantityValue <= maxAllowedQuantity
         property string selectedSize: "S"
         property string selectedIce: "Bình thường"
         property var availableSizes: ["S", "M", "L"]
@@ -949,7 +966,7 @@ Item {
                     visible: itemDialog.category === "Drink"
 
                     Text {
-                        text: "🧊  Mức đá"
+                        text: "Mức đá"
                         font.bold: true
                         font.pixelSize: 14
                         color: "#4E342E"
@@ -997,7 +1014,7 @@ Item {
                     visible: itemDialog.category === "Drink"
 
                     Text {
-                        text: "🍒  Topping thêm"
+                        text: "Topping thêm"
                         font.bold: true
                         font.pixelSize: 14
                         color: "#4E342E"
@@ -1147,7 +1164,8 @@ Item {
                     width: 120
                     height: 38
                     radius: 10
-                    color: "#5D4037"
+                    color: itemDialog.isQuantityValid ? "#5D4037" : "#BDBDBD"   // xám khi không hợp lệ
+                    opacity: itemDialog.isQuantityValid ? 1.0 : 0.6
 
                     Text {
                         anchors.centerIn: parent
@@ -1159,7 +1177,8 @@ Item {
 
                     MouseArea {
                         anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
+                        enabled: itemDialog.isQuantityValid          // ← quan trọng
+                        cursorShape: enabled ? Qt.PointingHandCursor : Qt.ForbiddenCursor
                         onClicked: itemDialog.accept()
                     }
                 }
@@ -1168,6 +1187,18 @@ Item {
 
         onAccepted: {
             if (quantityValue <= 0) return
+
+            if (typeof ingredientManager !== "undefined" && ingredientManager && itemDialog.itemData) {
+                    var success = ingredientManager.deductIngredientsForOrder(
+                        itemDialog.itemData.id,
+                        sizeSection.visible ? selectedSize : "M",
+                        quantityValue
+                    )
+                    if (!success) {
+                        console.warn("Không đủ nguyên liệu để thêm món:", itemDialog.itemData.name)
+                        return          // không cho thêm vào giỏ nếu trừ kho thất bại
+                    }
+                }
 
             var toppingNames = []
             for (var i = 0; i < toppingRepeater.count; i++) {
@@ -1189,12 +1220,14 @@ Item {
                 "totalPrice": itemDialog.calculatedPrice
             })
 
+            menuGrid.model = getMenuData(orderPageRoot.selectedCategory)
+
             close()
         }
     }
 
     // =========================================================================
-    // DIALOG HÓA ĐƠN & THANH TOÁN (To hơn, di chuyển lên trên)
+    // DIALOG HÓA ĐƠN & THANH TOÁN
     // =========================================================================
     Dialog {
             id: invoiceDialog
@@ -1483,12 +1516,9 @@ Item {
                             Layout.preferredWidth: 90
                             Layout.preferredHeight: 90
                             fillMode: Image.PreserveAspectFit
-                            source: {
-                                var appDir = (typeof applicationDir !== "undefined" && applicationDir) ? applicationDir : "";
-                                appDir = appDir.replace(/\\/g, "/");
-                                if (appDir.length > 0 && !appDir.endsWith("/")) appDir += "/";
-                                return "file:///" + appDir + "saves/ma_qr.jpg";
-                            }
+                            source: (typeof savesDirUrl !== "undefined" && savesDirUrl)
+                                    ? savesDirUrl + "ma_qr.jpg"
+                                    : ""
 
                             MouseArea {
                                 anchors.fill: parent
@@ -1594,16 +1624,16 @@ Item {
                             }
                         }
 
-                        if (typeof ingredientManager !== "undefined" && ingredientManager) {
-                            for (var k = 0; k < cartCopy.length; k++) {
-                                var item = cartCopy[k]
-                                try {
-                                    ingredientManager.deductIngredientsForOrder(item.id, item.size, item.quantity)
-                                } catch (e) {
-                                    console.error("Lỗi trừ kho món", item.id, e)
-                                }
-                            }
-                        }
+                        // if (typeof ingredientManager !== "undefined" && ingredientManager) {
+                        //     for (var k = 0; k < cartCopy.length; k++) {
+                        //         var item = cartCopy[k]
+                        //         try {
+                        //             ingredientManager.deductIngredientsForOrder(item.id, item.size, item.quantity)
+                        //         } catch (e) {
+                        //             console.error("Lỗi trừ kho món", item.id, e)
+                        //         }
+                        //     }
+                        // }
 
                         if (typeof orderHistoryManager !== "undefined" && orderHistoryManager) {
                             orderHistoryManager.addOrder({
@@ -1668,12 +1698,9 @@ Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 fillMode: Image.PreserveAspectFit
-                source: {
-                    var appDir = (typeof applicationDir !== "undefined" && applicationDir) ? applicationDir : "";
-                    appDir = appDir.replace(/\\/g, "/");
-                    if (appDir.length > 0 && !appDir.endsWith("/")) appDir += "/";
-                    return "file:///" + appDir + "saves/ma_qr.jpg";
-                }
+                source: (typeof savesDirUrl !== "undefined" && savesDirUrl)
+                        ? savesDirUrl + "ma_qr.jpg"
+                        : ""
             }
 
             Button {
@@ -1682,6 +1709,15 @@ Item {
                 implicitWidth: 120
                 implicitHeight: 38
                 onClicked: qrZoomDialog.close()
+            }
+        }
+    }
+    Connections {
+        target: typeof ingredientManager !== "undefined" ? ingredientManager : null
+        function onIngredientsChanged() {
+            // Chỉ refresh khi đang ở trang order
+            if (!showingInventory && !showingHistory) {
+                menuGrid.model = getMenuData(orderPageRoot.selectedCategory)
             }
         }
     }

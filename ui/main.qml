@@ -245,11 +245,11 @@ ApplicationWindow {
 
                     MenuButton { iconStr: "🏠"; btnText: "Trang Chủ Quản Lý"; targetPage: "ManagerPage.qml"; checkAccess: isAdmin }
                     MenuButton { iconStr: "🕒"; btnText: "Điểm Danh Ca Làm"; targetPage: "EmployeePage.qml"; checkAccess: isStaff && !isAdmin }
-                    MenuButton { iconStr: "🛒"; btnText: "Bán Hàng (Order)"; targetPage: "OrderPage.qml"; checkAccess: isAdmin || isStaff }
+                    MenuButton { iconStr: "🛒"; btnText: "Bán Hàng"; targetPage: "OrderPage.qml"; checkAccess: isAdmin || isStaff }
                     MenuButton { iconStr: "📦"; btnText: "Quản Lý Kho Hàng"; targetPage: "InventoryPage.qml"; checkAccess: isAdmin || isStaff }
                     MenuButton { iconStr: "📜"; btnText: "Lịch Sử Đơn Hàng"; targetPage: "OrderHistoryPage.qml"; checkAccess: isAdmin || isStaff }
                     MenuButton { iconStr: "🪑"; btnText: "Sơ Đồ Bàn"; targetPage: "SeatingPage.qml"; checkAccess: isAdmin || isStaff }
-                    MenuButton { iconStr: "🎁"; btnText: "Loyalty (Tích điểm)"; targetPage: "LoyaltyPage.qml"; checkAccess: isAdmin || isStaff }
+                    MenuButton { iconStr: "🎁"; btnText: "Tích điểm"; targetPage: "LoyaltyPage.qml"; checkAccess: isAdmin || isStaff }
 
                     Rectangle { Layout.fillWidth: true; height: 1; color: "#38BDF8"; Layout.topMargin: 6; Layout.bottomMargin: 6; visible: isAdmin }
 

@@ -28,6 +28,7 @@ private:
     QString m_foodPath;
     QString resolveStockId(const QString &menuId) const;
     void autoSave();
+
 public:
     explicit IngredientManager(QObject *parent = nullptr);
 
@@ -58,6 +59,7 @@ public:
     Q_INVOKABLE bool deductExtra(const QString &ingredientId, double amount);
     void setPaths(const QString &drinkPath, const QString &foodPath);
     Q_INVOKABLE bool saveFiltered(const QString &path, const QString &idPrefix) const;
+    Q_INVOKABLE bool restoreIngredientsForOrder(const QString &menuId, const QString &size, int quantity);
 
 signals:
     void ingredientsChanged();   // QML lắng nghe để refresh menu

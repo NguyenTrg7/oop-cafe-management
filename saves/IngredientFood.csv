@@ -1,15 +1,15 @@
 IngredientID,IngredientName,Type,Category,Unit,Quantity,MinimumQuantity
-ING101,Bánh Tiramisu,Raw,,cái,20,5
+ING101,Bánh Tiramisu,Raw,,cái,45,5
 ING102,Bánh Croissant,Raw,,cái,20,5
-ING103,Bánh Donut,Raw,,cái,20,5
+ING103,Bánh Donut,Raw,,cái,0,5
 ING104,Bánh Macaron,Raw,,cái,40,10
 ING105,Bánh Mousse Chanh Dây,Raw,,cái,20,5
 ING106,Bánh Red Velvet,Raw,,cái,20,5
-ING107,Cheesecake Việt Quất,Raw,,cái,20,5
+ING107,Cheesecake Việt Quất,Raw,,cái,19,5
 ING108,Bánh Su Kem,Raw,,cái,30,5
 ING109,Cookie Chocolate Chip,Raw,,cái,50,10
 ING110,Cookie Matcha,Raw,,cái,50,10
 ING111,Brownie Socola,Raw,,cái,25,5
-ING112,Bánh Cuộn Matcha,Raw,,cái,20,5
+ING112,Bánh Cuộn Matcha,Raw,,cái,18,5
 ING113,Panna Cotta,Raw,,cốc,20,5
 ING114,Pudding Caramel,Raw,,cốc,20,5

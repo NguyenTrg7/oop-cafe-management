@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QDir>
 #include <QFile>
+#include <QUrl>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
@@ -87,6 +88,14 @@ int main(int argc, char *argv[])
     // ==========================================
     // 5. ĐĂNG KÝ QML CONTEXT PROPERTIES
     // ==========================================
+    // Lấy đường dẫn tuyệt đối của thư mục save (cùng chỗ load CSV)
+    QString savesPath = QDir(SAVE_DIR_PATH).absolutePath();
+    if (!savesPath.endsWith('/'))
+        savesPath += '/';
+
+    // Đưa sang QML
+    engine.rootContext()->setContextProperty("savesDir", savesPath);
+    engine.rootContext()->setContextProperty("savesDirUrl", QUrl::fromLocalFile(savesPath).toString());
     engine.rootContext()->setContextProperty("accountHandler", &accountHandler);
     engine.rootContext()->setContextProperty("customerHandler", &customerHandler);
     engine.rootContext()->setContextProperty("cppEmployeeModel", &employeeModel);
