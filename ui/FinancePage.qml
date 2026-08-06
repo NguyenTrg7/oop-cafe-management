@@ -633,6 +633,7 @@ Page {
 
                 // Danh sách
                 ListView {
+                    id: historyListView // <--- THÊM ID CHO LISTVIEW
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     model: filteredFinanceModel
@@ -640,7 +641,8 @@ Page {
                     spacing: 4
 
                     delegate: Rectangle {
-                        width: parent.width
+                        // Thay vì dùng parent.width, ta gọi trực tiếp id của ListView
+                        width: historyListView.width
                         height: 40
                         color: index % 2 === 0 ? "#FFFFFF" : "#F8FAFC"
                         radius: 4
