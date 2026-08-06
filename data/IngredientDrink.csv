@@ -1,0 +1,44 @@
+IngredientID,IngredientName,Type,Category,Unit,Quantity,MinimumQuantity,LastPurchasePrice,SupplierID
+ING001,Hạt cà phê,Raw,Cà phê,g,15000,1000,850,SUP001
+ING002,Sữa đặc,Raw,Sữa,ml,8000,500,35,SUP004
+ING003,Sữa tươi,Raw,Sữa,ml,20000,2000,28,SUP004
+ING004,Bột matcha,Raw,Bột,g,3000,300,1800,SUP006
+ING005,Bột cacao,Raw,Bột,g,3000,300,1200,SUP006
+ING006,Syrup socola,Raw,Syrup,ml,5000,500,180,SUP003
+ING007,Syrup vani,Raw,Syrup,ml,3000,300,170,SUP003
+ING008,Syrup caramel,Raw,Syrup,ml,3000,300,180,SUP003
+ING009,Đường,Raw,Gia vị,g,20000,2000,25,SUP006
+ING010,Đá viên,Raw,Khác,g,80000,5000,2,SUP006
+ING011,Hồng trà,Raw,Trà,g,5000,500,120,SUP002
+ING012,Trà ô long,Raw,Trà,g,5000,500,150,SUP002
+ING013,Bột trà sữa,Raw,Bột,g,5000,500,200,SUP006
+ING014,Trân châu,Raw,Topping,g,5000,500,90,SUP006
+ING015,Cam,Raw,Trái cây,quả,50,10,12000,SUP005
+ING016,Đào ngâm,Raw,Trái cây,lát,150,20,800,SUP005
+ING017,Vải ngâm,Raw,Trái cây,quả,120,20,1000,SUP005
+ING018,Sả,Raw,Rau củ,cây,60,10,2500,SUP005
+ING019,Chanh,Raw,Trái cây,quả,60,10,5000,SUP005
+ING020,Táo,Raw,Trái cây,quả,40,5,15000,SUP005
+ING021,Dưa hấu,Raw,Trái cây,quả,15,3,60000,SUP005
+ING022,Thơm,Raw,Trái cây,quả,20,3,45000,SUP005
+ING023,Bánh Oreo,Raw,Bánh,cái,100,20,2500,SUP006
+ING024,Whipping Cream,Raw,Sữa,ml,5000,500,120,SUP004
+
+ING101,Bánh Tiramisu,Ready,Bánh,cái,20,5,28000,SUP007
+ING102,Bánh Croissant,Ready,Bánh,cái,20,5,22000,SUP007
+ING103,Bánh Donut,Ready,Bánh,cái,20,5,23000,SUP007
+ING104,Bánh Macaron,Ready,Bánh,cái,40,10,12000,SUP007
+ING105,Bánh Mousse Chanh Dây,Ready,Bánh,cái,20,5,30000,SUP007
+ING106,Bánh Red Velvet,Ready,Bánh,cái,20,5,32000,SUP007
+ING107,Cheesecake Việt Quất,Ready,Bánh,cái,20,5,35000,SUP007
+ING108,Bánh Su Kem,Ready,Bánh,cái,30,5,18000,SUP007
+ING109,Cookie Chocolate Chip,Ready,Bánh,cái,50,10,9000,SUP007
+ING110,Cookie Matcha,Ready,Bánh,cái,50,10,9000,SUP007
+ING111,Brownie Socola,Ready,Bánh,cái,25,5,20000,SUP007
+ING112,Bánh Cuộn Matcha,Ready,Bánh,cái,20,5,25000,SUP007
+ING113,Panna Cotta,Ready,Tráng miệng,cốc,20,5,22000,SUP007
+ING114,Pudding Caramel,Ready,Tráng miệng,cốc,20,5,15000,SUP007
+
+
+
+
