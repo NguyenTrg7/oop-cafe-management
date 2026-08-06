@@ -151,7 +151,14 @@ Dialog {
             }
 
             ListView {
-                id: itemList
+                // id: itemList
+                // Layout.fillWidth: true
+                // Layout.leftMargin: 20
+                // Layout.rightMargin: 20
+                // implicitHeight: contentHeight
+                // interactive: false
+                // spacing: 8
+                // model: root.items
                 Layout.fillWidth: true
                 Layout.leftMargin: 20
                 Layout.rightMargin: 20
@@ -160,88 +167,96 @@ Dialog {
                 spacing: 8
                 model: root.items
 
-                delegate: Rectangle {
-                    width: itemList.width
-                    implicitHeight: columnItem.implicitHeight + 20
-                    radius: 10
-                    color: "#FCFAF6"
-                    border.color: "#E7DBCF"
+                    delegate: Rectangle {
+                        width: ListView.view.width
+                        implicitHeight: Math.max(60, col.implicitHeight + 20)
+                        radius: 10
+                        color: "#FCFAF6"
+                        border.color: "#E7DBCF"
 
-                    RowLayout {
-                        anchors.fill: parent
-                        anchors.margins: 10
-                        spacing: 12
+                        RowLayout {
+                            anchors.fill: parent
+                            anchors.leftMargin: 12
+                            anchors.rightMargin: 12
+                            anchors.topMargin: 10
+                            anchors.bottomMargin: 10
+                            spacing: 12
 
-                        Image {
-                            Layout.preferredWidth: 50
-                            Layout.preferredHeight: 50
-                            Layout.alignment: Qt.AlignTop
-                            fillMode: Image.PreserveAspectCrop
-                            clip: true
-                            source: getImagePath(modelData.name, modelData.category || "Drink")
-
-                            Rectangle {
-                                anchors.fill: parent
-                                color: "transparent"
-                                border.color: "#E0E0E0"
-                                radius: 6
+                            // Ảnh
+                            Image {
+                                Layout.preferredWidth: 48
+                                Layout.preferredHeight: 48
+                                Layout.alignment: Qt.AlignVCenter
+                                fillMode: Image.PreserveAspectCrop
+                                clip: true
+                                source: getImagePath(modelData.name, modelData.category || "Drink")
                             }
-                        }
 
-                        ColumnLayout {
-                            id: columnItem
-                            Layout.fillWidth: true
-                            spacing: 3
+                            // Thông tin món
+                            ColumnLayout {
+                                id: col
+                                Layout.fillWidth: true
+                                spacing: 3
 
+                                Text {
+                                    text: (modelData.name || "") + (modelData.size ? " (" + modelData.size + ")" : "")
+                                    font.bold: true
+                                    font.pixelSize: 13
+                                    elide: Text.ElideRight
+                                    Layout.fillWidth: true
+                                }
+
+                                Text {
+                                    text: "SL: " + (modelData.quantity || 1)
+                                    font.pixelSize: 11
+                                    color: "#666"
+                                }
+
+                                // Mức đá
+                                Text {
+                                    visible: modelData.ice && modelData.ice !== "" && modelData.ice !== "Bình thường"
+                                    text: modelData.ice
+                                    font.pixelSize: 11
+                                    color: "#0277BD"
+                                }
+
+                                // Topping
+                                Text {
+                                    visible: modelData.toppings && modelData.toppings !== "" && modelData.toppings !== "undefined"
+                                    text: modelData.toppings
+                                    font.pixelSize: 11
+                                    color: "#6A1B9A"
+                                    elide: Text.ElideRight
+                                    Layout.fillWidth: true
+                                }
+
+                                // Ghi chú
+                                Text {
+                                    visible: modelData.note && modelData.note !== ""
+                                    text: "📝 " + modelData.note
+                                    font.pixelSize: 11
+                                    color: "#757575"
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
+                                    wrapMode: Text.Wrap
+                                    Layout.fillWidth: true
+                                }
+                            }
+
+                            // Giá (cố định để thẳng hàng)
                             Text {
-                                text: (modelData.name || "") + (modelData.size ? " (" + modelData.size + ")" : "")
+                                text: formatVND(modelData.totalPrice)
                                 font.bold: true
                                 font.pixelSize: 13
-                                color: "#2C1D11"
-                                elide: Text.ElideRight
-                                Layout.fillWidth: true
+                                color: "#8B5A2B"
+                                Layout.preferredWidth: 110
+                                Layout.minimumWidth: 110
+                                Layout.maximumWidth: 110
+                                horizontalAlignment: Text.AlignRight
+                                Layout.alignment: Qt.AlignVCenter
                             }
-
-                            Text {
-                                text: "SL: " + (modelData.quantity || 1)
-                                font.pixelSize: 11
-                                color: "#666666"
-                            }
-
-                            Text {
-                                visible: modelData.ice && modelData.ice !== "" && modelData.ice !== "Bình thường"
-                                text: "🧊 " + modelData.ice
-                                font.pixelSize: 11
-                                color: "#0277BD"
-                            }
-                            Text {
-                                visible: modelData.toppings && modelData.toppings !== "" && modelData.toppings !== "undefined"
-                                text: "🍒 " + modelData.toppings
-                                font.pixelSize: 11
-                                color: "#6A1B9A"
-                                wrapMode: Text.WordWrap
-                                Layout.fillWidth: true
-                            }
-
-                            Text {
-                                visible: modelData.note && modelData.note !== ""
-                                text: "📝 " + modelData.note
-                                color: "#888888"
-                                font.pixelSize: 10
-                                elide: Text.ElideRight
-                                Layout.fillWidth: true
-                            }
-                        }
-
-                        Text {
-                            text: formatVND(modelData.totalPrice)
-                            font.bold: true
-                            font.pixelSize: 13
-                            color: "#8B5A2B"
-                            Layout.alignment: Qt.AlignTop
                         }
                     }
-                }
             }
 
             Text {
@@ -302,7 +317,9 @@ Dialog {
                         Layout.preferredWidth: 115
                         Layout.preferredHeight: 115
                         fillMode: Image.PreserveAspectFit
-                        source: "file:///" + applicationDir + "/saves/ma_qr.jpg"
+                        source: (typeof savesDirUrl !== "undefined" && savesDirUrl)
+                                ? savesDirUrl + "ma_qr.jpg"
+                                : ""
                     }
 
                     ColumnLayout {

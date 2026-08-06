@@ -91,34 +91,43 @@ Item {
                     anchors.margins: 14
                     spacing: 15
 
+                    // Cột thông tin bên trái
                     ColumnLayout {
                         Layout.fillWidth: true
                         spacing: 3
 
                         Text {
-                            text: modelData.invoiceNumber
+                            text: modelData.invoiceNumber || ""
                             font.bold: true
                             font.pixelSize: 15
                             color: "#3E2723"
+                            elide: Text.ElideRight
+                            Layout.fillWidth: true
                         }
                         Text {
-                            text: modelData.date + "  •  " + modelData.time
+                            text: (modelData.date || "") + "  •  " + (modelData.time || "")
                             font.pixelSize: 12
                             color: "#757575"
                         }
                         Text {
                             text: (modelData.customerName || "Khách vãng lai") + "  •  "
-                                  + modelData.itemCount + " món"
+                                  + (modelData.itemCount || 0) + " món"
                             font.pixelSize: 12
                             color: "#616161"
                         }
                     }
 
+                    // Cột giá (cố định chiều rộng → thẳng hàng)
                     Text {
                         text: formatVND(modelData.totalAmount)
                         font.bold: true
                         font.pixelSize: 16
                         color: "#BF360C"
+                        Layout.preferredWidth: 130
+                        Layout.minimumWidth: 130
+                        Layout.maximumWidth: 130
+                        horizontalAlignment: Text.AlignRight
+                        Layout.alignment: Qt.AlignVCenter
                     }
                 }
             }
