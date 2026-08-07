@@ -252,17 +252,35 @@ Rectangle {
                     Text { text: qsTr("Mật khẩu"); font.pixelSize: 14; font.bold: true; color: "#0284C7" }
                     TextField {
                         id: loginPassInput
+                        property bool showPassword: false
                         placeholderText: qsTr("Nhập mật khẩu...")
-                        echoMode: TextInput.Password
+                        echoMode: showPassword ? TextInput.Normal : TextInput.Password
                         leftPadding: 40
+                        rightPadding: 44
                         width: parent.width // Mở rộng full theo cột
                         height: 48
                         font.pixelSize: 15
                         color: "#333333"
                         verticalAlignment: TextInput.AlignVCenter
                         background: Rectangle { radius: 12; color: "#FFFFFF"; border.color: "#BAE6FD"; border.width: 1 }
+
                         Text { text: "🔒"; font.pixelSize: 18; anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter; anchors.leftMargin: 12; opacity: 0.7 }
                         onAccepted: doLogin()
+
+                        Text {
+                                text: loginPassInput.showPassword ? "🕶" : "👁"
+                                font.pixelSize: 16
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.rightMargin: 12
+                                opacity: 0.75
+                                MouseArea {
+                                    anchors.fill: parent
+                                    anchors.margins: -6
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: loginPassInput.showPassword = !loginPassInput.showPassword
+                                }
+                            }
                     }
                 }
 
