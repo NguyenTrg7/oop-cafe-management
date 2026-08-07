@@ -15,21 +15,6 @@
 #include "IngredientManager.h"
 #include "OrderHistoryManager.h"
 
-// Fallback nếu không chạy từ CMake
-#ifndef SAVE_DIR_PATH
-#define SAVE_DIR_PATH "./saves"
-#endif
-
-// Hàm hỗ trợ lấy đường dẫn file nằm trong thư mục saves
-QString getSavePath(const QString &fileName)
-{
-    QDir dir(SAVE_DIR_PATH);
-    if (!dir.exists()) {
-        dir.mkpath("."); // Tự động tạo thư mục saves nếu chưa có
-    }
-    return dir.filePath(fileName);
-}
-
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
@@ -55,8 +40,8 @@ int main(int argc, char *argv[])
     // ==========================================
     GiangCoffeeSystem *systemInstance = GiangCoffeeSystem::getInstance();
 
-    QString drinkPath = getSavePath("drink.csv");
-    QString foodPath  = getSavePath("food.csv");
+    QString drinkPath = GiangCoffeeSystem::getSaveFilePath("drink.csv");
+    QString foodPath  = GiangCoffeeSystem::getSaveFilePath("food.csv");
 
     // Nạp dữ liệu từ CSV trong thư mục saves
     systemInstance->getMenuManager()->loadDrinksCSV(drinkPath);
@@ -68,9 +53,9 @@ int main(int argc, char *argv[])
     IngredientManager ingManager;
     systemInstance->getMenuManager()->setIngredientManager(&ingManager);
 
-    QString drinkIngPath = getSavePath("IngredientDrink.csv");
-    QString foodIngPath  = getSavePath("IngredientFood.csv");
-    QString recipesPath  = getSavePath("Recipes.csv");
+    QString drinkIngPath = GiangCoffeeSystem::getSaveFilePath("IngredientDrink.csv");
+    QString foodIngPath  = GiangCoffeeSystem::getSaveFilePath("IngredientFood.csv");
+    QString recipesPath  = GiangCoffeeSystem::getSaveFilePath("Recipes.csv");
 
     ingManager.loadIngredientsCSV(drinkIngPath, true);
     ingManager.loadIngredientsCSV(foodIngPath, false);
@@ -80,7 +65,7 @@ int main(int argc, char *argv[])
     // ==========================================
     // 4. XỬ LÝ LỊCH SỬ ĐƠN HÀNG (ORDER HISTORY MANAGER)
     // ==========================================
-    QString historyPath = getSavePath("OrderHistory.csv");
+    QString historyPath = GiangCoffeeSystem::getSaveFilePath("OrderHistory.csv");
     OrderHistoryManager *historyManager = new OrderHistoryManager();
     historyManager->setSavePath(historyPath);
     historyManager->loadFromCSV(historyPath);
