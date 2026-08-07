@@ -134,9 +134,9 @@ Rectangle {
     Rectangle {
         id: glassBox
         width: Math.min(380, parent.width * 0.88)
-        height: Math.min(380, parent.height * 0.78)
+        height: Math.min(370, parent.height * 0.78)
         anchors.centerIn: parent
-        color: "#80FFFFFF"
+        color:"#dcfbfbFF"
         radius: 20
         border.color: "#FFFFFF"
         border.width: 2
@@ -144,12 +144,12 @@ Rectangle {
 
         Image {
             id: logoImage
-            width: 110
-            height: 110
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
-            anchors.topMargin: -36
-            z: 20
+                       width: 130
+                       height: 130
+                       anchors.horizontalCenter: parent.horizontalCenter
+                       anchors.top: parent.top
+                       anchors.topMargin: -55
+                       z: 20
 
             source: {
                 if (typeof savesDir !== "undefined" && savesDir !== "") {
