@@ -15,7 +15,6 @@ Page {
     property double totalRevenue: 0.0
     property double totalExpense: 0.0
     property double netProfit: 0.0
-    property double budgetTarget: 50000000.0
 
     // Dữ liệu dùng cho vẽ biểu đồ
     property var chartLabels: []
@@ -29,15 +28,15 @@ Page {
 
     Component.onCompleted: {
         // Init years model
-        var currentYear = new Date().getFullYear();
-        var years = [];
-        for (var i = currentYear - 5; i <= currentYear + 5; i++) {
-            years.push(i.toString());
-        }
-        cbYear.model = years;
-        cbYear.currentIndex = 5; // Focus vào năm hiện tại
+        cbYear.model = ["2025", "2026", "2027"];
+        cbYear.currentIndex = 1; // Focus vào năm hiện tại
         cbMonth.currentIndex = new Date().getMonth();
 
+        refreshData();
+    }
+
+    // Alias để hàm tự động được main.qml gọi mỗi khi focus vào trang Tài Chính
+    function refreshData() {
         refreshFinance();
     }
 
@@ -60,10 +59,57 @@ Page {
         return sign + Math.round(absVal).toString();
     }
 
+    // Hàm lấy chính xác Date và Time để chuẩn hóa và sắp xếp
+    function parseDateStrFull(dateStr) {
+        if (!dateStr) return new Date(0);
+        var cleanStr = dateStr.toString().trim();
+        var parts = cleanStr.split(" ");
+        var dateOnly = parts[0];
+        var timeOnly = parts.length > 1 ? parts[1] : "00:00:00";
+
+        var y = 0, m = 0, d = 0;
+        var dParts = dateOnly.split("/");
+        if (dParts.length === 3) {
+            y = parseInt(dParts[2]);
+            m = parseInt(dParts[1]) - 1;
+            d = parseInt(dParts[0]);
+        } else {
+            dParts = dateOnly.split("-");
+            if (dParts.length === 3) {
+                y = parseInt(dParts[0]);
+                m = parseInt(dParts[1]) - 1;
+                d = parseInt(dParts[2]);
+            } else {
+                return new Date(cleanStr);
+            }
+        }
+
+        var tParts = timeOnly.split(":");
+        var hh = tParts.length > 0 ? parseInt(tParts[0]) : 0;
+        var min = tParts.length > 1 ? parseInt(tParts[1]) : 0;
+        var ss = tParts.length > 2 ? parseInt(tParts[2]) : 0;
+
+        return new Date(y, m, d, hh, min, ss);
+    }
+
+    // Hàm chuẩn hóa chuỗi Date xuất ra giao diện
+    function normalizeDateString(dateStr) {
+        var d = parseDateStrFull(dateStr);
+        if (d.getTime() === 0) return dateStr;
+
+        var yy = d.getFullYear();
+        var mm = ("0" + (d.getMonth() + 1)).slice(-2);
+        var dd = ("0" + d.getDate()).slice(-2);
+        var h = ("0" + d.getHours()).slice(-2);
+        var min = ("0" + d.getMinutes()).slice(-2);
+        var sec = ("0" + d.getSeconds()).slice(-2);
+        return yy + "-" + mm + "-" + dd + " " + h + ":" + min + ":" + sec;
+    }
+
     function parseDateStr(dateStr) {
         if (!dateStr) return new Date();
         var cleanStr = dateStr.toString().trim();
-        var dateOnly = cleanStr.split(" ")[0]; // Bỏ qua phần time nếu có để parse ngày
+        var dateOnly = cleanStr.split(" ")[0];
         var parts = dateOnly.split("/");
         if (parts.length === 3) {
             return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
@@ -79,12 +125,52 @@ Page {
         rawFinanceModel.clear();
         filteredFinanceModel.clear();
 
+        var tempArr = [];
+
+        // 1. Tải dữ liệu từ finance.csv (Chi phí cố định, vv..)
         if (typeof coffeeSystem !== "undefined" && coffeeSystem.loadFinance) {
             var data = coffeeSystem.loadFinance();
             for (var i = 0; i < data.length; i++) {
-                rawFinanceModel.append(data[i]);
+                tempArr.push({
+                    "date": normalizeDateString(data[i].date),
+                    "type": data[i].type,
+                    "amount": data[i].amount,
+                    "note": data[i].note
+                });
             }
         }
+
+        // 2. Tải dữ liệu từ OrderHistoryManager (Lịch sử bán hàng)
+        if (typeof orderHistoryManager !== "undefined") {
+            var orders = orderHistoryManager.getHistory();
+            for (var j = 0; j < orders.length; j++) {
+                var o = orders[j];
+                var dtStr = o.date;
+                if (o.time) {
+                    dtStr += " " + o.time;
+                }
+
+                tempArr.push({
+                    "date": normalizeDateString(dtStr),
+                    "type": "Thu",
+                    "amount": o.totalAmount,
+                    "note": "Đơn hàng " + o.invoiceNumber
+                });
+            }
+        }
+
+        // 3. Sắp xếp mảng gộp lại (Giảm dần - Mới nhất lên đầu)
+        tempArr.sort(function(a, b) {
+            var da = parseDateStrFull(a.date);
+            var db = parseDateStrFull(b.date);
+            return db.getTime() - da.getTime();
+        });
+
+        // 4. Nhồi vào Model
+        for (var k = 0; k < tempArr.length; k++) {
+            rawFinanceModel.append(tempArr[k]);
+        }
+
         Qt.callLater(applyFilters);
     }
 
@@ -270,12 +356,6 @@ Page {
             Item { Layout.fillWidth: true }
 
             Button {
-                text: "⚙️ Ngân Sách"
-                onClicked: budgetDialog.open()
-                background: Rectangle { color: "#F1F5F9"; radius: 8; border.color: "#CBD5E1" }
-            }
-
-            Button {
                 text: "➕ Thêm Giao Dịch"
                 background: Rectangle { color: "#0284C7"; radius: 8 }
                 contentItem: Text { text: parent.text; color: "white"; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
@@ -341,29 +421,6 @@ Page {
         RowLayout {
             Layout.fillWidth: true
             spacing: 12
-
-            // Thẻ Ngân Sách
-            Rectangle {
-                Layout.fillWidth: true; height: 90; color: "#FFFFFF"; radius: 10; border.color: "#E2E8F0"
-                ColumnLayout {
-                    anchors.fill: parent; anchors.margins: 12
-                    RowLayout {
-                        Text { text: "🎯 NGÂN SÁCH CHI"; font.bold: true; font.pixelSize: 11; color: "#64748B" }
-                        Item { Layout.fillWidth: true }
-                        Text { text: (budgetTarget > 0 ? Math.round((totalExpense / budgetTarget) * 100) : 0) + "%"; font.bold: true; color: totalExpense > budgetTarget ? "#DC2626" : "#22C55E" }
-                    }
-                    Text { text: formatMoney(budgetTarget) + " VNĐ"; font.pixelSize: 16; font.bold: true; color: "#0F172A" }
-                    Rectangle {
-                        Layout.fillWidth: true; height: 6; color: "#E2E8F0"; radius: 3
-                        Rectangle {
-                            width: budgetTarget > 0 ? Math.min(parent.width, parent.width * (totalExpense / budgetTarget)) : 0
-                            height: parent.height
-                            color: totalExpense > budgetTarget ? "#EF4444" : "#10B981"
-                            radius: 3
-                        }
-                    }
-                }
-            }
 
             // Thẻ Tổng Thu
             Rectangle {
@@ -849,49 +906,6 @@ Page {
                         addTransactionDialog.close();
                         inputAmount.text = "";
                         inputNote.text = "";
-                    }
-                }
-            }
-        }
-    }
-
-    // -------------------------------------------------------------------------
-    // POPUP CÀI ĐẶT NGÂN SÁCH
-    // -------------------------------------------------------------------------
-    Dialog {
-        id: budgetDialog
-        title: "Thiết Lập Ngân Sách"
-        width: 320; height: 200
-        anchors.centerIn: parent
-        modal: true
-
-        ColumnLayout {
-            anchors.fill: parent; spacing: 15
-
-            Text { text: "Nhập hạn mức ngân sách chi tiêu:"; color: "#475569" }
-
-            TextField {
-                id: inputBudgetTarget
-                text: financePage.budgetTarget.toString()
-                Layout.fillWidth: true
-                inputMethodHints: Qt.ImhDigitsOnly
-            }
-
-            RowLayout {
-                Layout.fillWidth: true
-                Button { text: "Đóng"; Layout.fillWidth: true; onClicked: budgetDialog.close() }
-                Button {
-                    text: "Cập nhật"
-                    Layout.fillWidth: true
-                    background: Rectangle { color: "#16A34A"; radius: 6 }
-                    contentItem: Text { text: parent.text; color: "white"; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
-                    onClicked: {
-                        var val = parseFloat(inputBudgetTarget.text.trim());
-                        if (!isNaN(val) && val > 0) {
-                            financePage.budgetTarget = val;
-                            Qt.callLater(applyFilters);
-                        }
-                        budgetDialog.close();
                     }
                 }
             }
