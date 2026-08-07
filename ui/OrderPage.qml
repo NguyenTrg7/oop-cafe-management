@@ -751,11 +751,11 @@ Item {
         }
 
         background: Rectangle {
-            radius: 20
-            color: "#F8FAFC"
-            border.color: "#BFDBFE"
-            border.width: 1
-        }
+                    radius: 20
+                    color: "#FFFFFF"
+                    border.color: "#BAE6FD"
+                    border.width: 1.5
+                }
 
         header: Rectangle {
             height: 60
@@ -769,7 +769,7 @@ Item {
 
                 Text {
                     text: "Tùy chọn món"
-                    color: "#A1887F"
+                    color: "#64748B"
                     font.pixelSize: 12
                     font.letterSpacing: 0.5
                 }
@@ -777,7 +777,7 @@ Item {
                     text: itemDialog.itemData ? itemDialog.itemData.name : ""
                     font.pixelSize: 20
                     font.bold: true
-                    color: "#3E2723"
+                    color: "#0C4A6E"
                     elide: Text.ElideRight
                 }
             }
@@ -789,7 +789,7 @@ Item {
                 anchors.leftMargin: 20
                 anchors.rightMargin: 20
                 height: 1
-                color: "#EFE6DC"
+                color: "#FFFFF0"
             }
         }
 
@@ -811,10 +811,10 @@ Item {
                     spacing: 8
 
                     Text {
-                        text: "☕  Kích thước"
+                        text: "Kích thước"
                         font.bold: true
                         font.pixelSize: 14
-                        color: "#4E342E"
+                        color: "#0C4A6E"
                     }
 
                     Row {
@@ -827,8 +827,8 @@ Item {
                                 width: 72
                                 height: 38
                                 radius: 10
-                                color: itemDialog.selectedSize === modelData ? "#3B82F6" : "#EFF6FF"
-                                border.color: itemDialog.selectedSize === modelData ? "#3B82F6" : "#BFDBFE"
+                                color: itemDialog.selectedSize === modelData ? "#3B82F6" : "#FFFFFF"
+                                border.color: itemDialog.selectedSize === modelData ? "#3B82F6" : "#BAE6FD"
                                 border.width: 1.5
 
                                 Text {
@@ -870,10 +870,10 @@ Item {
                     spacing: 8
 
                     Text {
-                        text: "🛒  Số lượng"
+                        text: "🛒 Số lượng"
                         font.bold: true
                         font.pixelSize: 14
-                        color: "#4E342E"
+                        color: "#0C4A6E"
                     }
 
                     Row {
@@ -883,15 +883,17 @@ Item {
                             width: 40
                             height: 40
                             radius: 10
-                            color: itemDialog.quantityValue <= 1 ? "#3B82F6" : "#EFF6FF"
-                            border.color: "#BFDBFE"
+                            color: "#FFFFFF"                    // luôn trắng
+                            border.color: "#BAE6FD"
+                            border.width: 1.5
+                            opacity: itemDialog.quantityValue <= 1 ? 0.5 : 1.0   // mờ nhẹ khi không bấm được
 
                             Text {
                                 anchors.centerIn: parent
                                 text: "−"
                                 font.pixelSize: 20
                                 font.bold: true
-                                color: itemDialog.quantityValue <= 1 ? "white" : "#1E40AF"
+                                color: "#1E40AF"
                             }
 
                             MouseArea {
@@ -917,14 +919,14 @@ Item {
                             verticalAlignment: Text.AlignVCenter
                             font.pixelSize: 16
                             font.bold: true
-                            color: "#3E2723"
+                            color:"#0C4A6E"
                             selectByMouse: true
                             validator: IntValidator { bottom: 1; top: 999 }
                             inputMethodHints: Qt.ImhDigitsOnly
 
                             background: Rectangle {
                                 color: "#FFFFFF"
-                                border.color: quantityField.activeFocus ? "#3B82F6" : "#BFDBFE"
+                                border.color: quantityField.activeFocus ? "#3B82F6" : "#BAE6FD"
                                 border.width: 1.5
                             }
 
@@ -956,8 +958,9 @@ Item {
                             width: 40
                             height: 40
                             radius: 10
-                            color: itemDialog.quantityValue >= itemDialog.maxAllowedQuantity ? "#3B82F6" : "#EFF6FF"
-                            border.color: "#BFDBFE"
+                            color: itemDialog.quantityValue >= itemDialog.maxAllowedQuantity ? "#3B82F6" : "#FFFFFF"
+                            border.color: "#BAE6FD"
+                            border.width: 1.5
 
                             Text {
                                 anchors.centerIn: parent
@@ -986,7 +989,7 @@ Item {
                         visible: itemDialog.maxAllowedQuantity < 999
                                  && itemDialog.quantityValue > itemDialog.maxAllowedQuantity
                         text: "⚠️ Không đủ nguyên liệu! Tối đa còn " + itemDialog.maxAllowedQuantity
-                        color: "#C62828"
+                        color: "#DC2626"
                         font.pixelSize: 12
                         font.bold: true
                     }
@@ -1000,7 +1003,7 @@ Item {
                         text: "📝  Ghi chú"
                         font.bold: true
                         font.pixelSize: 14
-                        color: "#4E342E"
+                        color:"#0C4A6E"
                     }
 
                     TextArea {
@@ -1010,13 +1013,13 @@ Item {
                         wrapMode: TextArea.Wrap
                         placeholderText: "Ví dụ: Ít đường, thêm sữa..."
                         font.pixelSize: 13
-                        color: "#3E2723"
+                        color: "#0C4A6E"
                         selectByMouse: true
 
                         background: Rectangle {
                             radius: 10
-                            color: "#EFF6FF"
-                            border.color: parent.activeFocus ?"#3B82F6" : "#BFDBFE"
+                            color: "#FFFFFF"
+                            border.color: parent.activeFocus ? "#3B82F6" : "#BAE6FD"
                             border.width: 1.5
                         }
                     }
@@ -1031,7 +1034,7 @@ Item {
                         text: " Mức đá"
                         font.bold: true
                         font.pixelSize: 14
-                        color: "#4E342E"
+                        color: "#0C4A6E"
                     }
 
                     Flow {
@@ -1045,8 +1048,8 @@ Item {
                                 width: iceLabel.implicitWidth + 20
                                 height: 34
                                 radius: 17
-                                color: itemDialog.selectedIce === modelData ? "#3B82F6" : "#EFF6FF"
-                                border.color: itemDialog.selectedIce === modelData ? "#3B82F6" : "#BFDBFE"
+                                color: itemDialog.selectedIce === modelData ? "#3B82F6" : "#FFFFFF"
+                                border.color: itemDialog.selectedIce === modelData ? "#3B82F6" : "#BAE6FD"
                                 border.width: 1.5
 
                                 Text {
@@ -1079,7 +1082,7 @@ Item {
                         text: "Topping thêm"
                         font.bold: true
                         font.pixelSize: 14
-                        color: "#4E342E"
+                        color: "#0C4A6E"
                     }
 
                     Flow {
@@ -1103,8 +1106,8 @@ Item {
                                 property real toppingPrice: modelData.price
                                 property string toppingName: modelData.name
 
-                                color: checked ? "#3B82F6" : "#EFF6FF"
-                                border.color: checked ? "#3B82F6" : "#BFDBFE"
+                                color: checked ? "#3B82F6" : "#FFFFFF"
+                                border.color: checked ? "#3B82F6" : "#BAE6FD"
                                 border.width: 1.5
 
                                 Column {
@@ -1122,7 +1125,7 @@ Item {
                                         anchors.horizontalCenter: parent.horizontalCenter
                                         text: "+" + formatVND(modelData.price)
                                         font.pixelSize: 10
-                                        color: checked ? "#FFE0B2" : "#8D6E63"
+                                        color: checked ? "#DBEAFE" : "#64748B"
                                     }
                                 }
 
@@ -1144,8 +1147,8 @@ Item {
                     Layout.fillWidth: true
                     height: 50
                     radius: 12
-                    color: "#EFF6FF"
-                    border.color: "#93C5FD"
+                    color: "#E0F2FE"
+                    border.color: "#7DD3FC"
                     border.width: 1
 
                     RowLayout {
@@ -1156,7 +1159,7 @@ Item {
                             text: "Thành tiền"
                             font.bold: true
                             font.pixelSize: 14
-                            color: "#1D4ED8"
+                            color: "#0C4A6E"
                         }
 
                         Item { Layout.fillWidth: true }
@@ -1165,7 +1168,7 @@ Item {
                             text: formatVND(itemDialog.calculatedPrice)
                             font.bold: true
                             font.pixelSize: 20
-                            color: "#BF360C"
+                            color: "#f92867"
                         }
                     }
                 }
@@ -1188,7 +1191,7 @@ Item {
                 anchors.leftMargin: 20
                 anchors.rightMargin: 20
                 height: 1
-                color: "#EFE6DC"
+                color: "#BAE6FD"
             }
 
             RowLayout {
@@ -1202,16 +1205,16 @@ Item {
                     width: 100
                     height: 38
                     radius: 10
-                    color: "#F1F5F9"
-                    border.color: "#CBD5E1"
-                    border.width: 1
+                    color: "#EFF6FF"
+                    border.color: "#BAE6FD"
+                    border.width: 1.5
 
                     Text {
                         anchors.centerIn: parent
                         text: "HỦY"
                         font.bold: true
                         font.pixelSize: 13
-                        color: "#475569"
+                        color: "#0C4A6E"
                     }
 
                     MouseArea {
@@ -1299,9 +1302,10 @@ Item {
         padding: 0
 
         background: Rectangle {
-            color: "#FFFDF9"
+            color: "#FFFFFF"
             radius: 18
-            border.color: "#D8C4B6"
+            border.color: "#BAE6FD"
+            border.width: 1.5
         }
 
         function loadVouchersForPhone(phone) {
@@ -1325,6 +1329,7 @@ Item {
             }
         }
 
+
         header: Rectangle {
             height: 60
             color: "transparent"
@@ -1333,15 +1338,15 @@ Item {
                 anchors.centerIn: parent
                 spacing: 2
                 Text {
-                    text: "☕ GIANG'S COFFEE"
+                    text: "GIANG'S COFFEE"
                     font.pixelSize: 20
                     font.bold: true
-                    color: "#6F4E37"
+                    color: "#0C4A6E"
                     Layout.alignment: Qt.AlignHCenter
                 }
                 Text {
                     text: "Thank you for your order ❤️"
-                    color: "#888"
+                    color: "#64748B"
                     font.pixelSize: 11
                     Layout.alignment: Qt.AlignHCenter
                 }
@@ -1354,7 +1359,7 @@ Item {
                 anchors.leftMargin: 16
                 anchors.rightMargin: 16
                 height: 1
-                color: "#EFE6DC"
+                color: "#BAE6FD"
             }
         }
 
@@ -1370,8 +1375,8 @@ Item {
                 Rectangle {
                     Layout.fillWidth: true
                     radius: 12
-                    color: "#F0FDF4"
-                    border.color: "#86EFAC"
+                    color: "#FFFFFF"
+                    border.color: "#FFFFFF"
                     implicitHeight: 120
 
                     ColumnLayout {
@@ -1383,7 +1388,7 @@ Item {
                             text: "📱 Số điện thoại tích điểm & dùng voucher"
                             font.pixelSize: 12
                             font.bold: true
-                            color: "#166534"
+                            color: "#0C4A6E"
                         }
 
                         TextField {
@@ -1393,10 +1398,11 @@ Item {
                             placeholderText: "Nhập SĐT (để trống nếu không tích điểm)"
                             inputMethodHints: Qt.ImhDigitsOnly
                             font.pixelSize: 13
+                            color: "#0C4A6E"
                             background: Rectangle {
                                 radius: 8
                                 color: "white"
-                                border.color: parent.activeFocus ? "#16A34A" : "#BBF7D0"
+                                border.color: parent.activeFocus ? "#3B82F6" : "#BAE6FD"
                             }
                             validator: RegularExpressionValidator { regularExpression: /0\d{0,9}/ }
 
@@ -1418,6 +1424,21 @@ Item {
                             enabled: phoneVoucherModel.count > 0
                             model: phoneVoucherModel
                             textRole: "display"
+
+                            background: Rectangle {
+                                radius: 8
+                                color: "white"
+                                border.color: "#BAE6FD"
+                                border.width: 1.5
+                            }
+
+                            contentItem: Text {
+                                text: parent.displayText
+                                color: "#0C4A6E"
+                                font.pixelSize: 13
+                                leftPadding: 10
+                                verticalAlignment: Text.AlignVCenter
+                            }
 
                             displayText: {
                                 if (phoneVoucherModel.count === 0)
@@ -1446,16 +1467,17 @@ Item {
                 Rectangle {
                     Layout.fillWidth: true
                     implicitHeight: 74
-                    radius: 10
-                    color: "#F9F5EF"
-                    border.color: "#E6D8C8"
+                    radius: 12
+                    color: "#FFFFFF"
+                    border.color: "#BAE6FD"
+                    border.width: 1
                     Column {
                         anchors.fill: parent
                         anchors.margins: 10
                         spacing: 3
-                        Text { text: "🧾  Mã hóa đơn:  " + invoiceNumber; font.bold: true; font.pixelSize: 12 }
-                        Text { text: "📅  Ngày: " + invoiceDate; font.pixelSize: 11 }
-                        Text { text: "🕒  Giờ: " + invoiceTime; font.pixelSize: 11 }
+                        Text { text: "🧾  Mã hóa đơn:  " + invoiceNumber; font.bold: true; font.pixelSize: 12; color: "#0C4A6E" }
+                        Text { text: "📅  Ngày: " + invoiceDate; font.pixelSize: 11; color: "#64748B" }
+                        Text { text: "🕒  Giờ: " + invoiceTime; font.pixelSize: 11; color: "#64748B" }
                     }
                 }
 
@@ -1463,7 +1485,7 @@ Item {
                     text: "CHI TIẾT ĐƠN HÀNG"
                     font.bold: true
                     font.pixelSize: 14
-                    color: "#6F4E37"
+                    color: "#0C4A6E"
                     Layout.alignment: Qt.AlignHCenter
                 }
 
@@ -1478,8 +1500,9 @@ Item {
                         width: ListView.view.width
                         implicitHeight: Math.max(60, col.implicitHeight + 20)
                         radius: 10
-                        color: "#FCFAF6"
-                        border.color: "#E7DBCF"
+                        color: "#FFFFFF"
+                        border.color: "#BAE6FD"
+                        border.width: 1
 
                         RowLayout {
                             anchors.fill: parent
@@ -1509,6 +1532,7 @@ Item {
                                     text: (model.name || "") + (model.size ? " (" + model.size + ")" : "")
                                     font.bold: true
                                     font.pixelSize: 13
+                                    color: "#1E3A5F"
                                     elide: Text.ElideRight
                                     Layout.fillWidth: true
                                 }
@@ -1516,7 +1540,7 @@ Item {
                                 Text {
                                     text: "SL: " + (model.quantity || 1)
                                     font.pixelSize: 11
-                                    color: "#666"
+                                    color: "#64748B"
                                 }
 
                                 // Mức đá
@@ -1524,7 +1548,7 @@ Item {
                                     visible: model.ice && model.ice !== "" && model.ice !== "Bình thường"
                                     text: model.ice
                                     font.pixelSize: 11
-                                    color: "#0277BD"
+                                    color: "#0284C7"
                                 }
 
                                 // Topping
@@ -1532,7 +1556,7 @@ Item {
                                     visible: model.toppings && model.toppings !== "" && model.toppings !== "undefined"
                                     text:  model.toppings
                                     font.pixelSize: 11
-                                    color: "#6A1B9A"
+                                    color: "#7C3AED"
                                     elide: Text.ElideRight
                                     Layout.fillWidth: true
                                 }
@@ -1542,7 +1566,7 @@ Item {
                                     visible: model.note && model.note !== ""
                                     text: "📝 " + model.note
                                     font.pixelSize: 11
-                                    color: "#757575"
+                                    color: "#64748B"
                                     elide: Text.ElideRight
                                     maximumLineCount: 2
                                     wrapMode: Text.Wrap
@@ -1555,7 +1579,7 @@ Item {
                                 text: formatVND(model.totalPrice)
                                 font.bold: true
                                 font.pixelSize: 13
-                                color: "#8B5A2B"
+                                color: "#0369A1"
                                 Layout.preferredWidth: 110
                                 Layout.minimumWidth: 110
                                 Layout.maximumWidth: 110
@@ -1569,8 +1593,8 @@ Item {
                 Rectangle {
                     Layout.fillWidth: true
                     radius: 12
-                    color: "#FFF7ED"
-                    border.color: "#F2D9B6"
+                    color: "#E0F2FE"
+                    border.color: "#7DD3FC"
                     implicitHeight: voucherDiscount > 0 ? 80 : 50
 
                     ColumnLayout {
@@ -1581,9 +1605,9 @@ Item {
                         RowLayout {
                             visible: voucherDiscount > 0
                             Layout.fillWidth: true
-                            Text { text: "Giảm giá voucher"; color: "#15803D"; font.bold: true; font.pixelSize: 12 }
+                            Text { text: "Giảm giá voucher"; color: "#059669"; font.bold: true; font.pixelSize: 12 }
                             Item { Layout.fillWidth: true }
-                            Text { text: "−" + formatVND(voucherDiscount); color: "#15803D"; font.bold: true; font.pixelSize: 12 }
+                            Text { text: "−" + formatVND(voucherDiscount); color: "#059669"; font.bold: true; font.pixelSize: 12 }
                         }
 
                         RowLayout {
@@ -1592,14 +1616,14 @@ Item {
                                 text: "💰 Tổng thanh toán"
                                 font.bold: true
                                 font.pixelSize: 14
-                                color: "#6F4E37"
+                                color: "#0C4A6E"
                             }
                             Item { Layout.fillWidth: true }
                             Text {
                                 text: formatVND(Math.max(0, calculateGrandTotal() - voucherDiscount))
                                 font.bold: true
                                 font.pixelSize: 18
-                                color: "#B45309"
+                                color: "#f50000"
                             }
                         }
                     }
@@ -1609,8 +1633,9 @@ Item {
                     Layout.fillWidth: true
                     implicitHeight: 110
                     radius: 14
-                    color: "#FAF8F4"
-                    border.color: "#E6D8C8"
+                    color: "#FFFFFF"
+                    border.color: "#BAE6FD"
+                    border.width: 1
 
                     RowLayout {
                         anchors.fill: parent
@@ -1640,14 +1665,14 @@ Item {
                                 text: "Quét mã QR để thanh toán"
                                 font.pixelSize: 13
                                 font.bold: true
-                                color: "#6F4E37"
+                                color: "#0C4A6E"
                                 wrapMode: Text.WordWrap
                             }
 
                             Text {
                                 text: "Sử dụng app ngân hàng hoặc ví điện tử.\n👉 Bấm vào ảnh QR để phóng to."
                                 font.pixelSize: 11
-                                color: "#666"
+                                color: "#64748B"
                                 wrapMode: Text.WordWrap
                             }
                         }
@@ -1672,7 +1697,7 @@ Item {
                 anchors.leftMargin: 16
                 anchors.rightMargin: 16
                 height: 1
-                color: "#EFE6DC"
+                color: "#BAE6FD"
             }
 
             RowLayout {
@@ -1686,6 +1711,20 @@ Item {
                     text: "Đóng"
                     implicitWidth: 100
                     implicitHeight: 38
+                    background: Rectangle {
+                        radius: 10
+                        color: parent.down ? "#E0F2FE" : "#EFF6FF"
+                        border.color: "#BAE6FD"
+                        border.width: 1.5
+                    }
+                    contentItem: Text {
+                        text: parent.text
+                        color: "#0C4A6E"
+                        font.bold: true
+                        font.pixelSize: 14
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
                     onClicked: invoiceDialog.close()
                 }
 
@@ -1693,7 +1732,18 @@ Item {
                     text: "In Hóa Đơn"
                     implicitWidth: 140
                     implicitHeight: 38
-                    highlighted: true
+                    background: Rectangle {
+                        radius: 10
+                        color: parent.down ? "#2563EB" : "#3B82F6"
+                    }
+                    contentItem: Text {
+                        text: parent.text
+                        color: "white"
+                        font.bold: true
+                        font.pixelSize: 14
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
 
                     onClicked: {
                         var phone = invoicePhoneInput.text.trim()
@@ -1780,10 +1830,10 @@ Item {
         padding: 16
 
         background: Rectangle {
-            color: "#FFFDF9"
+            color: "#F0F9FF"
             radius: 18
-            border.color: "#D8C4B6"
-            border.width: 2
+            border.color: "#BAE6FD"
+            border.width: 1.5
         }
 
         ColumnLayout {
@@ -1794,7 +1844,7 @@ Item {
                 text: "🔍 MÃ QR THANH TOÁN"
                 font.bold: true
                 font.pixelSize: 16
-                color: "#6F4E37"
+                color: "#0C4A6E"
                 Layout.alignment: Qt.AlignHCenter
             }
 
@@ -1812,6 +1862,18 @@ Item {
                 Layout.alignment: Qt.AlignHCenter
                 implicitWidth: 120
                 implicitHeight: 38
+                background: Rectangle {
+                    radius: 10
+                    color: parent.down ? "#2563EB" : "#3B82F6"
+                }
+                contentItem: Text {
+                    text: parent.text
+                    color: "white"
+                    font.bold: true
+                    font.pixelSize: 14
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
                 onClicked: qrZoomDialog.close()
             }
         }

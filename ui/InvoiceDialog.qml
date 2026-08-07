@@ -69,10 +69,10 @@ Dialog {
     }
 
     background: Rectangle {
-        color: "#FFFDF9"
+        color: "#F0F9FF"
         radius: 18
-        border.color: "#D8C4B6"
-        border.width: 1
+        border.color: "#BAE6FD"
+        border.width: 1.5
     }
 
     ScrollView {
@@ -83,7 +83,7 @@ Dialog {
 
         ColumnLayout {
             width: scroll.availableWidth - 10
-            spacing: 15
+            spacing: 14
 
             ColumnLayout {
                 Layout.fillWidth: true
@@ -91,16 +91,16 @@ Dialog {
                 spacing: 4
 
                 Text {
-                    text: "☕ GIANG'S COFFEE"
+                    text: "GIANG'S COFFEE"
                     font.pixelSize: 26
                     font.bold: true
-                    color: "#6F4E37"
+                    color: "#0C4A6E"
                     Layout.fillWidth: true
                     horizontalAlignment: Text.AlignHCenter
                 }
                 Text {
                     text: showFinishButton ? "Thank you for your order ❤️" : "Hóa đơn đã thanh toán"
-                    color: "#888888"
+                    color: "#64748B"
                     font.pixelSize: 13
                     Layout.fillWidth: true
                     horizontalAlignment: Text.AlignHCenter
@@ -112,9 +112,10 @@ Dialog {
                 Layout.leftMargin: 20
                 Layout.rightMargin: 20
                 implicitHeight: showFinishButton ? 80 : 100
-                radius: 10
-                color: "#F9F5EF"
-                border.color: "#E6D8C8"
+                radius: 12
+                color: "#FFFFFF"
+                border.color: "#BAE6FD"
+                border.width: 1
 
                 Column {
                     anchors.fill: parent
@@ -125,19 +126,23 @@ Dialog {
                         text: "🧾  Mã hóa đơn:  " + root.invoiceNumber
                         font.bold: true
                         font.pixelSize: 13
+                        color: "#0C4A6E"
                     }
                     Text {
                         text: "📅  Ngày: " + root.invoiceDate
                         font.pixelSize: 12
+                        color: "#475569"
                     }
                     Text {
                         text: "🕒  Giờ: " + root.invoiceTime
                         font.pixelSize: 12
+                        color: "#475569"
                     }
                     Text {
                         visible: !showFinishButton
                         text: "👤  Khách hàng: " + root.customerName
                         font.pixelSize: 12
+                        color: "#475569"
                     }
                 }
             }
@@ -146,7 +151,7 @@ Dialog {
                 text: "CHI TIẾT ĐƠN HÀNG"
                 font.bold: true
                 font.pixelSize: 15
-                color: "#6F4E37"
+                color: "#0C4A6E"
                 Layout.alignment: Qt.AlignHCenter
             }
 
@@ -170,9 +175,10 @@ Dialog {
                     delegate: Rectangle {
                         width: ListView.view.width
                         implicitHeight: Math.max(60, col.implicitHeight + 20)
-                        radius: 10
-                        color: "#FCFAF6"
-                        border.color: "#E7DBCF"
+                        radius: 12
+                        color: "#FFFFFF"
+                        border.color: "#BAE6FD"
+                        border.width: 1
 
                         RowLayout {
                             anchors.fill: parent
@@ -202,6 +208,7 @@ Dialog {
                                     text: (modelData.name || "") + (modelData.size ? " (" + modelData.size + ")" : "")
                                     font.bold: true
                                     font.pixelSize: 13
+                                    color: "#1E3A5F"
                                     elide: Text.ElideRight
                                     Layout.fillWidth: true
                                 }
@@ -209,7 +216,7 @@ Dialog {
                                 Text {
                                     text: "SL: " + (modelData.quantity || 1)
                                     font.pixelSize: 11
-                                    color: "#666"
+                                    color: "#64748B"
                                 }
 
                                 // Mức đá
@@ -217,7 +224,7 @@ Dialog {
                                     visible: modelData.ice && modelData.ice !== "" && modelData.ice !== "Bình thường"
                                     text: modelData.ice
                                     font.pixelSize: 11
-                                    color: "#0277BD"
+                                    color: "#0284C7"
                                 }
 
                                 // Topping
@@ -225,7 +232,7 @@ Dialog {
                                     visible: modelData.toppings && modelData.toppings !== "" && modelData.toppings !== "undefined"
                                     text: modelData.toppings
                                     font.pixelSize: 11
-                                    color: "#6A1B9A"
+                                    color: "#7C3AED"
                                     elide: Text.ElideRight
                                     Layout.fillWidth: true
                                 }
@@ -235,7 +242,7 @@ Dialog {
                                     visible: modelData.note && modelData.note !== ""
                                     text: "📝 " + modelData.note
                                     font.pixelSize: 11
-                                    color: "#757575"
+                                    color: "#64748B"
                                     elide: Text.ElideRight
                                     maximumLineCount: 2
                                     wrapMode: Text.Wrap
@@ -248,7 +255,8 @@ Dialog {
                                 text: formatVND(modelData.totalPrice)
                                 font.bold: true
                                 font.pixelSize: 13
-                                color: "#8B5A2B"
+                                //color: "#8B5A2B"
+                                color: "#0369A1"
                                 Layout.preferredWidth: 110
                                 Layout.minimumWidth: 110
                                 Layout.maximumWidth: 110
@@ -267,7 +275,7 @@ Dialog {
                 text: "Voucher " + root.voucherCode + ":  -" + formatVND(root.discount)
                 font.pixelSize: 13
                 font.bold: true
-                color: "#2E7D32"
+                color: "#059669"
             }
 
             Rectangle {
@@ -275,8 +283,8 @@ Dialog {
                 Layout.leftMargin: 20
                 Layout.rightMargin: 20
                 radius: 12
-                color: "#FFF7ED"
-                border.color: "#F2D9B6"
+                color: "#E0F2FE"
+                border.color: "#7DD3FC"
                 implicitHeight: 55
 
                 RowLayout {
@@ -287,14 +295,14 @@ Dialog {
                         text: "💰 Tổng thanh toán"
                         font.bold: true
                         font.pixelSize: 15
-                        color: "#6F4E37"
+                        color: "#000000"
                     }
                     Item { Layout.fillWidth: true }
                     Text {
                         text: formatVND(root.totalAmount)
                         font.bold: true
                         font.pixelSize: 20
-                        color: "#B45309"
+                        color: "#F50000"
                     }
                 }
             }
@@ -305,8 +313,8 @@ Dialog {
                 Layout.rightMargin: 20
                 implicitHeight: 140
                 radius: 14
-                color: "#FAF8F4"
-                border.color: "#E6D8C8"
+                color: "#FFFFFF"
+                border.color: "#BAE6FD"
 
                 RowLayout {
                     anchors.fill: parent
@@ -331,7 +339,7 @@ Dialog {
                             text: "Quét mã QR để thanh toán"
                             font.pixelSize: 15
                             font.bold: true
-                            color: "#6F4E37"
+                            color: "#0C4A6E"
                             wrapMode: Text.WordWrap
                             Layout.fillWidth: true
                         }
@@ -339,7 +347,7 @@ Dialog {
                         Text {
                             text: "Sử dụng app ngân hàng hoặc ví điện tử để quét mã."
                             font.pixelSize: 12
-                            color: "#666666"
+                            color: "#64748B"
                             wrapMode: Text.WordWrap
                             Layout.fillWidth: true
                         }
@@ -348,7 +356,7 @@ Dialog {
                             text: "Cảm ơn Quý khách! ❤️"
                             font.pixelSize: 12
                             font.italic: true
-                            color: "#8B5A2B"
+                            color: "#0284C7"
                             wrapMode: Text.WordWrap
                             Layout.fillWidth: true
                         }
@@ -369,6 +377,20 @@ Dialog {
                     text: "Đóng"
                     implicitWidth: 110
                     implicitHeight: 40
+                    background: Rectangle {
+                        radius: 10
+                        color: parent.down ? "#E0F2FE" : "#EFF6FF"
+                        border.color: "#BAE6FD"
+                        border.width: 1.5
+                    }
+                    contentItem: Text {
+                        text: parent.text
+                        color: "#0C4A6E"
+                        font.bold: true
+                        font.pixelSize: 14
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
                     onClicked: {
                         root.close()
                         root.closed()
@@ -381,6 +403,18 @@ Dialog {
                     implicitWidth: 170
                     implicitHeight: 40
                     highlighted: true
+                    background: Rectangle {
+                        radius: 10
+                        color: parent.down ? "#2563EB" : "#3B82F6"
+                    }
+                    contentItem: Text {
+                        text: parent.text
+                        color: "white"
+                        font.bold: true
+                        font.pixelSize: 14
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
                     onClicked: {
                         root.finished()
                         root.close()

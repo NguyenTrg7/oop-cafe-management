@@ -28,10 +28,15 @@ Item {
         return Qt.locale("vi_VN").toString(value) + " VNĐ"
     }
 
+    Rectangle {
+        anchors.fill: parent
+        color: "#F0F9FF"
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 20
-        spacing: 15
+        spacing: 16
 
         RowLayout {
             Layout.fillWidth: true
@@ -40,7 +45,7 @@ Item {
                 text: "📜 LỊCH SỬ ĐƠN HÀNG"
                 font.pixelSize: 22
                 font.bold: true
-                color: "#3E2723"
+                color: "#0C4A6E"
             }
 
             Item { Layout.fillWidth: true }
@@ -63,7 +68,7 @@ Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
             clip: true
-            spacing: 8
+            spacing: 10
 
             model: typeof orderHistoryManager !== "undefined"
                    ? orderHistoryManager.getHistory()
@@ -71,11 +76,11 @@ Item {
 
             delegate: Rectangle {
                 width: historyList.width
-                height: 82
-                radius: 10
-                color: selectedInvoice === modelData.invoiceNumber ? "#EFEBE9" : "#FFFDF9"
-                border.color: selectedInvoice === modelData.invoiceNumber ? "#8D6E63" : "#E0D5C8"
-
+                height: 86
+                radius: 12
+                color: selectedInvoice === modelData.invoiceNumber ? "#E0F2FE" : "#FFFFFF"
+                border.color: selectedInvoice === modelData.invoiceNumber ? "#3B82F6" : "#BAE6FD"
+                border.width: selectedInvoice === modelData.invoiceNumber ? 2 : 1.5
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
@@ -89,31 +94,31 @@ Item {
                 RowLayout {
                     anchors.fill: parent
                     anchors.margins: 14
-                    spacing: 15
+                    spacing: 16
 
                     // Cột thông tin bên trái
                     ColumnLayout {
                         Layout.fillWidth: true
-                        spacing: 3
+                        spacing: 4
 
                         Text {
                             text: modelData.invoiceNumber || ""
                             font.bold: true
                             font.pixelSize: 15
-                            color: "#3E2723"
+                            color: "#0C4A6E"
                             elide: Text.ElideRight
                             Layout.fillWidth: true
                         }
                         Text {
                             text: (modelData.date || "") + "  •  " + (modelData.time || "")
                             font.pixelSize: 12
-                            color: "#757575"
+                            color: "#64748B"
                         }
                         Text {
                             text: (modelData.customerName || "Khách vãng lai") + "  •  "
                                   + (modelData.itemCount || 0) + " món"
                             font.pixelSize: 12
-                            color: "#616161"
+                            color: "#475569"
                         }
                     }
 
@@ -122,10 +127,10 @@ Item {
                         text: formatVND(modelData.totalAmount)
                         font.bold: true
                         font.pixelSize: 16
-                        color: "#BF360C"
-                        Layout.preferredWidth: 130
-                        Layout.minimumWidth: 130
-                        Layout.maximumWidth: 130
+                        color: "#0369A1"
+                        Layout.preferredWidth: 140
+                        Layout.minimumWidth: 140
+                        Layout.maximumWidth: 140
                         horizontalAlignment: Text.AlignRight
                         Layout.alignment: Qt.AlignVCenter
                     }
@@ -137,7 +142,7 @@ Item {
                 visible: historyList.count === 0
                 text: "Chưa có đơn hàng nào"
                 font.pixelSize: 16
-                color: "#9E9E9E"
+                color: "#94A3B8"
             }
         }
     }
