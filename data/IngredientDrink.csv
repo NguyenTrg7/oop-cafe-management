@@ -1,0 +1,25 @@
+IngredientID,IngredientName,Type,Category,Unit,Quantity,MinimumQuantity
+ING001,Hạt cà phê,Raw,,g,14924,1000
+ING002,Sữa đặc,Raw,,ml,7860,500
+ING003,Sữa tươi,Raw,,ml,19330,2000
+ING004,Bột matcha,Raw,,g,3000,300
+ING005,Bột cacao,Raw,,g,3000,300
+ING006,Syrup socola,Raw,,ml,4985,500
+ING007,Syrup vani,Raw,,ml,3000,300
+ING008,Syrup caramel,Raw,,ml,3000,300
+ING009,Đường,Raw,,g,19980,2000
+ING010,Đá viên,Raw,,g,79220,5000
+ING011,Hồng trà,Raw,,g,4992,500
+ING012,Trà ô long,Raw,,g,5000,500
+ING013,Bột trà sữa,Raw,,g,5000,500
+ING014,Trân châu,Raw,,g,5000,500
+ING015,Cam,Raw,,quả,49,10
+ING016,Đào ngâm,Raw,,lát,146,20
+ING017,Vải ngâm,Raw,,quả,120,20
+ING018,Sả,Raw,,cây,59,10
+ING019,Chanh,Raw,,quả,60,10
+ING020,Táo,Raw,,quả,40,5
+ING021,Dưa hấu,Raw,,quả,15,3
+ING022,Thơm,Raw,,quả,20,3
+ING023,Bánh Oreo,Raw,,cái,100,20
+ING024,Whipping Cream,Raw,,ml,5000,500
