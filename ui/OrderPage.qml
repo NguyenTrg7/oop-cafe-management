@@ -476,7 +476,7 @@ Item {
                                     cartModel.remove(index)
                                     // Hoàn lại tồn kho
                                     if (typeof ingredientManager !== "undefined" && ingredientManager) {
-                                        ingredientManager.restoreIngredientsForOrder(model.id, model.size || "M", model.quantity)
+                                        ingredientManager.restoreIngredientsForOrder(itemId, itemSize, itemQty)
                                     }
                                     menuGrid.model = getMenuData(orderPageRoot.selectedCategory)
                                 }
