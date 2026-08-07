@@ -17,6 +17,18 @@ Page {
         }
     }
 
+    function getLogoSource() {
+        if (typeof savesDir !== "undefined" && savesDir !== "") {
+            var base = savesDir.toString().replace(/[\\\/]+$/, "")
+            base = base.replace(/[\\\/]saves$/i, "")
+            return "file:///" + (base + "/data/logo.png").replace(/\\/g, "/")
+        }
+        if (typeof applicationDir !== "undefined" && applicationDir !== "") {
+            return "file:///" + applicationDir.toString().replace(/\\/g, "/") + "/data/logo.png"
+        }
+        return ""
+    }
+
     StackView.onActivating: syncNavBar()
     Component.onCompleted: syncNavBar()
 
@@ -26,109 +38,222 @@ Page {
 
         ColumnLayout {
             anchors.centerIn: parent
-            width: parent.width * 0.9 // Responsive width
-            spacing: 20
+            width: Math.min(780, parent.width * 0.92)
+            spacing: 32
 
-            Text {
-                text: "☕ CA LÀM VIỆC NHÂN VIÊN"
-                font.pixelSize: Math.max(18, Math.min(26, parent.width * 0.05))
-                font.bold: true
-                color: "#0369A1"
+            // ===== LOGO + TÊN QUÁN =====
+            Row {
                 Layout.alignment: Qt.AlignHCenter
-            }
-
-            Text {
-                text: "Tài khoản hệ thống: " + (typeof accountHandler !== "undefined" ? accountHandler.currentUserPhone : "nhanvien")
-                font.pixelSize: 15
-                color: "#475569"
-                Layout.alignment: Qt.AlignHCenter
-            }
-
-            RowLayout {
                 spacing: 20
+
+                Text {
+                    text: "GIANG'S COFFEE"
+                    font.pixelSize: 80
+                    font.bold: true
+                    font.family: "Poppins Bold"
+                    color: "#846559"
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                Image {
+                    width: 180
+                    height: 180
+                    source: getLogoSource()
+                    fillMode: Image.PreserveAspectFit
+                    smooth: true
+                    mipmap: true
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+            }
+
+            // ===== TIÊU ĐỀ PHỤ =====
+            Text {
+                text: "CA LÀM VIỆC CỦA BẠN"
+                font.pixelSize: 35
+                font.bold: true
+                color: "#1E293B"
                 Layout.alignment: Qt.AlignHCenter
-                Layout.fillWidth: true
-                Layout.maximumWidth: 450 // Không dãn quá to trên màn hình lớn
+            }
 
-                Button {
-                    id: btnCheckIn
-                    Layout.fillWidth: true // Tự động co giãn theo RowLayout
-                    Layout.preferredHeight: 48
+            // ===== 2 NÚT CHECK-IN / CHECK-OUT =====
+            RowLayout {
+                Layout.alignment: Qt.AlignHCenter
+                spacing: 45
 
-                    HoverHandler { cursorShape: Qt.PointingHandCursor }
+                // CHECK-IN
+                Rectangle {
+                    width: 300
+                    height: 160
+                    radius: 22
+                    color: "#FFFFFF"
+                    border.color: "#BBF7D0"
+                    border.width: 3
 
-                    background: Rectangle {
-                        color: btnCheckIn.pressed ? "#F1F5F9" : "#FFFFFF"
-                        border.color: "#CBD5E1"
-                        border.width: 1
-                        radius: 8
-                    }
-
-                    contentItem: Item {
+                    RowLayout {
                         anchors.fill: parent
-                        Row {
-                            anchors.centerIn: parent
-                            spacing: 8
-                            Rectangle { width: 10; height: 10; radius: 5; color: "#22C55E"; anchors.verticalCenter: parent.verticalCenter }
-                            Text { text: "CHECK-IN CA LÀM"; font.bold: true; font.pixelSize: 13; color: "#1E293B"; anchors.verticalCenter: parent.verticalCenter }
+                        anchors.margins: 16
+                        spacing: 12
+
+                        Rectangle {
+                            width: 48
+                            height: 48
+                            radius: 24
+                            color: "#22C55E"
+                            Layout.alignment: Qt.AlignVCenter
+
+                            Text {
+                                anchors.centerIn: parent
+                                text: "☕"
+                                font.pixelSize: 22
+                                color: "white"
+                            }
+                        }
+
+                        Column {
+                            Layout.fillWidth: true
+                            spacing: 4
+                            Text {
+                                text: "CHECK-IN"
+                                font.pixelSize: 24
+                                font.bold: true
+                                color: "#16A34A"
+                            }
+                            Text {
+                                text: "CA LÀM"
+                                font.pixelSize: 20
+                                font.bold: true
+                                color: "#15803D"
+                            }
+                            Text {
+                                text: "Bắt đầu ca làm việc"
+                                font.pixelSize: 20
+                                color: "#64748B"
+                            }
+                        }
+
+                        Text {
+                            text: "→"
+                            font.pixelSize: 25
+                            color: "#22C55E"
+                            Layout.alignment: Qt.AlignVCenter
                         }
                     }
 
-                    onClicked: {
-                        employeePage.currentAction = "CHECK_IN"
-                        txtConfirmPhone.text = ""
-                        lblDialogError.visible = false
-                        statusText.visible = false
-                        confirmDialog.open()
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            employeePage.currentAction = "CHECK_IN"
+                            txtConfirmPhone.text = ""
+                            lblDialogError.visible = false
+                            statusText.visible = false
+                            confirmDialog.open()
+                        }
                     }
                 }
 
-                Button {
-                    id: btnCheckOut
-                    Layout.fillWidth: true // Tự động co giãn theo RowLayout
-                    Layout.preferredHeight: 48
+                // CHECK-OUT
+                Rectangle {
+                    width: 300
+                    height: 160
+                    radius: 22
+                    color: "#FFFFFF"
+                    border.color: "#FECACA"
+                    border.width: 3
 
-                    HoverHandler { cursorShape: Qt.PointingHandCursor }
-
-                    background: Rectangle {
-                        color: btnCheckOut.pressed ? "#F1F5F9" : "#FFFFFF"
-                        border.color: "#CBD5E1"
-                        border.width: 1
-                        radius: 8
-                    }
-
-                    contentItem: Item {
+                    RowLayout {
                         anchors.fill: parent
-                        Row {
-                            anchors.centerIn: parent
-                            spacing: 8
-                            Rectangle { width: 10; height: 10; radius: 5; color: "#EF4444"; anchors.verticalCenter: parent.verticalCenter }
-                            Text { text: "CHECK-OUT CA LÀM"; font.bold: true; font.pixelSize: 13; color: "#1E293B"; anchors.verticalCenter: parent.verticalCenter }
+                        anchors.margins: 16
+                        spacing: 12
+
+                        Rectangle {
+                            width: 48
+                            height: 48
+                            radius: 24
+                            color: "#EF4444"
+                            Layout.alignment: Qt.AlignVCenter
+
+                            Text {
+                                anchors.centerIn: parent
+                                text: "☕"
+                                font.pixelSize: 22
+                                color: "white"
+                            }
+                        }
+
+                        Column {
+                            Layout.fillWidth: true
+                            spacing: 4
+                            Text {
+                                text: "CHECK-OUT"
+                                font.pixelSize: 24
+                                font.bold: true
+                                color: "#DC2626"
+                            }
+                            Text {
+                                text: "CA LÀM"
+                                font.pixelSize: 20
+                                font.bold: true
+                                color: "#B91C1C"
+                            }
+                            Text {
+                                text: "Kết thúc ca làm việc"
+                                font.pixelSize: 20
+                                color: "#64748B"
+                            }
+                        }
+
+                        Text {
+                            text: "←"
+                            font.pixelSize: 25
+                            color: "#EF4444"
+                            Layout.alignment: Qt.AlignVCenter
                         }
                     }
 
-                    onClicked: {
-                        employeePage.currentAction = "CHECK_OUT"
-                        txtConfirmPhone.text = ""
-                        lblDialogError.visible = false
-                        statusText.visible = false
-                        confirmDialog.open()
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            employeePage.currentAction = "CHECK_OUT"
+                            txtConfirmPhone.text = ""
+                            lblDialogError.visible = false
+                            statusText.visible = false
+                            confirmDialog.open()
+                        }
                     }
                 }
             }
 
+            // ===== TRẠNG THÁI =====
             Text {
                 id: statusText
                 text: ""
                 font.bold: true
-                font.pixelSize: 16
+                font.pixelSize: 15
                 visible: false
                 Layout.alignment: Qt.AlignHCenter
-                Layout.topMargin: 10
+                Layout.topMargin: 8
+            }
+
+            Item {
+                    Layout.fillHeight: true          // đẩy slogan xuống đáy
+                    Layout.minimumHeight: 40
+                }
+
+            // ===== SLOGAN =====
+            Text {
+                text: "-Gửi chút bình yên vào tách cà phê ấm-"
+                font.pixelSize: 20
+                font.italic: true
+                color: "#7C6C62"
+                Layout.alignment: Qt.AlignHCenter
+                Layout.topMargin: 12
             }
         }
     }
 
+    // ===== DIALOG XÁC NHẬN (giữ nguyên logic cũ) =====
     Popup {
         id: confirmDialog
         width: Math.min(380, employeePage.width * 0.9)
@@ -172,11 +297,6 @@ Page {
                 Layout.preferredHeight: 44
                 font.pixelSize: 15
                 horizontalAlignment: TextInput.AlignHCenter
-                verticalAlignment: TextInput.AlignVCenter
-                leftPadding: 10
-                rightPadding: 10
-                topPadding: 0
-                bottomPadding: 0
                 color: "#1E293B"
                 background: Rectangle {
                     radius: 8
@@ -184,14 +304,13 @@ Page {
                     border.width: 1
                     color: "#F8FAFC"
                 }
-
                 Keys.onReturnPressed: btnConfirm.clicked()
                 Keys.onEnterPressed: btnConfirm.clicked()
             }
 
             Text {
                 id: lblDialogError
-                text: "SĐT chưa được gán thông tin Nhân viên bởi Manager!"
+                text: ""
                 color: "#DC2626"
                 font.pixelSize: 12
                 font.bold: true
@@ -208,15 +327,11 @@ Page {
                 Layout.topMargin: 5
 
                 Button {
-                    id: btnCancel
                     text: "Hủy"
                     Layout.fillWidth: true
                     Layout.preferredHeight: 40
-
-                    HoverHandler { cursorShape: Qt.PointingHandCursor }
-
                     background: Rectangle {
-                        color: btnCancel.pressed ? "#E2E8F0" : "#F1F5F9"
+                        color: parent.pressed ? "#E2E8F0" : "#F1F5F9"
                         radius: 8
                     }
                     contentItem: Text {
@@ -234,11 +349,8 @@ Page {
                     text: "Xác nhận"
                     Layout.fillWidth: true
                     Layout.preferredHeight: 40
-
-                    HoverHandler { cursorShape: Qt.PointingHandCursor }
-
                     background: Rectangle {
-                        color: btnConfirm.pressed ? "#0284C7" : "#0369A1"
+                        color: parent.pressed ? "#0284C7" : "#0369A1"
                         radius: 8
                     }
                     contentItem: Text {
@@ -257,28 +369,26 @@ Page {
                             return
                         }
 
-                        var isValid = false;
-                        var employeeName = "";
-                        var phoneToRecord = inputStr;
-                        var empId = "";
+                        var isValid = false
+                        var employeeName = ""
+                        var phoneToRecord = inputStr
+                        var empId = ""
 
                         if (typeof coffeeSystem !== "undefined" && coffeeSystem.loadEmployees) {
                             var list = coffeeSystem.loadEmployees()
                             for (var i = 0; i < list.length; i++) {
                                 if (list[i].phone === inputStr || list[i].id === inputStr) {
-                                    isValid = true;
-                                    employeeName = list[i].name;
-                                    phoneToRecord = list[i].phone;
-                                    empId = list[i].id;
-                                    break;
+                                    isValid = true
+                                    employeeName = list[i].name
+                                    phoneToRecord = list[i].phone
+                                    empId = list[i].id
+                                    break
                                 }
                             }
                         }
 
-                        if (!isValid) {
-                            if (typeof coffeeSystem !== "undefined" && coffeeSystem.verifyEmployeePhone) {
-                                isValid = coffeeSystem.verifyEmployeePhone(inputStr)
-                            }
+                        if (!isValid && typeof coffeeSystem !== "undefined" && coffeeSystem.verifyEmployeePhone) {
+                            isValid = coffeeSystem.verifyEmployeePhone(inputStr)
                         }
 
                         if (!isValid) {
@@ -311,7 +421,6 @@ Page {
                         if (typeof coffeeSystem !== "undefined" && coffeeSystem.loadAttendance) {
                             var attendanceList = coffeeSystem.loadAttendance()
                             var lastAction = ""
-
                             for (var a = 0; a < attendanceList.length; a++) {
                                 if (attendanceList[a].identifier === phoneToRecord || attendanceList[a].identifier === empId) {
                                     lastAction = attendanceList[a].type
@@ -323,7 +432,6 @@ Page {
                                 lblDialogError.visible = true
                                 return
                             }
-
                             if (employeePage.currentAction === "CHECK_IN" && lastAction === "CHECK_IN") {
                                 lblDialogError.text = "⚠️ Bạn đã Check-In ca làm trước đó rồi!"
                                 lblDialogError.visible = true
@@ -337,20 +445,16 @@ Page {
                         confirmDialog.close()
 
                         if (employeePage.currentAction === "CHECK_IN") {
-                            if (typeof coffeeSystem !== "undefined" && coffeeSystem.recordAttendanceCSV) {
+                            if (typeof coffeeSystem !== "undefined" && coffeeSystem.recordAttendanceCSV)
                                 coffeeSystem.recordAttendanceCSV(phoneToRecord, "CHECK_IN", currentTime)
-                            }
                             statusText.text = "🟢 Nhân viên " + displayName + " đã Check-In thành công lúc " + currentTime
                             statusText.color = "#15803D"
-                        }
-                        else if (employeePage.currentAction === "CHECK_OUT") {
-                            if (typeof coffeeSystem !== "undefined" && coffeeSystem.recordAttendanceCSV) {
+                        } else {
+                            if (typeof coffeeSystem !== "undefined" && coffeeSystem.recordAttendanceCSV)
                                 coffeeSystem.recordAttendanceCSV(phoneToRecord, "CHECK_OUT", currentTime)
-                            }
                             statusText.text = "🔴 Nhân viên " + displayName + " đã Check-Out thành công lúc " + currentTime
                             statusText.color = "#B91C1C"
                         }
-
                         statusText.visible = true
                     }
                 }
