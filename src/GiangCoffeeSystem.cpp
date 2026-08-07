@@ -757,7 +757,7 @@ QVariantList GiangCoffeeSystem::calculateMonthlyPayroll(int month, int year)
 
         // 3. Phân loại logic tính lương theo jobRole
         if (jobRole == "Full-time") {
-            baseSalary = 7000000.0; // 7 Triệu
+            baseSalary = 8000000.0; // 8 Triệu
             completionRatio = totalNormalHours / standardHours;
 
             double hourlyRate = baseSalary / standardHours;
@@ -768,7 +768,7 @@ QVariantList GiangCoffeeSystem::calculateMonthlyPayroll(int month, int year)
             totalSalary = baseEarned + weekdayOtEarned + sundayOtEarned;
 
         } else if (jobRole == "Bảo vệ (Full-time)" || jobRole == "Bảo vệ") {
-            baseSalary = 5000000.0; // 5 Triệu
+            baseSalary = 7000000.0; // 7 Triệu
             completionRatio = totalNormalHours / standardHours;
 
             double hourlyRate = baseSalary / standardHours;
