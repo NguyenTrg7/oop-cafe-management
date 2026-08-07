@@ -21,9 +21,7 @@ Item {
         return arr;
     }
     property var yearList: {
-        var arr = ["Tất cả năm"];
-        var cy = new Date().getFullYear();
-        for(var i=cy-5; i<=cy+5; i++) arr.push(i.toString());
+        var arr = ["Tất cả năm", "2025", "2026", "2027"];
         return arr;
     }
     property var timeList: {

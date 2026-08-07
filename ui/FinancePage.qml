@@ -29,13 +29,8 @@ Page {
 
     Component.onCompleted: {
         // Init years model
-        var currentYear = new Date().getFullYear();
-        var years = [];
-        for (var i = currentYear - 5; i <= currentYear + 5; i++) {
-            years.push(i.toString());
-        }
-        cbYear.model = years;
-        cbYear.currentIndex = 5; // Focus vào năm hiện tại
+        cbYear.model = ["2025", "2026", "2027"];
+        cbYear.currentIndex = 1; // Focus vào năm hiện tại
         cbMonth.currentIndex = new Date().getMonth();
 
         refreshData();

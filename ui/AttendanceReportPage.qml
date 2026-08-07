@@ -21,9 +21,7 @@ Page {
         return arr;
     }
     property var yearList: {
-        var arr = ["Tất cả năm"];
-        var cy = new Date().getFullYear();
-        for(var i=cy-5; i<=cy+5; i++) arr.push(i.toString());
+        var arr = ["Tất cả năm", "2025", "2026", "2027"];
         return arr;
     }
     property var timeList: {
@@ -126,6 +124,32 @@ Page {
         }
     }
 
+    // Component ComboBox giới hạn chiều cao tối đa (250px) để không bị che khuất màn hình
+    component FilterCombo : ComboBox {
+        id: control
+        popup: Popup {
+            y: control.height - 1
+            width: control.width
+            implicitHeight: Math.min(250, contentItem.implicitHeight)
+            padding: 1
+
+            contentItem: ListView {
+                clip: true
+                implicitHeight: contentHeight
+                model: control.popup.visible ? control.delegateModel : null
+                currentIndex: control.highlightedIndex
+                ScrollIndicator.vertical: ScrollIndicator { }
+            }
+
+            background: Rectangle {
+                border.color: "#CBD5E1"
+                border.width: 1
+                radius: 4
+                color: "#FFFFFF"
+            }
+        }
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 20
@@ -162,19 +186,19 @@ Page {
                 spacing: 10
 
                 Text { text: "Ngày:"; font.bold: true; color: "#334155" }
-                ComboBox {
+                FilterCombo {
                     id: cbDay; model: dayList
                     onCurrentIndexChanged: Qt.callLater(applyFilters)
                 }
 
                 Text { text: "Tháng:"; font.bold: true; color: "#334155" }
-                ComboBox {
+                FilterCombo {
                     id: cbMonth; model: monthList
                     onCurrentIndexChanged: Qt.callLater(applyFilters)
                 }
 
                 Text { text: "Năm:"; font.bold: true; color: "#334155" }
-                ComboBox {
+                FilterCombo {
                     id: cbYear; model: yearList
                     onCurrentIndexChanged: Qt.callLater(applyFilters)
                 }
@@ -182,13 +206,13 @@ Page {
                 Item { Layout.preferredWidth: 10 }
 
                 Text { text: "Từ giờ:"; font.bold: true; color: "#334155" }
-                ComboBox {
+                FilterCombo {
                     id: cbStartTime; model: timeList
                     onCurrentIndexChanged: Qt.callLater(applyFilters)
                 }
 
                 Text { text: "Đến giờ:"; font.bold: true; color: "#334155" }
-                ComboBox {
+                FilterCombo {
                     id: cbEndTime; model: timeList
                     onCurrentIndexChanged: Qt.callLater(applyFilters)
                 }
