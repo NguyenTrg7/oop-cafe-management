@@ -15,7 +15,6 @@ Page {
     property double totalRevenue: 0.0
     property double totalExpense: 0.0
     property double netProfit: 0.0
-    property double budgetTarget: 50000000.0
 
     // Dữ liệu dùng cho vẽ biểu đồ
     property var chartLabels: []
@@ -357,12 +356,6 @@ Page {
             Item { Layout.fillWidth: true }
 
             Button {
-                text: "⚙️ Ngân Sách"
-                onClicked: budgetDialog.open()
-                background: Rectangle { color: "#F1F5F9"; radius: 8; border.color: "#CBD5E1" }
-            }
-
-            Button {
                 text: "➕ Thêm Giao Dịch"
                 background: Rectangle { color: "#0284C7"; radius: 8 }
                 contentItem: Text { text: parent.text; color: "white"; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
@@ -428,29 +421,6 @@ Page {
         RowLayout {
             Layout.fillWidth: true
             spacing: 12
-
-            // Thẻ Ngân Sách
-            Rectangle {
-                Layout.fillWidth: true; height: 90; color: "#FFFFFF"; radius: 10; border.color: "#E2E8F0"
-                ColumnLayout {
-                    anchors.fill: parent; anchors.margins: 12
-                    RowLayout {
-                        Text { text: "🎯 NGÂN SÁCH CHI"; font.bold: true; font.pixelSize: 11; color: "#64748B" }
-                        Item { Layout.fillWidth: true }
-                        Text { text: (budgetTarget > 0 ? Math.round((totalExpense / budgetTarget) * 100) : 0) + "%"; font.bold: true; color: totalExpense > budgetTarget ? "#DC2626" : "#22C55E" }
-                    }
-                    Text { text: formatMoney(budgetTarget) + " VNĐ"; font.pixelSize: 16; font.bold: true; color: "#0F172A" }
-                    Rectangle {
-                        Layout.fillWidth: true; height: 6; color: "#E2E8F0"; radius: 3
-                        Rectangle {
-                            width: budgetTarget > 0 ? Math.min(parent.width, parent.width * (totalExpense / budgetTarget)) : 0
-                            height: parent.height
-                            color: totalExpense > budgetTarget ? "#EF4444" : "#10B981"
-                            radius: 3
-                        }
-                    }
-                }
-            }
 
             // Thẻ Tổng Thu
             Rectangle {
@@ -936,49 +906,6 @@ Page {
                         addTransactionDialog.close();
                         inputAmount.text = "";
                         inputNote.text = "";
-                    }
-                }
-            }
-        }
-    }
-
-    // -------------------------------------------------------------------------
-    // POPUP CÀI ĐẶT NGÂN SÁCH
-    // -------------------------------------------------------------------------
-    Dialog {
-        id: budgetDialog
-        title: "Thiết Lập Ngân Sách"
-        width: 320; height: 200
-        anchors.centerIn: parent
-        modal: true
-
-        ColumnLayout {
-            anchors.fill: parent; spacing: 15
-
-            Text { text: "Nhập hạn mức ngân sách chi tiêu:"; color: "#475569" }
-
-            TextField {
-                id: inputBudgetTarget
-                text: financePage.budgetTarget.toString()
-                Layout.fillWidth: true
-                inputMethodHints: Qt.ImhDigitsOnly
-            }
-
-            RowLayout {
-                Layout.fillWidth: true
-                Button { text: "Đóng"; Layout.fillWidth: true; onClicked: budgetDialog.close() }
-                Button {
-                    text: "Cập nhật"
-                    Layout.fillWidth: true
-                    background: Rectangle { color: "#16A34A"; radius: 6 }
-                    contentItem: Text { text: parent.text; color: "white"; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
-                    onClicked: {
-                        var val = parseFloat(inputBudgetTarget.text.trim());
-                        if (!isNaN(val) && val > 0) {
-                            financePage.budgetTarget = val;
-                            Qt.callLater(applyFilters);
-                        }
-                        budgetDialog.close();
                     }
                 }
             }
