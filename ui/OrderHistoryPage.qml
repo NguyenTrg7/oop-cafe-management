@@ -63,89 +63,15 @@ Item {
         return Qt.locale("vi_VN").toString(value) + " VNĐ"
     }
 
-    function timeToMins(timeStr) {
-        if (!timeStr) return 0;
-        var p = timeStr.split(":");
-        return parseInt(p[0]) * 60 + parseInt(p[1]);
-    }
-
-    function loadHistory() {
-        if (typeof orderHistoryManager !== "undefined") {
-            rawHistory = orderHistoryManager.getHistory();
-            applyFilters();
-        }
-    }
-
-    function applyFilters() {
-        filteredHistoryModel.clear();
-
-        var selDay = cbDay.currentIndex > 0 ? parseInt(cbDay.currentText) : -1;
-        var selMonth = cbMonth.currentIndex > 0 ? parseInt(cbMonth.currentText) : -1;
-        var selYear = cbYear.currentIndex > 0 ? parseInt(cbYear.currentText) : -1;
-        var startMins = cbStartTime.currentIndex > 0 ? timeToMins(cbStartTime.currentText) : -1;
-        var endMins = cbEndTime.currentIndex > 0 ? timeToMins(cbEndTime.currentText) : -1;
-
-        for (var i = 0; i < rawHistory.length; i++) {
-            var item = rawHistory[i];
-
-            // Xử lý ngày (định dạng có thể là DD/MM/YYYY hoặc YYYY-MM-DD)
-            var dYear = -1, dMonth = -1, dDay = -1;
-            if (item.date.indexOf("/") !== -1) {
-                var dParts = item.date.split("/");
-                dDay = parseInt(dParts[0]);
-                dMonth = parseInt(dParts[1]);
-                dYear = parseInt(dParts[2]);
-            } else {
-                var dParts2 = item.date.split("-");
-                dYear = parseInt(dParts2[0]);
-                dMonth = parseInt(dParts2[1]);
-                dDay = parseInt(dParts2[2]);
-            }
-
-            // Xử lý thời gian
-            var itemMins = timeToMins(item.time);
-
-            // Kiểm tra các điều kiện lọc
-            if (selDay !== -1 && dDay !== selDay) continue;
-            if (selMonth !== -1 && dMonth !== selMonth) continue;
-            if (selYear !== -1 && dYear !== selYear) continue;
-            if (startMins !== -1 && itemMins < startMins) continue;
-            if (endMins !== -1 && itemMins > endMins) continue;
-
-            filteredHistoryModel.append(item);
-        }
-    }
-
-    // Component ComboBox giới hạn chiều cao tối đa (250px) để không bị che khuất màn hình
-    component FilterCombo : ComboBox {
-        id: control
-        popup: Popup {
-            y: control.height - 1
-            width: control.width
-            implicitHeight: Math.min(250, contentItem.implicitHeight)
-            padding: 1
-
-            contentItem: ListView {
-                clip: true
-                implicitHeight: contentHeight
-                model: control.popup.visible ? control.delegateModel : null
-                currentIndex: control.highlightedIndex
-                ScrollIndicator.vertical: ScrollIndicator { }
-            }
-
-            background: Rectangle {
-                border.color: "#CBD5E1"
-                border.width: 1
-                radius: 4
-                color: "#FFFFFF"
-            }
-        }
+    Rectangle {
+        anchors.fill: parent
+        color: "#F0F9FF"
     }
 
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 20
-        spacing: 15
+        spacing: 16
 
         RowLayout {
             Layout.fillWidth: true
@@ -154,7 +80,7 @@ Item {
                 text: "📜 LỊCH SỬ ĐƠN HÀNG"
                 font.pixelSize: 22
                 font.bold: true
-                color: "#3E2723"
+                color: "#0C4A6E"
             }
 
             Item { Layout.fillWidth: true }
@@ -214,18 +140,17 @@ Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
             clip: true
-            spacing: 8
+            spacing: 10
 
             model: filteredHistoryModel
 
             delegate: Rectangle {
                 width: historyList.width
-                height: 82
-                radius: 10
-                // Lưu ý: Đã sửa từ modelData thành model
-                color: selectedInvoice === model.invoiceNumber ? "#EFEBE9" : "#FFFDF9"
-                border.color: selectedInvoice === model.invoiceNumber ? "#8D6E63" : "#E0D5C8"
-
+                height: 86
+                radius: 12
+                color: selectedInvoice === modelData.invoiceNumber ? "#E0F2FE" : "#FFFFFF"
+                border.color: selectedInvoice === modelData.invoiceNumber ? "#3B82F6" : "#BAE6FD"
+                border.width: selectedInvoice === modelData.invoiceNumber ? 2 : 1.5
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
@@ -239,31 +164,31 @@ Item {
                 RowLayout {
                     anchors.fill: parent
                     anchors.margins: 14
-                    spacing: 15
+                    spacing: 16
 
                     // Cột thông tin bên trái
                     ColumnLayout {
                         Layout.fillWidth: true
-                        spacing: 3
+                        spacing: 4
 
                         Text {
                             text: model.invoiceNumber || ""
                             font.bold: true
                             font.pixelSize: 15
-                            color: "#3E2723"
+                            color: "#0C4A6E"
                             elide: Text.ElideRight
                             Layout.fillWidth: true
                         }
                         Text {
                             text: (model.date || "") + "  •  " + (model.time || "")
                             font.pixelSize: 12
-                            color: "#757575"
+                            color: "#64748B"
                         }
                         Text {
                             text: (model.customerName || "Khách vãng lai") + "  •  "
                                   + (model.itemCount || 0) + " món"
                             font.pixelSize: 12
-                            color: "#616161"
+                            color: "#475569"
                         }
                     }
 
@@ -272,10 +197,10 @@ Item {
                         text: formatVND(model.totalAmount)
                         font.bold: true
                         font.pixelSize: 16
-                        color: "#BF360C"
-                        Layout.preferredWidth: 130
-                        Layout.minimumWidth: 130
-                        Layout.maximumWidth: 130
+                        color: "#0369A1"
+                        Layout.preferredWidth: 140
+                        Layout.minimumWidth: 140
+                        Layout.maximumWidth: 140
                         horizontalAlignment: Text.AlignRight
                         Layout.alignment: Qt.AlignVCenter
                     }
@@ -287,7 +212,7 @@ Item {
                 visible: historyList.count === 0
                 text: "Chưa có đơn hàng nào khớp với tìm kiếm"
                 font.pixelSize: 16
-                color: "#9E9E9E"
+                color: "#94A3B8"
             }
         }
     }

@@ -142,6 +142,7 @@ Rectangle {
         border.width: 2
         z: 10
 
+
         Image {
             id: logoImage
                        width: 130
