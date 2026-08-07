@@ -1707,6 +1707,7 @@ Item {
                         cartModel.clear()
                         menuGrid.model = getMenuData(orderPageRoot.selectedCategory)
 
+                        fireworksOverlay.explode()
                         invoiceDialog.close()
                     }
                 }
@@ -1771,6 +1772,224 @@ Item {
             if (!showingInventory && !showingHistory) {
                 menuGrid.model = getMenuData(orderPageRoot.selectedCategory)
             }
+        }
+    }
+    // ==================== PHÁO HOA ====================
+    Item {
+        id: fireworksOverlay
+        anchors.fill: parent
+        z: 99999
+        visible: false
+
+        property var colors: [
+            "#FFD700", "#FFA500", "#FF4500",   // vàng - cam
+            "#00BFFF", "#1E90FF", "#00CED1",   // xanh dương
+            "#FF69B4", "#DA70D6", "#FF1493",   // hồng - tím
+            "#FFFFFF", "#FFFACD"
+        ]
+
+        function explode() {
+            visible = true
+
+            while (particleContainer.children.length > 0)
+                particleContainer.children[0].destroy()
+
+            // Bắn 7 quả pháo hoa
+            for (var k = 0; k < 7; k++) {
+                Qt.callLater(function() {
+                    var cx = 120 + Math.random() * (width - 240)
+                    var cy = 90 + Math.random() * (height * 0.4)
+
+                    createCenterGlow(cx, cy)
+                    createStreaks(cx, cy, 28 + Math.floor(Math.random() * 12))
+                    createSparks(cx, cy, 40 + Math.floor(Math.random() * 25))
+                }, k * 160)
+            }
+
+            hideTimer.restart()
+        }
+
+        // Lõi sáng ở giữa
+        function createCenterGlow(cx, cy) {
+            glowComp.createObject(particleContainer, {
+                x: cx - 22,
+                y: cy - 22
+            })
+        }
+
+        // Các tia dài
+        function createStreaks(cx, cy, count) {
+            for (var i = 0; i < count; i++) {
+                var angle = (Math.PI * 2 * i) / count + Math.random() * 0.3
+                var length = 90 + Math.random() * 130
+                var color = colors[Math.floor(Math.random() * colors.length)]
+
+                streakComp.createObject(particleContainer, {
+                    cx: cx,
+                    cy: cy,
+                    angle: angle * 180 / Math.PI,
+                    streakLength: length,
+                    streakColor: color
+                })
+            }
+        }
+
+        // Hạt lấp lánh nhỏ
+        function createSparks(cx, cy, count) {
+            for (var i = 0; i < count; i++) {
+                var angle = Math.random() * Math.PI * 2
+                var dist  = 40 + Math.random() * 160
+                var color = colors[Math.floor(Math.random() * colors.length)]
+                var size  = 2 + Math.random() * 5
+
+                sparkComp.createObject(particleContainer, {
+                    x: cx,
+                    y: cy,
+                    particleColor: color,
+                    particleSize: size,
+                    targetX: cx + Math.cos(angle) * dist,
+                    targetY: cy + Math.sin(angle) * dist
+                })
+            }
+        }
+
+        Item {
+            id: particleContainer
+            anchors.fill: parent
+        }
+
+        // === Component lõi sáng ===
+        Component {
+            id: glowComp
+            Rectangle {
+                id: glow
+                width: 44
+                height: 44
+                radius: 22
+                color: "#FFFFFF"
+                opacity: 0.95
+                scale: 0.15
+
+                ParallelAnimation {
+                    running: true
+                    NumberAnimation {
+                        target: glow; property: "scale"
+                        to: 2.6; duration: 380
+                        easing.type: Easing.OutCubic
+                    }
+                    NumberAnimation {
+                        target: glow; property: "opacity"
+                        to: 0; duration: 480
+                        easing.type: Easing.InQuad
+                    }
+                    onFinished: glow.destroy()
+                }
+            }
+        }
+
+        // === Component tia dài ===
+        Component {
+            id: streakComp
+            Rectangle {
+                id: streak
+                width: 3
+                height: 8
+                radius: 1.5
+                color: streakColor
+                opacity: 1
+                transformOrigin: Item.Bottom
+
+                property real cx: 0
+                property real cy: 0
+                property real angle: 0
+                property real streakLength: 100
+                property color streakColor: "#FFD700"
+
+                x: cx - width / 2
+                y: cy - height
+
+                rotation: angle
+
+                ParallelAnimation {
+                    running: true
+
+                    NumberAnimation {
+                        target: streak; property: "height"
+                        to: streakLength
+                        duration: 420
+                        easing.type: Easing.OutCubic
+                    }
+                    NumberAnimation {
+                        target: streak; property: "opacity"
+                        to: 0
+                        duration: 900
+                        easing.type: Easing.InQuad
+                    }
+                    NumberAnimation {
+                        target: streak; property: "width"
+                        to: 1.2
+                        duration: 700
+                    }
+                    onFinished: streak.destroy()
+                }
+            }
+        }
+
+        // === Component hạt lấp lánh ===
+        Component {
+            id: sparkComp
+            Rectangle {
+                id: spark
+                width: particleSize
+                height: particleSize
+                radius: width / 2
+                color: particleColor
+                opacity: 1
+                scale: 0.4
+
+                property real particleSize: 4
+                property color particleColor: "white"
+                property real targetX: 0
+                property real targetY: 0
+
+                ParallelAnimation {
+                    running: true
+
+                    NumberAnimation {
+                        target: spark; property: "x"; to: targetX
+                        duration: 700 + Math.random() * 500
+                        easing.type: Easing.OutCubic
+                    }
+                    NumberAnimation {
+                        target: spark; property: "y"; to: targetY
+                        duration: 700 + Math.random() * 500
+                        easing.type: Easing.OutCubic
+                    }
+                    SequentialAnimation {
+                        NumberAnimation {
+                            target: spark; property: "scale"
+                            to: 1.4; duration: 200
+                            easing.type: Easing.OutBack
+                        }
+                        NumberAnimation {
+                            target: spark; property: "scale"
+                            to: 0.1; duration: 800
+                        }
+                    }
+                    NumberAnimation {
+                        target: spark; property: "opacity"
+                        to: 0; duration: 1100
+                        easing.type: Easing.InQuad
+                    }
+                    onFinished: spark.destroy()
+                }
+            }
+        }
+
+        Timer {
+            id: hideTimer
+            interval: 3200
+            onTriggered: fireworksOverlay.visible = false
         }
     }
 }
