@@ -7,8 +7,26 @@ Page {
     id: empPage
     title: "Quản Lý Lịch & Ca Làm"
 
-    background: Rectangle {
-        color: "#F1F5F9"
+    function getImageSource() {
+        if (typeof savesDir !== "undefined" && savesDir !== "") {
+            var base = savesDir.toString().replace(/[\\\/]+$/, "")
+            base = base.replace(/[\\\/]saves$/i, "")
+            var path = base + "/data/themeManager.png"
+            path = path.replace(/\\/g, "/")
+            console.log("Image path:", "file:///" + path)
+            return "file:///" + path
+        }
+        if (typeof applicationDir !== "undefined" && applicationDir !== "") {
+            var p = applicationDir.toString().replace(/\\/g, "/") + "/data/themeManager.png"
+            return "file:///" + p
+        }
+        return ""
+    }
+
+    background: Image {
+        source: getImageSource()
+        fillMode: Image.PreserveAspectCrop
+        anchors.fill: parent
     }
 
     function syncNavBar() {
@@ -29,8 +47,9 @@ Page {
     property string selectedDateStr: Qt.formatDateTime(currentDate, "dd/MM/yyyy")
     property string todayStr: Qt.formatDateTime(new Date(), "dd/MM/yyyy")
 
-    readonly property var fullTimeSuggestions: ["07:00-15:00", "08:00-16:00", "14:00-22:00", "07:00-17:00"]
-    readonly property var partTimeSuggestions: ["07:00-11:00", "08:00-12:00", "12:00-17:00", "17:00-22:00"]
+    // Gợi ý chuẩn cho từng Role
+    readonly property var fullTimeSuggestions: ["07:00-15:00", "14:00-22:00"]
+    readonly property var partTimeSuggestions: ["08:00-12:00", "13:00-17:00", "18:00-22:00"]
 
     readonly property string selectedEmpRole: {
         if (cbEmployee.currentIndex >= 0 && cbEmployee.currentIndex < allEmployeesModel.count) {
@@ -40,7 +59,7 @@ Page {
     }
 
     readonly property var activeSuggestions: {
-        if (selectedEmpRole.indexOf("Full-time") !== -1) {
+        if (selectedEmpRole.indexOf("Full-time") !== -1 || selectedEmpRole.indexOf("Bảo vệ") !== -1) {
             return fullTimeSuggestions
         }
         return partTimeSuggestions
@@ -58,9 +77,8 @@ Page {
 
     function generateCalendar(month, year) {
         calendarModel.clear()
-        var firstDay = new Date(year, month, 1)
-        var lastDay = new Date(year, month + 1, 0)
-        // firstDay.getDay(): 0 = CN, 1 = T2, 2 = T3, ..., 6 = T7
+        var firstDay = new Date(year, month, 1, 12, 0, 0)
+        var lastDay = new Date(year, month + 1, 0, 12, 0, 0)
         var startOffset = (firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1)
 
         for (var i = 0; i < startOffset; i++) {
@@ -68,15 +86,16 @@ Page {
         }
 
         for (var d = 1; d <= lastDay.getDate(); d++) {
-            var tempDate = new Date(year, month, d)
-            var dStr = Qt.formatDateTime(tempDate, "dd/MM/yyyy")
+            var tempDate = new Date(year, month, d, 12, 0, 0)
+            var dd = d < 10 ? "0" + d : d.toString()
+            var mm = (month + 1) < 10 ? "0" + (month + 1) : (month + 1).toString()
+            var dStr = dd + "/" + mm + "/" + year
             calendarModel.append({ "dayNumber": d.toString(), "dateStr": dStr, "isCurrentMonth": true })
         }
     }
 
     function changeMonth(offset) {
-        // Khởi tạo ngày 1 của tháng mới để tránh lỗi tràn ngày trong JS
-        var tempDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + offset, 1)
+        var tempDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + offset, 1, 12, 0, 0)
         currentDate = tempDate
         generateCalendar(currentDate.getMonth(), currentDate.getFullYear())
         refreshData()
@@ -92,7 +111,7 @@ Page {
             if (data) {
                 for (var i = 0; i < data.length; i++) {
                     allEmployeesModel.append({
-                        "text": data[i].id + " - " + data[i].name,
+                        "text": data[i].id + " - " + data[i].name + " (" + (data[i].jobRole ? data[i].jobRole : "Part-time") + ")",
                         "empId": data[i].id,
                         "empName": data[i].name,
                         "empPhone": data[i].phone,
@@ -219,8 +238,6 @@ Page {
         }
     }
 
-    // --- DIALOGS XÁC NHẬN / THÔNG BÁO ---
-
     Dialog {
         id: imagePreviewDialog
         width: Math.min(empPage.width > 0 ? empPage.width * 0.85 : 700, 700)
@@ -235,7 +252,7 @@ Page {
         property alias imageSource: fullImg.source
 
         background: Rectangle {
-            color: "#0F172A"
+            color: Qt.rgba(0.06, 0.09, 0.16, 0.95)
             radius: 16
             border.color: "#334155"
             border.width: 1
@@ -551,7 +568,7 @@ Page {
                     background: Rectangle { color: "#0F766E"; radius: 8 }
                     contentItem: Text { text: "Đồng ý"; color: "white"; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                     onClicked: {
-                        var temp = new Date(yearTumbler.currentIndex + 2000, monthTumbler.currentIndex, 1)
+                        var temp = new Date(yearTumbler.currentIndex + 2000, monthTumbler.currentIndex, 1, 12, 0, 0)
                         currentDate = temp
                         generateCalendar(currentDate.getMonth(), currentDate.getFullYear())
                         refreshData()
@@ -567,60 +584,87 @@ Page {
         }
     }
 
-    // --- MAIN LAYOUT ---
-
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 16
         spacing: 14
 
         TabBar {
-            id: tabBar
-            Layout.fillWidth: true
-            Layout.preferredHeight: 46
+                    id: tabBar
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 46
 
-            background: Rectangle {
-                color: "#E2E8F0"
-                radius: 10
-            }
+                    background: Rectangle {
+                        color: Qt.rgba(1, 1, 1, 0.7)
+                        border.color: "#E2E8F0"
+                        border.width: 1
+                        radius: 10
+                    }
 
-            onCurrentIndexChanged: {
-                if (typeof appWindow !== "undefined") {
-                    appWindow.title = "Giang's Coffee - " + (currentIndex === 0 ? "Quản Lý Lịch & Ca Làm" : "Hồ Sơ Nhân Viên")
+                    onCurrentIndexChanged: {
+                        if (typeof appWindow !== "undefined") {
+                            appWindow.title = "Giang's Coffee - " + (currentIndex === 0 ? "Quản Lý Lịch && Ca Làm" : "Hồ Sơ Nhân Viên")
+                        }
+                    }
+
+                    TabButton {
+                        id: tab1
+                        text: "📅 Quản Lý Lịch & Ca Làm"
+                        width: tabBar.width / 2 // Chia đều 50% chiều rộng để cả 2 tab hiện rõ ngay từ đầu
+                        implicitHeight: 46
+
+                        background: Rectangle {
+                            color: tabBar.currentIndex === 0
+                                   ? "#FFFFFF"
+                                   : (tab1.hovered ? "#E2E8F0" : "transparent") // Màu nền khi Hover & khi Active
+                            radius: 8
+                            anchors.margins: 4
+                            border.color: tabBar.currentIndex === 0 ? "#CBD5E1" : "transparent"
+                            border.width: 1
+                        }
+
+                        contentItem: Text {
+                            text: parent.text
+                            font.bold: true
+                            font.pixelSize: 14
+                            color: tabBar.currentIndex === 0 ? "#0F766E" : (tab1.hovered ? "#0F766E" : "#64748B") // Đổi màu chữ khi di chuột
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                    }
+
+                    TabButton {
+                        id: tab2
+                        text: "📁 Hồ Sơ Nhân Viên"
+                        width: tabBar.width / 2 // Chia đều 50% chiều rộng
+                        implicitHeight: 46
+
+                        background: Rectangle {
+                            color: tabBar.currentIndex === 1
+                                   ? "#FFFFFF"
+                                   : (tab2.hovered ? "#E2E8F0" : "transparent") // Màu nền khi Hover & khi Active
+                            radius: 8
+                            anchors.margins: 4
+                            border.color: tabBar.currentIndex === 1 ? "#CBD5E1" : "transparent"
+                            border.width: 1
+                        }
+
+                        contentItem: Text {
+                            text: parent.text
+                            font.bold: true
+                            font.pixelSize: 14
+                            color: tabBar.currentIndex === 1 ? "#0F766E" : (tab2.hovered ? "#0F766E" : "#64748B") // Đổi màu chữ khi di chuột
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                    }
                 }
-            }
-
-            TabButton {
-                text: "📅 Quản Lý Lịch & Ca Làm"
-                font.bold: true
-                font.pixelSize: 14
-
-                background: Rectangle {
-                    color: tabBar.currentIndex === 0 ? "#FFFFFF" : "transparent"
-                    radius: 8
-                    anchors.margins: 4
-                }
-            }
-
-            TabButton {
-                text: "📁 Hồ Sơ Nhân Viên"
-                font.bold: true
-                font.pixelSize: 14
-
-                background: Rectangle {
-                    color: tabBar.currentIndex === 1 ? "#FFFFFF" : "transparent"
-                    radius: 8
-                    anchors.margins: 4
-                }
-            }
-        }
 
         StackLayout {
             currentIndex: tabBar.currentIndex
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            // TAB 1: QUẢN LÝ LỊCH VÀ CA LÀM
             RowLayout {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -629,7 +673,7 @@ Page {
                 Rectangle {
                     Layout.preferredWidth: 360
                     Layout.fillHeight: true
-                    color: "#FFFFFF"
+                    color: Qt.rgba(1, 1, 1, 0.5)
                     radius: 12
                     border.color: "#E2E8F0"
 
@@ -661,7 +705,7 @@ Page {
                                     contentItem: Text {
                                         text: "Tháng " + Qt.formatDateTime(currentDate, "MM - yyyy")
                                         font.bold: true
-                                        font.pixelSize: 17
+                                        font.pixelSize: 15
                                         color: "#0F766E"
                                         horizontalAlignment: Text.AlignHCenter
                                     }
@@ -678,15 +722,13 @@ Page {
                             RowLayout {
                                 Layout.fillWidth: true
                                 spacing: 4
-
                                 Repeater {
                                     model: ["T2", "T3", "T4", "T5", "T6", "T7", "CN"]
-
                                     Text {
                                         text: modelData
                                         font.bold: true
-                                        font.pixelSize: 13
-                                        color: "#64748B"
+                                        font.pixelSize: 11
+                                        color: "#475569"
                                         Layout.fillWidth: true
                                         horizontalAlignment: Text.AlignHCenter
                                     }
@@ -706,7 +748,6 @@ Page {
                                         Layout.fillWidth: true
                                         Layout.preferredHeight: 38
                                         text: model.dayNumber
-                                        // Sử dụng opacity và enabled thay vì visible để giữ nguyên vị trí lưới
                                         opacity: model.isCurrentMonth ? 1.0 : 0.0
                                         enabled: model.isCurrentMonth
 
@@ -773,18 +814,18 @@ Page {
                     }
                 }
 
-                // KHU VỰC BẢNG PHÂN CA LÀM
+                // KHU VỰC BẢNG PHÂN CA LÀM ĐÃ ĐƯỢC TỐI ƯU CÂN BẰNG TỶ LỆ KÍCH THƯỚC
                 Rectangle {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    color: "#FFFFFF"
+                    color: Qt.rgba(1, 1, 1, 0.85)
                     radius: 12
                     border.color: "#E2E8F0"
 
                     ColumnLayout {
                         anchors.fill: parent
                         anchors.margins: 18
-                        spacing: 12
+                        spacing: 14
 
                         Text {
                             text: "☕ Ca làm việc: " + selectedDateStr
@@ -801,28 +842,47 @@ Page {
 
                         ColumnLayout {
                             Layout.fillWidth: true
-                            spacing: 8
+                            spacing: 12
 
+                            // DÒNG NHẬP LIỆU PHÂN CA ĐÃ CÂN CHỈNH KÍCH THƯỚC HỢP LÝ
                             RowLayout {
                                 Layout.fillWidth: true
-                                spacing: 10
+                                spacing: 8
 
                                 ComboBox {
                                     id: cbEmployee
-                                    Layout.preferredWidth: 220
+                                    Layout.fillWidth: true // Mở rộng chiếm trọn không gian trống còn lại
+                                    Layout.minimumWidth: 180
+                                    Layout.preferredHeight: 38
                                     textRole: "text"
-                                    font.pixelSize: 13
+                                    font.pixelSize: 9
                                     displayText: currentIndex === -1 ? "--- Chọn nhân sự ---" : currentText
+
+                                    delegate: ItemDelegate {
+                                            width: cbEmployee.width
+                                            contentItem: Text {
+                                                text: model.text
+                                                font.pixelSize: 9 // 👈 Cỡ chữ danh sách xổ xuống
+                                                color: "#1E293B"
+                                                elide: Text.ElideRight
+                                                verticalAlignment: Text.AlignVCenter
+                                            }
+                                            highlighted: cbEmployee.highlightedIndex === index
+                                        }
+                                    onCurrentIndexChanged: {
+                                        txtShiftTime.text = "" // Xóa giờ làm khi chuyển qua nhân sự khác
+                                    }
                                 }
 
                                 TextField {
                                     id: txtShiftTime
-                                    placeholderText: "VD: 08:00-12:00"
-                                    Layout.preferredWidth: 140
-                                    Layout.preferredHeight: 40
+                                    placeholderText: "08:00-12:00"
+                                    Layout.preferredWidth: 125 // Vừa khít chuỗi thời gian HH:MM-HH:MM
+                                    Layout.preferredHeight: 38
                                     verticalAlignment: TextInput.AlignVCenter
-                                    leftPadding: 10
-                                    font.pixelSize: 13
+                                    leftPadding: 8
+                                    rightPadding: 8
+                                    font.pixelSize: 12
 
                                     background: Rectangle {
                                         radius: 8
@@ -835,7 +895,11 @@ Page {
                                     Keys.onEnterPressed: repeatMonths.forceActiveFocus()
                                 }
 
-                                Text { text: "Lặp lại (tháng):"; font.pixelSize: 13; color: "#475569" }
+                                Text {
+                                    text: "Lặp (tháng):"
+                                    font.pixelSize: 12
+                                    color: "#1E293B"
+                                }
 
                                 SpinBox {
                                     id: repeatMonths
@@ -843,7 +907,8 @@ Page {
                                     to: 12
                                     value: 0
                                     editable: true
-                                    Layout.preferredWidth: 90
+                                    Layout.preferredWidth: 85 // Nhỏ gọn vừa đủ hiển thị số 0-12
+                                    Layout.preferredHeight: 38
 
                                     Keys.onReturnPressed: btnAddShift.clicked()
                                     Keys.onEnterPressed: btnAddShift.clicked()
@@ -854,7 +919,8 @@ Page {
                                     text: "➕ Phân ca"
                                     highlighted: true
                                     font.bold: true
-                                    Layout.preferredHeight: 40
+                                    Layout.preferredHeight: 38
+                                    Layout.preferredWidth: 105 // Kích thước gọn gàng vừa vặn
 
                                     onClicked: {
                                         if (cbEmployee.currentIndex < 0) {
@@ -863,7 +929,7 @@ Page {
                                             return
                                         }
                                         if (txtShiftTime.text.trim() === "") {
-                                            shiftErrorDialog.message = "⚠️ Vui lòng nhập khung giờ làm việc!"
+                                            shiftErrorDialog.message = "⚠️ Vui lòng nhập hoặc chọn khung giờ làm việc!"
                                             shiftErrorDialog.open()
                                             return
                                         }
@@ -874,13 +940,51 @@ Page {
                                         }
 
                                         var emp = allEmployeesModel.get(cbEmployee.currentIndex)
+                                        var role = emp.empRole
+                                        var tStr = txtShiftTime.text.trim()
+
+                                        var parts = tStr.split("-")
+                                        var startT = parts[0].split(":")
+                                        var endT = parts[1].split(":")
+                                        var startHour = parseInt(startT[0], 10) + parseInt(startT[1], 10) / 60.0
+                                        var endHour = parseInt(endT[0], 10) + parseInt(endT[1], 10) / 60.0
+
+                                        if (endHour <= startHour) {
+                                            shiftErrorDialog.message = "⚠️ Giờ kết thúc ca làm phải lớn hơn giờ bắt đầu!"
+                                            shiftErrorDialog.open()
+                                            return
+                                        }
+
+                                        if (startHour < 7 || endHour > 22) {
+                                            shiftErrorDialog.message = "⚠️ Khung giờ làm việc phải nằm trong khoảng từ 07:00 đến 22:00!"
+                                            shiftErrorDialog.open()
+                                            return
+                                        }
+
+                                        // KIỂM TRA ĐIỀU KIỆN CHẶT CHẼ THEO ROLE
+                                        if (role.indexOf("Full-time") !== -1 || role.indexOf("Bảo vệ") !== -1) {
+                                            if (tStr !== "07:00-15:00" && tStr !== "14:00-22:00") {
+                                                shiftErrorDialog.message = "⚠️ Nhân viên Full-time/Bảo vệ chỉ được phép phân ca:\n• 07:00-15:00\n• 14:00-22:00"
+                                                shiftErrorDialog.open()
+                                                return
+                                            }
+                                        } else {
+                                            // Part-time
+                                            var duration = endHour - startHour
+                                            if (duration < 3 || duration > 5) {
+                                                shiftErrorDialog.message = "⚠️ Nhân viên Part-time chỉ được làm ca từ 3 đến 5 tiếng!"
+                                                shiftErrorDialog.open()
+                                                return
+                                            }
+                                        }
+
                                         if (typeof coffeeSystem !== "undefined" && coffeeSystem.addShift) {
-                                            if (coffeeSystem.addShift(emp.empId, emp.empName, emp.empPhone, selectedDateStr, txtShiftTime.text.trim(), repeatMonths.value)) {
+                                            if (coffeeSystem.addShift(emp.empId, emp.empName, emp.empPhone, selectedDateStr, tStr, repeatMonths.value)) {
                                                 refreshShifts()
                                                 txtShiftTime.text = ""
                                                 repeatMonths.value = 0
                                             } else {
-                                                shiftErrorDialog.message = "⚠️ Đăng ký ca làm không hợp lệ!\n\nLý do có thể do:\n• Ca Part-time phải dài từ 3 đến 5 tiếng.\n• Khung giờ nằm ngoài 07:00 đến 22:00.\n• Ca làm bị trùng/chồng giờ với ca đã có.\n• Vượt quá giới hạn giờ làm (12h/ngày, 48h/tuần)."
+                                                shiftErrorDialog.message = "⚠️ Đăng ký ca làm không hợp lệ!\n\nLý do có thể do:\n• Ca làm bị trùng/chồng giờ với ca đã có của nhân viên."
                                                 shiftErrorDialog.open()
                                             }
                                         }
@@ -888,41 +992,51 @@ Page {
                                 }
                             }
 
+                            // DÒNG GỢI Ý (Render tùy thuộc Role của nv được chọn)
                             RowLayout {
-                                spacing: 8
-                                Layout.topMargin: 2
+                                Layout.fillWidth: true
+                                spacing: 10
 
                                 Text {
                                     text: selectedEmpRole !== ""
-                                          ? "Gợi ý ca (" + selectedEmpRole + "):"
-                                          : "Gợi ý ca nhanh:"
+                                          ? "Gợi ý (" + selectedEmpRole + "):"
+                                          : "Gợi ý nhanh:"
                                     font.pixelSize: 12
                                     color: "#0F766E"
                                     font.bold: true
+                                    Layout.alignment: Qt.AlignTop
+                                    Layout.topMargin: 4
                                 }
 
-                                Repeater {
-                                    model: activeSuggestions
+                                Flow {
+                                    Layout.fillWidth: true
+                                    spacing: 8
 
-                                    Button {
-                                        implicitHeight: 28
-                                        background: Rectangle {
-                                            color: parent.hovered ? "#CCFBF1" : "#F1F5F9"
-                                            radius: 14
-                                            border.color: parent.hovered ? "#0D9488" : "#99F6E4"
-                                            border.width: 1
-                                        }
-                                        contentItem: Text {
-                                            text: modelData
-                                            font.pixelSize: 11
-                                            font.bold: true
-                                            color: "#0F766E"
-                                            horizontalAlignment: Text.AlignHCenter
-                                            verticalAlignment: Text.AlignVCenter
-                                        }
-                                        onClicked: {
-                                            txtShiftTime.text = modelData
-                                            repeatMonths.forceActiveFocus()
+                                    Repeater {
+                                        model: activeSuggestions
+
+                                        Button {
+                                            implicitHeight: 26
+                                            background: Rectangle {
+                                                color: parent.hovered ? "#CCFBF1" : "#F1F5F9"
+                                                radius: 13
+                                                border.color: parent.hovered ? "#0D9488" : "#99F6E4"
+                                                border.width: 1
+                                            }
+                                            contentItem: Text {
+                                                text: modelData
+                                                font.pixelSize: 11
+                                                font.bold: true
+                                                color: "#0F766E"
+                                                horizontalAlignment: Text.AlignHCenter
+                                                verticalAlignment: Text.AlignVCenter
+                                                leftPadding: 8
+                                                rightPadding: 8
+                                            }
+                                            onClicked: {
+                                                txtShiftTime.text = modelData
+                                                repeatMonths.forceActiveFocus()
+                                            }
                                         }
                                     }
                                 }
@@ -958,14 +1072,12 @@ Page {
                                     ColumnLayout {
                                         Layout.fillWidth: true
                                         spacing: 2
-
                                         Text {
                                             text: model.id + " - " + model.name
                                             font.bold: true
                                             font.pixelSize: 14
                                             color: "#1E293B"
                                         }
-
                                         Text {
                                             text: "📞 " + model.phone
                                             font.pixelSize: 12
@@ -981,7 +1093,6 @@ Page {
                                         color: shiftColors.bg
                                         border.color: shiftColors.border
                                         border.width: 1
-
                                         Text {
                                             text: "🕒 " + model.shiftTime
                                             anchors.centerIn: parent
@@ -994,13 +1105,11 @@ Page {
                                     Button {
                                         implicitHeight: 32
                                         implicitWidth: 70
-
                                         background: Rectangle {
                                             color: parent.pressed ? "#FEE2E2" : "#FFF1F2"
                                             radius: 6
                                             border.color: "#FDA4AF"
                                         }
-
                                         contentItem: Text {
                                             text: "❌ Xóa"
                                             color: "#BE123C"
@@ -1009,7 +1118,6 @@ Page {
                                             horizontalAlignment: Text.AlignHCenter
                                             verticalAlignment: Text.AlignVCenter
                                         }
-
                                         onClicked: {
                                             if (typeof coffeeSystem !== "undefined" && coffeeSystem.removeShift) {
                                                 coffeeSystem.removeShift(model.id, selectedDateStr, model.shiftTime)
@@ -1024,11 +1132,10 @@ Page {
                 }
             }
 
-            // TAB 2: DANH SÁCH HỒ SƠ NHÂN VIÊN
             Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                color: "#FFFFFF"
+                color: Qt.rgba(1, 1, 1, 0.85)
                 radius: 12
                 border.color: "#E2E8F0"
 
@@ -1052,13 +1159,11 @@ Page {
                             text: "📥 Import CSV"
                             font.bold: true
                             palette.buttonText: "#0369A1"
-
                             background: Rectangle {
                                 color: parent.pressed ? "#E0F2FE" : "#F0F9FF"
                                 radius: 8
                                 border.color: "#7DD3FC"
                             }
-
                             onClicked: importCsvDialog.open()
                         }
 
@@ -1066,13 +1171,11 @@ Page {
                             text: "📤 Export CSV"
                             font.bold: true
                             palette.buttonText: "#047857"
-
                             background: Rectangle {
                                 color: parent.pressed ? "#D1FAE5" : "#ECFDF5"
                                 radius: 8
                                 border.color: "#6EE7B7"
                             }
-
                             onClicked: exportCsvDialog.open()
                         }
                     }
@@ -1087,13 +1190,13 @@ Page {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         model: allEmployeesModel
-                        cellWidth: 310
-                        cellHeight: 120
+                        cellWidth: Math.max(300, (width - 20) / Math.floor(width / 300))
+                        cellHeight: 125
                         clip: true
 
                         delegate: Rectangle {
-                            width: 295
-                            height: 108
+                            width: GridView.view.cellWidth - 10
+                            height: 115
                             color: mouseArea.containsMouse ? "#F1F5F9" : "#F8FAFC"
                             radius: 12
                             border.color: mouseArea.containsMouse ? "#0F766E" : "#CBD5E1"
@@ -1163,6 +1266,7 @@ Page {
                                         font.pixelSize: 14
                                         color: "#1E293B"
                                         elide: Text.ElideRight
+                                        Layout.fillWidth: true
                                     }
 
                                     Text {
@@ -1192,8 +1296,6 @@ Page {
             }
         }
     }
-
-    // --- DIALOG TẠO HỒ SƠ MỚI ---
 
     Dialog {
         id: newEmpDialog
@@ -1264,10 +1366,7 @@ Page {
                                 border.width: newId.activeFocus ? 2 : 1
                                 color: "#F8FAFC"
                             }
-
                             onAccepted: newName.forceActiveFocus()
-                            Keys.onReturnPressed: newName.forceActiveFocus()
-                            Keys.onEnterPressed: newName.forceActiveFocus()
                         }
                     }
 
@@ -1290,17 +1389,13 @@ Page {
                                 border.width: newName.activeFocus ? 2 : 1
                                 color: "#F8FAFC"
                             }
-
                             onAccepted: newPhone.forceActiveFocus()
-                            Keys.onReturnPressed: newPhone.forceActiveFocus()
-                            Keys.onEnterPressed: newPhone.forceActiveFocus()
                         }
                     }
 
                     RowLayout {
                         Layout.fillWidth: true
                         spacing: 12
-
                         ColumnLayout {
                             Layout.fillWidth: true
                             spacing: 4
@@ -1321,10 +1416,7 @@ Page {
                                     border.width: newPhone.activeFocus ? 2 : 1
                                     color: "#F8FAFC"
                                 }
-
                                 onAccepted: newSalary.forceActiveFocus()
-                                Keys.onReturnPressed: newSalary.forceActiveFocus()
-                                Keys.onEnterPressed: newSalary.forceActiveFocus()
                             }
                         }
 
@@ -1348,10 +1440,7 @@ Page {
                                     border.width: newSalary.activeFocus ? 2 : 1
                                     color: "#F8FAFC"
                                 }
-
                                 onAccepted: newGender.forceActiveFocus()
-                                Keys.onReturnPressed: newGender.forceActiveFocus()
-                                Keys.onEnterPressed: newGender.forceActiveFocus()
                             }
                         }
                     }
@@ -1376,9 +1465,7 @@ Page {
                                     border.color: newGender.activeFocus ? "#0F766E" : "#CBD5E1"
                                     color: "#F8FAFC"
                                 }
-
                                 Keys.onReturnPressed: newRole.forceActiveFocus()
-                                Keys.onEnterPressed: newRole.forceActiveFocus()
                             }
                         }
 
@@ -1398,9 +1485,7 @@ Page {
                                     border.color: newRole.activeFocus ? "#0F766E" : "#CBD5E1"
                                     color: "#F8FAFC"
                                 }
-
                                 Keys.onReturnPressed: if (btnSaveForm.enabled) btnSaveForm.clicked()
-                                Keys.onEnterPressed: if (btnSaveForm.enabled) btnSaveForm.clicked()
                             }
                         }
                     }
@@ -1429,12 +1514,10 @@ Page {
                 Button {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 42
-
                     background: Rectangle {
                         color: parent.pressed ? "#E2E8F0" : "#F1F5F9"
                         radius: 8
                     }
-
                     contentItem: Text {
                         text: "Hủy bỏ"
                         color: "#475569"
@@ -1442,7 +1525,6 @@ Page {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
-
                     onClicked: {
                         newEmpError.text = ""
                         newEmpDialog.close()
@@ -1460,7 +1542,6 @@ Page {
                         color: parent.enabled ? (parent.pressed ? "#0D9488" : "#0F766E") : "#CBD5E1"
                         radius: 8
                     }
-
                     contentItem: Text {
                         text: "💾 Lưu hồ sơ"
                         color: "white"
@@ -1468,7 +1549,6 @@ Page {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
-
                     onClicked: {
                         if (!validatePhone(newPhone.text)) {
                             newEmpError.text = "⚠️ SĐT không hợp lệ (bắt đầu bằng 0 và đủ 10 chữ số)!"
@@ -1499,8 +1579,6 @@ Page {
             }
         }
     }
-
-    // --- DIALOG CHỈNH SỬA HỒ SƠ CHI TIẾT ---
 
     Dialog {
         id: editEmpDialog
@@ -1562,17 +1640,9 @@ Page {
                             font.pixelSize: 13
                             leftPadding: 12
                             verticalAlignment: TextInput.AlignVCenter
-
                             background: Rectangle {
-                                implicitHeight: 38
-                                radius: 8
-                                border.color: "#CBD5E1"
-                                color: "#E2E8F0"
+                                implicitHeight: 38; radius: 8; border.color: "#CBD5E1"; color: "#E2E8F0"
                             }
-
-                            onAccepted: editName.forceActiveFocus()
-                            Keys.onReturnPressed: editName.forceActiveFocus()
-                            Keys.onEnterPressed: editName.forceActiveFocus()
                         }
                     }
 
@@ -1587,17 +1657,9 @@ Page {
                             font.pixelSize: 13
                             leftPadding: 12
                             verticalAlignment: TextInput.AlignVCenter
-
                             background: Rectangle {
-                                implicitHeight: 38
-                                radius: 8
-                                border.color: editName.activeFocus ? "#0F766E" : "#CBD5E1"
-                                color: "#F8FAFC"
+                                implicitHeight: 38; radius: 8; border.color: editName.activeFocus ? "#0F766E" : "#CBD5E1"; color: "#F8FAFC"
                             }
-
-                            onAccepted: editPhone.forceActiveFocus()
-                            Keys.onReturnPressed: editPhone.forceActiveFocus()
-                            Keys.onEnterPressed: editPhone.forceActiveFocus()
                         }
                     }
 
@@ -1608,7 +1670,6 @@ Page {
                         ColumnLayout {
                             Layout.fillWidth: true
                             spacing: 4
-
                             Text { text: "Số điện thoại:"; font.bold: true; color: "#334155"; font.pixelSize: 12 }
                             TextField {
                                 id: editPhone
@@ -1618,24 +1679,15 @@ Page {
                                 inputMethodHints: Qt.ImhDialableCharactersOnly
                                 leftPadding: 12
                                 verticalAlignment: TextInput.AlignVCenter
-
                                 background: Rectangle {
-                                    implicitHeight: 38
-                                    radius: 8
-                                    border.color: editPhone.activeFocus ? "#0F766E" : "#CBD5E1"
-                                    color: "#F8FAFC"
+                                    implicitHeight: 38; radius: 8; border.color: editPhone.activeFocus ? "#0F766E" : "#CBD5E1"; color: "#F8FAFC"
                                 }
-
-                                onAccepted: editSalary.forceActiveFocus()
-                                Keys.onReturnPressed: editSalary.forceActiveFocus()
-                                Keys.onEnterPressed: editSalary.forceActiveFocus()
                             }
                         }
 
                         ColumnLayout {
                             Layout.fillWidth: true
                             spacing: 4
-
                             Text { text: "Lương/giờ (VNĐ):"; font.bold: true; color: "#334155"; font.pixelSize: 12 }
                             TextField {
                                 id: editSalary
@@ -1645,17 +1697,9 @@ Page {
                                 inputMethodHints: Qt.ImhDigitsOnly
                                 leftPadding: 12
                                 verticalAlignment: TextInput.AlignVCenter
-
                                 background: Rectangle {
-                                    implicitHeight: 38
-                                    radius: 8
-                                    border.color: editSalary.activeFocus ? "#0F766E" : "#CBD5E1"
-                                    color: "#F8FAFC"
+                                    implicitHeight: 38; radius: 8; border.color: editSalary.activeFocus ? "#0F766E" : "#CBD5E1"; color: "#F8FAFC"
                                 }
-
-                                onAccepted: editDob.forceActiveFocus()
-                                Keys.onReturnPressed: editDob.forceActiveFocus()
-                                Keys.onEnterPressed: editDob.forceActiveFocus()
                             }
                         }
                     }
@@ -1667,19 +1711,14 @@ Page {
                         ColumnLayout {
                             Layout.fillWidth: true
                             spacing: 4
-
                             Text { text: "Giới tính:"; font.bold: true; color: "#334155"; font.pixelSize: 12 }
                             ComboBox {
                                 id: editGender
                                 Layout.fillWidth: true
                                 model: ["Nam", "Nữ", "Khác"]
                                 font.pixelSize: 13
-
                                 background: Rectangle {
-                                    implicitHeight: 38
-                                    radius: 8
-                                    border.color: "#CBD5E1"
-                                    color: "#F8FAFC"
+                                    implicitHeight: 38; radius: 8; border.color: "#CBD5E1"; color: "#F8FAFC"
                                 }
                             }
                         }
@@ -1687,19 +1726,14 @@ Page {
                         ColumnLayout {
                             Layout.fillWidth: true
                             spacing: 4
-
                             Text { text: "Vị trí / Ca:"; font.bold: true; color: "#334155"; font.pixelSize: 12 }
                             ComboBox {
                                 id: editRole
                                 Layout.fillWidth: true
                                 model: ["Part-time", "Full-time", "Bảo vệ (Full-time)"]
                                 font.pixelSize: 13
-
                                 background: Rectangle {
-                                    implicitHeight: 38
-                                    radius: 8
-                                    border.color: "#CBD5E1"
-                                    color: "#F8FAFC"
+                                    implicitHeight: 38; radius: 8; border.color: "#CBD5E1"; color: "#F8FAFC"
                                 }
                             }
                         }
@@ -1712,7 +1746,6 @@ Page {
                         ColumnLayout {
                             Layout.fillWidth: true
                             spacing: 4
-
                             Text { text: "Ngày sinh (DD/MM/YYYY):"; font.bold: true; color: "#334155"; font.pixelSize: 12 }
                             TextField {
                                 id: editDob
@@ -1721,24 +1754,15 @@ Page {
                                 font.pixelSize: 13
                                 leftPadding: 12
                                 verticalAlignment: TextInput.AlignVCenter
-
                                 background: Rectangle {
-                                    implicitHeight: 38
-                                    radius: 8
-                                    border.color: editDob.activeFocus ? "#0F766E" : "#CBD5E1"
-                                    color: "#F8FAFC"
+                                    implicitHeight: 38; radius: 8; border.color: editDob.activeFocus ? "#0F766E" : "#CBD5E1"; color: "#F8FAFC"
                                 }
-
-                                onAccepted: editCccd.forceActiveFocus()
-                                Keys.onReturnPressed: editCccd.forceActiveFocus()
-                                Keys.onEnterPressed: editCccd.forceActiveFocus()
                             }
                         }
 
                         ColumnLayout {
                             Layout.fillWidth: true
                             spacing: 4
-
                             Text { text: "Số CCCD/CMND:"; font.bold: true; color: "#334155"; font.pixelSize: 12 }
                             TextField {
                                 id: editCccd
@@ -1747,17 +1771,9 @@ Page {
                                 font.pixelSize: 13
                                 leftPadding: 12
                                 verticalAlignment: TextInput.AlignVCenter
-
                                 background: Rectangle {
-                                    implicitHeight: 38
-                                    radius: 8
-                                    border.color: editCccd.activeFocus ? "#0F766E" : "#CBD5E1"
-                                    color: "#F8FAFC"
+                                    implicitHeight: 38; radius: 8; border.color: editCccd.activeFocus ? "#0F766E" : "#CBD5E1"; color: "#F8FAFC"
                                 }
-
-                                onAccepted: editAvatar.forceActiveFocus()
-                                Keys.onReturnPressed: editAvatar.forceActiveFocus()
-                                Keys.onEnterPressed: editAvatar.forceActiveFocus()
                             }
                         }
                     }
@@ -1769,13 +1785,10 @@ Page {
                         ColumnLayout {
                             Layout.fillWidth: true
                             spacing: 4
-
                             Text { text: "Ảnh Đại Diện (URL/Path):"; font.bold: true; color: "#334155"; font.pixelSize: 12 }
-
                             RowLayout {
                                 Layout.fillWidth: true
                                 spacing: 6
-
                                 TextField {
                                     id: editAvatar
                                     placeholderText: "Đường dẫn file ảnh..."
@@ -1783,19 +1796,10 @@ Page {
                                     font.pixelSize: 12
                                     leftPadding: 10
                                     verticalAlignment: TextInput.AlignVCenter
-
                                     background: Rectangle {
-                                        implicitHeight: 38
-                                        radius: 8
-                                        border.color: "#CBD5E1"
-                                        color: "#F8FAFC"
+                                        implicitHeight: 38; radius: 8; border.color: "#CBD5E1"; color: "#F8FAFC"
                                     }
-
-                                    onAccepted: editCccdFront.forceActiveFocus()
-                                    Keys.onReturnPressed: editCccdFront.forceActiveFocus()
-                                    Keys.onEnterPressed: editCccdFront.forceActiveFocus()
                                 }
-
                                 Button {
                                     text: "📁"
                                     implicitWidth: 38; implicitHeight: 38
@@ -1806,29 +1810,20 @@ Page {
 
                         Image {
                             source: editAvatar.text !== "" ? editAvatar.text : ""
-                            Layout.preferredWidth: 60
-                            Layout.preferredHeight: 60
+                            Layout.preferredWidth: 60; Layout.preferredHeight: 60
                             fillMode: Image.PreserveAspectCrop
-                            clip: true
-                            mipmap: true
-                            smooth: true
+                            clip: true; mipmap: true; smooth: true
                             visible: source.toString() !== ""
-
                             Rectangle {
-                                anchors.fill: parent
-                                color: "transparent"
-                                border.color: "#CBD5E1"
-                                border.width: 1
-                                radius: 8
+                                anchors.fill: parent; color: "transparent"
+                                border.color: "#CBD5E1"; border.width: 1; radius: 8
                             }
-
                             MouseArea {
                                 anchors.fill: parent
                                 cursorShape: Qt.PointingHandCursor
                                 onClicked: {
                                     if (parent.source.toString() !== "") {
-                                        imagePreviewDialog.imageSource = parent.source
-                                        imagePreviewDialog.open()
+                                        imagePreviewDialog.imageSource = parent.source; imagePreviewDialog.open()
                                     }
                                 }
                             }
@@ -1842,13 +1837,10 @@ Page {
                         ColumnLayout {
                             Layout.fillWidth: true
                             spacing: 4
-
                             Text { text: "Ảnh CCCD (Mặt Trước):"; font.bold: true; color: "#334155"; font.pixelSize: 12 }
-
                             RowLayout {
                                 Layout.fillWidth: true
                                 spacing: 6
-
                                 TextField {
                                     id: editCccdFront
                                     placeholderText: "Đường dẫn file ảnh..."
@@ -1856,19 +1848,10 @@ Page {
                                     font.pixelSize: 12
                                     leftPadding: 10
                                     verticalAlignment: TextInput.AlignVCenter
-
                                     background: Rectangle {
-                                        implicitHeight: 38
-                                        radius: 8
-                                        border.color: "#CBD5E1"
-                                        color: "#F8FAFC"
+                                        implicitHeight: 38; radius: 8; border.color: "#CBD5E1"; color: "#F8FAFC"
                                     }
-
-                                    onAccepted: editCccdBack.forceActiveFocus()
-                                    Keys.onReturnPressed: editCccdBack.forceActiveFocus()
-                                    Keys.onEnterPressed: editCccdBack.forceActiveFocus()
                                 }
-
                                 Button {
                                     text: "📁"
                                     implicitWidth: 38; implicitHeight: 38
@@ -1879,29 +1862,20 @@ Page {
 
                         Image {
                             source: editCccdFront.text !== "" ? editCccdFront.text : ""
-                            Layout.preferredWidth: 80
-                            Layout.preferredHeight: 55
+                            Layout.preferredWidth: 80; Layout.preferredHeight: 55
                             fillMode: Image.PreserveAspectCrop
-                            clip: true
-                            mipmap: true
-                            smooth: true
+                            clip: true; mipmap: true; smooth: true
                             visible: source.toString() !== ""
-
                             Rectangle {
-                                anchors.fill: parent
-                                color: "transparent"
-                                border.color: "#CBD5E1"
-                                border.width: 1
-                                radius: 8
+                                anchors.fill: parent; color: "transparent"
+                                border.color: "#CBD5E1"; border.width: 1; radius: 8
                             }
-
                             MouseArea {
                                 anchors.fill: parent
                                 cursorShape: Qt.PointingHandCursor
                                 onClicked: {
                                     if (parent.source.toString() !== "") {
-                                        imagePreviewDialog.imageSource = parent.source
-                                        imagePreviewDialog.open()
+                                        imagePreviewDialog.imageSource = parent.source; imagePreviewDialog.open()
                                     }
                                 }
                             }
@@ -1915,13 +1889,10 @@ Page {
                         ColumnLayout {
                             Layout.fillWidth: true
                             spacing: 4
-
                             Text { text: "Ảnh CCCD (Mặt Sau):"; font.bold: true; color: "#334155"; font.pixelSize: 12 }
-
                             RowLayout {
                                 Layout.fillWidth: true
                                 spacing: 6
-
                                 TextField {
                                     id: editCccdBack
                                     placeholderText: "Đường dẫn file ảnh..."
@@ -1929,19 +1900,10 @@ Page {
                                     font.pixelSize: 12
                                     leftPadding: 10
                                     verticalAlignment: TextInput.AlignVCenter
-
                                     background: Rectangle {
-                                        implicitHeight: 38
-                                        radius: 8
-                                        border.color: "#CBD5E1"
-                                        color: "#F8FAFC"
+                                        implicitHeight: 38; radius: 8; border.color: "#CBD5E1"; color: "#F8FAFC"
                                     }
-
-                                    onAccepted: if (btnUpdateEmp.enabled) btnUpdateEmp.clicked()
-                                    Keys.onReturnPressed: if (btnUpdateEmp.enabled) btnUpdateEmp.clicked()
-                                    Keys.onEnterPressed: if (btnUpdateEmp.enabled) btnUpdateEmp.clicked()
                                 }
-
                                 Button {
                                     text: "📁"
                                     implicitWidth: 38; implicitHeight: 38
@@ -1952,29 +1914,20 @@ Page {
 
                         Image {
                             source: editCccdBack.text !== "" ? editCccdBack.text : ""
-                            Layout.preferredWidth: 80
-                            Layout.preferredHeight: 55
+                            Layout.preferredWidth: 80; Layout.preferredHeight: 55
                             fillMode: Image.PreserveAspectCrop
-                            clip: true
-                            mipmap: true
-                            smooth: true
+                            clip: true; mipmap: true; smooth: true
                             visible: source.toString() !== ""
-
                             Rectangle {
-                                anchors.fill: parent
-                                color: "transparent"
-                                border.color: "#CBD5E1"
-                                border.width: 1
-                                radius: 8
+                                anchors.fill: parent; color: "transparent"
+                                border.color: "#CBD5E1"; border.width: 1; radius: 8
                             }
-
                             MouseArea {
                                 anchors.fill: parent
                                 cursorShape: Qt.PointingHandCursor
                                 onClicked: {
                                     if (parent.source.toString() !== "") {
-                                        imagePreviewDialog.imageSource = parent.source
-                                        imagePreviewDialog.open()
+                                        imagePreviewDialog.imageSource = parent.source; imagePreviewDialog.open()
                                     }
                                 }
                             }
@@ -2005,13 +1958,11 @@ Page {
                 Button {
                     Layout.preferredWidth: 120
                     Layout.preferredHeight: 42
-
                     background: Rectangle {
                         color: parent.pressed ? "#FEE2E2" : "#FFF1F2"
                         radius: 8
                         border.color: "#FDA4AF"
                     }
-
                     contentItem: Text {
                         text: "🗑️ Xoá hồ sơ"
                         color: "#BE123C"
@@ -2019,19 +1970,16 @@ Page {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
-
                     onClicked: confirmDeleteDialog.open()
                 }
 
                 Button {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 42
-
                     background: Rectangle {
                         color: parent.pressed ? "#CBD5E1" : "#F1F5F9"
                         radius: 8
                     }
-
                     contentItem: Text {
                         text: "Đóng"
                         color: "#475569"
@@ -2039,7 +1987,6 @@ Page {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
-
                     onClicked: editEmpDialog.close()
                 }
 
@@ -2054,7 +2001,6 @@ Page {
                         color: parent.enabled ? (parent.pressed ? "#0D9488" : "#0F766E") : "#CBD5E1"
                         radius: 8
                     }
-
                     contentItem: Text {
                         text: "🔄 Cập nhật"
                         color: "white"
@@ -2062,31 +2008,15 @@ Page {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
-
                     onClicked: {
-                        if (!validatePhone(editPhone.text)) {
-                            editEmpError.text = "⚠️ Số điện thoại không hợp lệ!"
-                            return
-                        }
-                        if (!validateDob(editDob.text)) {
-                            editEmpError.text = "⚠️ Ngày sinh phải đúng dạng DD/MM/YYYY!"
-                            return
-                        }
-                        if (!validateCccd(editCccd.text)) {
-                            editEmpError.text = "⚠️ Số CCCD phải đủ 12 chữ số!"
-                            return
-                        }
+                        if (!validatePhone(editPhone.text)) { editEmpError.text = "⚠️ Số điện thoại không hợp lệ!"; return }
+                        if (!validateDob(editDob.text)) { editEmpError.text = "⚠️ Ngày sinh phải đúng dạng DD/MM/YYYY!"; return }
+                        if (!validateCccd(editCccd.text)) { editEmpError.text = "⚠️ Số CCCD phải đủ 12 chữ số!"; return }
                         var salaryVal = parseFloat(editSalary.text)
-                        if (isNaN(salaryVal) || salaryVal < 0) {
-                            editEmpError.text = "⚠️ Mức lương không hợp lệ!"
-                            return
-                        }
+                        if (isNaN(salaryVal) || salaryVal < 0) { editEmpError.text = "⚠️ Mức lương không hợp lệ!"; return }
 
                         var dupError = checkDuplicate(editId.text.trim(), editPhone.text.trim(), editId.text.trim())
-                        if (dupError !== "") {
-                            editEmpError.text = "⚠️ " + dupError
-                            return
-                        }
+                        if (dupError !== "") { editEmpError.text = "⚠️ " + dupError; return }
 
                         if (typeof coffeeSystem !== "undefined" && coffeeSystem.updateEmployeeCSV) {
                             if (coffeeSystem.updateEmployeeCSV(
