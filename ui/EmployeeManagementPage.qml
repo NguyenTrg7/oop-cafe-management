@@ -60,6 +60,7 @@ Page {
         calendarModel.clear()
         var firstDay = new Date(year, month, 1)
         var lastDay = new Date(year, month + 1, 0)
+        // firstDay.getDay(): 0 = CN, 1 = T2, 2 = T3, ..., 6 = T7
         var startOffset = (firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1)
 
         for (var i = 0; i < startOffset; i++) {
@@ -74,8 +75,8 @@ Page {
     }
 
     function changeMonth(offset) {
-        var tempDate = new Date(currentDate.getTime())
-        tempDate.setMonth(tempDate.getMonth() + offset)
+        // Khởi tạo ngày 1 của tháng mới để tránh lỗi tràn ngày trong JS
+        var tempDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + offset, 1)
         currentDate = tempDate
         generateCalendar(currentDate.getMonth(), currentDate.getFullYear())
         refreshData()
@@ -222,8 +223,8 @@ Page {
 
     Dialog {
         id: imagePreviewDialog
-        width: Math.min(empPage.width * 0.85, 700)
-        height: Math.min(empPage.height * 0.85, 550)
+        width: Math.min(empPage.width > 0 ? empPage.width * 0.85 : 700, 700)
+        height: Math.min(empPage.height > 0 ? empPage.height * 0.85 : 550, 550)
         modal: true
         padding: 16
         x: Math.max(0, (empPage.width - width) / 2)
@@ -277,7 +278,7 @@ Page {
 
     Dialog {
         id: shiftErrorDialog
-        width: Math.min(420, empPage.width * 0.9)
+        width: Math.min(420, empPage.width > 0 ? empPage.width - 24 : 420)
         modal: true
         padding: 20
         x: Math.max(0, (empPage.width - width) / 2)
@@ -353,7 +354,7 @@ Page {
 
     Dialog {
         id: confirmDeleteDialog
-        width: Math.min(400, empPage.width * 0.9)
+        width: Math.min(400, empPage.width > 0 ? empPage.width - 24 : 400)
         modal: true
         padding: 20
         x: Math.max(0, (empPage.width - width) / 2)
@@ -466,8 +467,8 @@ Page {
 
     Dialog {
         id: monthYearDialog
-        width: Math.min(320, empPage.width * 0.9)
-        height: Math.min(300, empPage.height * 0.9)
+        width: Math.min(320, empPage.width > 0 ? empPage.width - 24 : 320)
+        height: Math.min(300, empPage.height > 0 ? empPage.height - 40 : 300)
         modal: true
         padding: 16
         x: Math.max(0, (empPage.width - width) / 2)
@@ -626,7 +627,7 @@ Page {
                 spacing: 16
 
                 Rectangle {
-                    Layout.preferredWidth: parent.width * 0.35 // Tự dãn thay vì fix 360
+                    Layout.preferredWidth: 360
                     Layout.fillHeight: true
                     color: "#FFFFFF"
                     radius: 12
@@ -705,7 +706,9 @@ Page {
                                         Layout.fillWidth: true
                                         Layout.preferredHeight: 38
                                         text: model.dayNumber
-                                        visible: model.isCurrentMonth
+                                        // Sử dụng opacity và enabled thay vì visible để giữ nguyên vị trí lưới
+                                        opacity: model.isCurrentMonth ? 1.0 : 0.0
+                                        enabled: model.isCurrentMonth
 
                                         property bool isSelected: model.dateStr === selectedDateStr
                                         property bool isToday: model.dateStr === todayStr
@@ -806,7 +809,7 @@ Page {
 
                                 ComboBox {
                                     id: cbEmployee
-                                    Layout.fillWidth: true
+                                    Layout.preferredWidth: 220
                                     textRole: "text"
                                     font.pixelSize: 13
                                     displayText: currentIndex === -1 ? "--- Chọn nhân sự ---" : currentText
@@ -852,7 +855,6 @@ Page {
                                     highlighted: true
                                     font.bold: true
                                     Layout.preferredHeight: 40
-                                    Layout.preferredWidth: 100
 
                                     onClicked: {
                                         if (cbEmployee.currentIndex < 0) {
@@ -889,7 +891,6 @@ Page {
                             RowLayout {
                                 spacing: 8
                                 Layout.topMargin: 2
-                                Layout.fillWidth: true
 
                                 Text {
                                     text: selectedEmpRole !== ""
@@ -1086,12 +1087,12 @@ Page {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         model: allEmployeesModel
-                        cellWidth: Math.max(310, width / Math.max(1, Math.floor(width / 310)))
+                        cellWidth: 310
                         cellHeight: 120
                         clip: true
 
                         delegate: Rectangle {
-                            width: GridView.view.cellWidth - 15
+                            width: 295
                             height: 108
                             color: mouseArea.containsMouse ? "#F1F5F9" : "#F8FAFC"
                             radius: 12
@@ -1192,12 +1193,12 @@ Page {
         }
     }
 
-    // --- DIALOG TẠO HỒ SƠ MỚI (ĐÃ SỬA LỖI DÃN KHUNG) ---
+    // --- DIALOG TẠO HỒ SƠ MỚI ---
 
     Dialog {
         id: newEmpDialog
-        width: Math.min(500, empPage.width * 0.9)
-        height: Math.min(550, empPage.height * 0.9)
+        width: Math.min(500, empPage.width > 0 ? empPage.width - 24 : 500)
+        height: Math.min(550, empPage.height > 0 ? empPage.height - 24 : 550)
         modal: true
         padding: 20
         x: Math.max(0, (empPage.width - width) / 2)
@@ -1499,12 +1500,12 @@ Page {
         }
     }
 
-    // --- DIALOG CHỈNH SỬA HỒ SƠ CHI TIẾT (ĐÃ SỬA LỖI DÃN KHUNG) ---
+    // --- DIALOG CHỈNH SỬA HỒ SƠ CHI TIẾT ---
 
     Dialog {
         id: editEmpDialog
-        width: Math.min(600, empPage.width * 0.95)
-        height: Math.min(660, empPage.height * 0.95)
+        width: Math.min(600, empPage.width > 0 ? empPage.width - 24 : 600)
+        height: Math.min(660, empPage.height > 0 ? empPage.height - 24 : 660)
         modal: true
         padding: 20
         x: Math.max(0, (empPage.width - width) / 2)

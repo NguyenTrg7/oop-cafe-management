@@ -2,8 +2,8 @@
 #include <iostream>
 
 Employee::Employee(const QString &id,
-                   const QString &phone,
                    const QString &name,
+                   const QString &phone,
                    double salary,
                    const QString &gender,
                    const QString &jobRole,
@@ -70,8 +70,9 @@ double Employee::calculateSalary(double normalHours, double weekdayOtHours, doub
 void Employee::displayInfo() const
 {
     std::cout << "ID: " << getId().toStdString()
-    << " | SĐT: " << m_phone.toStdString()
     << " | Tên: " << getName().toStdString()
+    << " | SĐT: " << m_phone.toStdString()
+    << " | Giới tính: " << m_gender.toStdString()
     << " | CCCD: " << m_cccd.toStdString()
     << " | Chức vụ: " << m_jobRole.toStdString()
     << std::endl;
