@@ -144,9 +144,7 @@ Page {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.top: parent.top
-                anchors.leftMargin: 24
-                anchors.rightMargin: 24
-                anchors.topMargin: 20
+                anchors.margins: Math.max(16, scrollView.availableWidth * 0.05) // Tự dãn khoảng cách lề
                 spacing: 20
 
                 // Header tiêu đề
@@ -242,7 +240,7 @@ Page {
                 }
 
                 GridLayout {
-                    columns: 2
+                    columns: managerPage.width < 600 ? 1 : 2 // Auto xuống dòng nếu màn hình quá hẹp
                     Layout.fillWidth: true
                     columnSpacing: 15
                     rowSpacing: 15
@@ -272,7 +270,7 @@ Page {
                 }
 
                 GridLayout {
-                    columns: 2
+                    columns: managerPage.width < 600 ? 1 : 2 // Auto xuống dòng nếu màn hình quá hẹp
                     Layout.fillWidth: true
                     columnSpacing: 15
                     rowSpacing: 15

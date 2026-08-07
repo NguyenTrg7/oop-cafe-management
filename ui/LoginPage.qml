@@ -125,8 +125,9 @@ Rectangle {
 
     Rectangle {
         id: glassBox
-        width: 380
-        height: 400
+        // Tự động căn chỉnh độ rộng theo màn hình, tối đa 420px
+        width: Math.min(420, parent.width * 0.9)
+        height: Math.min(420, parent.height * 0.9)
         anchors.centerIn: parent
         color: "#80FFFFFF"
         radius: 20
@@ -135,12 +136,13 @@ Rectangle {
 
         Column {
             anchors.centerIn: parent
+            width: parent.width * 0.85
             spacing: 25
 
             Text {
                 id: titleText
                 text: qsTr("☕ GIANG'S COFFEE")
-                font.pixelSize: 28
+                font.pixelSize: Math.max(18, Math.min(28, glassBox.width * 0.08)) // Chữ tự nhỏ lại
                 font.bold: true
                 color: "#0369A1"
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -148,16 +150,22 @@ Rectangle {
 
             Column {
                 id: loginForm
+                width: parent.width
                 spacing: 15
 
                 Column {
+                    width: parent.width
                     spacing: 5
                     Text { text: qsTr("Tên đăng nhập"); font.pixelSize: 14; font.bold: true; color: "#0284C7" }
                     TextField {
                         id: loginUserInput
                         focus: true
                         placeholderText: qsTr("Nhập tài khoản của bạn ...")
-                        leftPadding: 40; width: 300; height: 48; font.pixelSize: 15; color: "#333333"
+                        leftPadding: 40
+                        width: parent.width // Mở rộng full theo cột
+                        height: 48
+                        font.pixelSize: 15
+                        color: "#333333"
                         verticalAlignment: TextInput.AlignVCenter
                         background: Rectangle { radius: 12; color: "#FFFFFF"; border.color: "#BAE6FD"; border.width: 1 }
                         Text { text: "👤"; font.pixelSize: 18; anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter; anchors.leftMargin: 12; opacity: 0.7 }
@@ -166,13 +174,18 @@ Rectangle {
                 }
 
                 Column {
+                    width: parent.width
                     spacing: 5
                     Text { text: qsTr("Mật khẩu"); font.pixelSize: 14; font.bold: true; color: "#0284C7" }
                     TextField {
                         id: loginPassInput
                         placeholderText: qsTr("Nhập mật khẩu...")
                         echoMode: TextInput.Password
-                        leftPadding: 40; width: 300; height: 48; font.pixelSize: 15; color: "#333333"
+                        leftPadding: 40
+                        width: parent.width // Mở rộng full theo cột
+                        height: 48
+                        font.pixelSize: 15
+                        color: "#333333"
                         verticalAlignment: TextInput.AlignVCenter
                         background: Rectangle { radius: 12; color: "#FFFFFF"; border.color: "#BAE6FD"; border.width: 1 }
                         Text { text: "🔒"; font.pixelSize: 18; anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter; anchors.leftMargin: 12; opacity: 0.7 }
@@ -186,13 +199,18 @@ Rectangle {
                     color: "#E53935"
                     font.pixelSize: 14
                     visible: false
+                    wrapMode: Text.WordWrap
+                    width: parent.width
+                    horizontalAlignment: Text.AlignHCenter
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
 
                 Button {
                     id: loginBtn
                     text: qsTr("ĐĂNG NHẬP")
-                    width: 300; height: 52; anchors.horizontalCenter: parent.horizontalCenter
+                    width: parent.width // Co giãn nút bấm
+                    height: 52
+                    anchors.horizontalCenter: parent.horizontalCenter
                     background: Rectangle {
                         radius: 12
                         gradient: Gradient {
