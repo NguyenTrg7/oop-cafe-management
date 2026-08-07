@@ -45,17 +45,17 @@ Item {
 
             Item { Layout.fillWidth: true }
 
-            Button {
-                text: "← Quay lại"
-                onClicked: {
-                    if (typeof orderPageRoot !== "undefined") {
-                        orderPageRoot.showingInventory = false
-                        orderPageRoot.showingHistory = false
-                    } else if (StackView.view) {
-                        StackView.view.pop()
-                    }
-                }
-            }
+            // Button {
+            //     text: "← Quay lại"
+            //     onClicked: {
+            //         if (typeof orderPageRoot !== "undefined") {
+            //             orderPageRoot.showingInventory = false
+            //             orderPageRoot.showingHistory = false
+            //         } else if (StackView.view) {
+            //             StackView.view.pop()
+            //         }
+            //     }
+            // }
         }
 
         ListView {
