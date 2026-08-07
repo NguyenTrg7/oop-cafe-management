@@ -56,59 +56,383 @@ Page {
 
     Dialog {
         id: editDialog
-        title: "Sửa bàn " + editingTable
         modal: true
         anchors.centerIn: parent
-        width: 340
-        standardButtons: Dialog.Ok | Dialog.Cancel
+        width: Math.min(400, seatingPage.width > 0 ? seatingPage.width - 48 : 400)
+        padding: 0
+        header: Item { implicitHeight: 0 }
+        footer: Item { implicitHeight: 0 }
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
         background: Rectangle {
             color: "#FFFFFF"
-            radius: 12
+            radius: 16
             border.color: "#E2E8F0"
+            border.width: 1
         }
 
-        ColumnLayout {
-            anchors.fill: parent
-            spacing: 14
+        contentItem: ColumnLayout {
+            spacing: 0
 
-            Label { text: "Hình dạng:"; color: "#334155"; font.bold: true }
-            ComboBox {
-                id: editShape
-                model: ["Vuông", "Tròn"]
+            // ===== HEADER =====
+            Rectangle {
                 Layout.fillWidth: true
-            }
+                implicitHeight: 64
+                color: "#F0F9FF"
+                radius: 16
 
-            Label { text: "Số ghế:"; color: "#334155"; font.bold: true }
-            SpinBox {
-                id: editCapacity
-                from: 1
-                to: 20
-                value: 4
-                Layout.fillWidth: true
-            }
+                // Che bo góc dưới để header liền mạch
+                Rectangle {
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    height: 16
+                    color: "#F0F9FF"
+                }
 
-            Label { text: "Ghi chú khách đặt bàn:"; color: "#334155"; font.bold: true }
-            TextArea {
-                id: editNote
-                Layout.fillWidth: true
-                Layout.preferredHeight: 72
-                wrapMode: TextArea.Wrap
-                placeholderText: "VD: Anh Nam - 4 người - 18:30"
-                background: Rectangle {
-                    radius: 8
-                    color: "#F8FAFC"
-                    border.color: "#CBD5E1"
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.leftMargin: 20
+                    anchors.rightMargin: 16
+                    spacing: 12
+
+                    Rectangle {
+                        width: 40
+                        height: 40
+                        radius: 10
+                        color: "#E0F2FE"
+                        Layout.alignment: Qt.AlignVCenter
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "🪑"
+                            font.pixelSize: 20
+                        }
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignVCenter
+                        spacing: 2
+
+                        Text {
+                            text: "Chỉnh sửa bàn"
+                            font.pixelSize: 16
+                            font.bold: true
+                            color: "#0369A1"
+                        }
+                        Text {
+                            text: "Bàn số " + editingTable
+                            font.pixelSize: 13
+                            color: "#64748B"
+                        }
+                    }
+
+                    // Nút đóng góc phải
+                    Button {
+                        implicitWidth: 32
+                        implicitHeight: 32
+                        Layout.alignment: Qt.AlignVCenter
+                        HoverHandler { cursorShape: Qt.PointingHandCursor }
+                        background: Rectangle {
+                            color: parent.hovered ? "#FEE2E2" : "transparent"
+                            radius: 8
+                        }
+                        contentItem: Text {
+                            text: "✕"
+                            color: parent.hovered ? "#DC2626" : "#94A3B8"
+                            font.pixelSize: 14
+                            font.bold: true
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                        onClicked: editDialog.close()
+                    }
                 }
             }
-        }
 
-        onAccepted: {
-            if (typeof coffeeSystem !== "undefined") {
-                if (coffeeSystem.editTable) coffeeSystem.editTable(editingTable, editShape.currentText, editCapacity.value)
-                if (coffeeSystem.setTableNote) coffeeSystem.setTableNote(editingTable, editNote.text.trim())
+            // ===== BODY =====
+            ColumnLayout {
+                Layout.fillWidth: true
+                Layout.margins: 20
+                spacing: 16
+
+                // Hình dạng
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 6
+
+                    Text {
+                        text: "Hình dạng bàn"
+                        font.pixelSize: 13
+                        font.bold: true
+                        color: "#334155"
+                    }
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 10
+
+                        // Nút Vuông
+                        Rectangle {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 48
+                            radius: 10
+                            color: editShape.currentIndex === 0 ? "#E0F2FE" : "#F8FAFC"
+                            border.color: editShape.currentIndex === 0 ? "#0284C7" : "#E2E8F0"
+                            border.width: editShape.currentIndex === 0 ? 2 : 1
+
+                            RowLayout {
+                                anchors.centerIn: parent
+                                spacing: 8
+                                Rectangle {
+                                    width: 18
+                                    height: 18
+                                    radius: 3
+                                    color: editShape.currentIndex === 0 ? "#0284C7" : "#CBD5E1"
+                                }
+                                Text {
+                                    text: "Vuông"
+                                    font.bold: true
+                                    font.pixelSize: 14
+                                    color: editShape.currentIndex === 0 ? "#0369A1" : "#64748B"
+                                }
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: editShape.currentIndex = 0
+                            }
+                        }
+
+                        // Nút Tròn
+                        Rectangle {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 48
+                            radius: 10
+                            color: editShape.currentIndex === 1 ? "#E0F2FE" : "#F8FAFC"
+                            border.color: editShape.currentIndex === 1 ? "#0284C7" : "#E2E8F0"
+                            border.width: editShape.currentIndex === 1 ? 2 : 1
+
+                            RowLayout {
+                                anchors.centerIn: parent
+                                spacing: 8
+                                Rectangle {
+                                    width: 18
+                                    height: 18
+                                    radius: 9
+                                    color: editShape.currentIndex === 1 ? "#0284C7" : "#CBD5E1"
+                                }
+                                Text {
+                                    text: "Tròn"
+                                    font.bold: true
+                                    font.pixelSize: 14
+                                    color: editShape.currentIndex === 1 ? "#0369A1" : "#64748B"
+                                }
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: editShape.currentIndex = 1
+                            }
+                        }
+                    }
+
+                    // ComboBox ẩn (giữ để logic cũ vẫn chạy)
+                    ComboBox {
+                        id: editShape
+                        model: ["Vuông", "Tròn"]
+                        visible: false
+                        Layout.preferredHeight: 0
+                    }
+                }
+
+                // Số ghế
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 6
+
+                    Text {
+                        text: "Số ghế"
+                        font.pixelSize: 13
+                        font.bold: true
+                        color: "#334155"
+                    }
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 12
+
+                        Button {
+                            implicitWidth: 44
+                            implicitHeight: 44
+                            HoverHandler { cursorShape: Qt.PointingHandCursor }
+                            background: Rectangle {
+                                color: parent.pressed ? "#E0F2FE" : (parent.hovered ? "#F0F9FF" : "#F8FAFC")
+                                radius: 10
+                                border.color: "#CBD5E1"
+                            }
+                            contentItem: Text {
+                                text: "−"
+                                font.pixelSize: 20
+                                font.bold: true
+                                color: "#0369A1"
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                            }
+                            onClicked: {
+                                if (editCapacity.value > editCapacity.from)
+                                    editCapacity.value -= 1
+                            }
+                        }
+
+                        Rectangle {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 44
+                            radius: 10
+                            color: "#F0F9FF"
+                            border.color: "#BAE6FD"
+
+                            Text {
+                                anchors.centerIn: parent
+                                text: editCapacity.value + " ghế"
+                                font.pixelSize: 18
+                                font.bold: true
+                                color: "#0369A1"
+                            }
+                        }
+
+                        Button {
+                            implicitWidth: 44
+                            implicitHeight: 44
+                            HoverHandler { cursorShape: Qt.PointingHandCursor }
+                            background: Rectangle {
+                                color: parent.pressed ? "#E0F2FE" : (parent.hovered ? "#F0F9FF" : "#F8FAFC")
+                                radius: 10
+                                border.color: "#CBD5E1"
+                            }
+                            contentItem: Text {
+                                text: "+"
+                                font.pixelSize: 20
+                                font.bold: true
+                                color: "#0369A1"
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                            }
+                            onClicked: {
+                                if (editCapacity.value < editCapacity.to)
+                                    editCapacity.value += 1
+                            }
+                        }
+
+                        // SpinBox ẩn (giữ logic)
+                        SpinBox {
+                            id: editCapacity
+                            from: 1
+                            to: 20
+                            value: 4
+                            visible: false
+                            Layout.preferredWidth: 0
+                            Layout.preferredHeight: 0
+                        }
+                    }
+                }
+
+                // Ghi chú
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 6
+
+                    Text {
+                        text: "Ghi chú khách đặt bàn"
+                        font.pixelSize: 13
+                        font.bold: true
+                        color: "#334155"
+                    }
+
+                    TextArea {
+                        id: editNote
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 88
+                        wrapMode: TextArea.Wrap
+                        placeholderText: "VD: Anh Nam – 4 người – 18:30"
+                        font.pixelSize: 14
+                        color: "#1E293B"
+                        leftPadding: 12
+                        rightPadding: 12
+                        topPadding: 10
+                        bottomPadding: 10
+                        background: Rectangle {
+                            radius: 10
+                            color: "#F8FAFC"
+                            border.color: editNote.activeFocus ? "#0284C7" : "#E2E8F0"
+                            border.width: editNote.activeFocus ? 2 : 1
+                        }
+                    }
+                }
             }
-            refresh()
+
+            // ===== FOOTER =====
+            Rectangle {
+                Layout.fillWidth: true
+                implicitHeight: 1
+                color: "#E2E8F0"
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.margins: 16
+                spacing: 12
+
+                Button {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 44
+                    HoverHandler { cursorShape: Qt.PointingHandCursor }
+                    background: Rectangle {
+                        color: parent.pressed ? "#E2E8F0" : "#F1F5F9"
+                        radius: 10
+                    }
+                    contentItem: Text {
+                        text: "Hủy"
+                        font.bold: true
+                        font.pixelSize: 14
+                        color: "#475569"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                    onClicked: editDialog.close()
+                }
+
+                Button {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 44
+                    HoverHandler { cursorShape: Qt.PointingHandCursor }
+                    background: Rectangle {
+                        color: parent.pressed ? "#0369A1" : "#0284C7"
+                        radius: 10
+                    }
+                    contentItem: Text {
+                        text: "💾 Lưu thay đổi"
+                        font.bold: true
+                        font.pixelSize: 14
+                        color: "white"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                    onClicked: {
+                        if (typeof coffeeSystem !== "undefined") {
+                            if (coffeeSystem.editTable)
+                                coffeeSystem.editTable(editingTable, editShape.currentText, editCapacity.value)
+                            if (coffeeSystem.setTableNote)
+                                coffeeSystem.setTableNote(editingTable, editNote.text.trim())
+                        }
+                        refresh()
+                        editDialog.close()
+                    }
+                }
+            }
         }
     }
 
