@@ -1,6 +1,6 @@
 id,phone,name,salary,gender,jobRole,dob,cccd,shiftDate,shiftTime,avatar,cccdFront,cccdBack
 NV01,0938260316,Bùi Ngọc Trang,40000,Nữ,Full-time,27/06/1996,067005313306,,,,,
-NV02,0952366059,Lý Thị Vy,30000,Nữ,Part-time,22/02/1998,041348413328,,,,,
+NV02,Lý Thị Vy,0952366059,30000,Nữ,Part-time,22/02/1998,041348413328,,,,,
 NV03,0993268123,Nguyễn Hữu Trí,40000,Nam,Full-time,20/07/2000,034367223016,,,,,
 NV04,0999937422,Lý Gia Trí,28000,Nam,Part-time,16/10/2000,050598781668,,,,,
 NV05,0971258890,Ngô Anh Yến,30000,Nữ,Part-time,28/03/1995,036906487927,,,,,
