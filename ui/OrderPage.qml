@@ -23,6 +23,9 @@ Item {
         var keyword = searchField.text.trim().toLowerCase()
         var cat = categoryFilter.currentText
 
+        if (!cat || cat.length === 0)
+                cat = "Tất cả"
+
         var result = []
         for (var i = 0; i < source.length; i++) {
             var item = source[i]
@@ -130,87 +133,6 @@ Item {
         spacing: 12
 
         // =====================================================================
-        // 1. SIDEBAR DỌC BÊN TRÁI
-        // =====================================================================
-        Rectangle {
-            Layout.preferredWidth: 180
-            Layout.fillHeight: true
-            color: "#F9F6F0"
-            border.color: "#E0D5C8"
-            radius: 12
-
-            ColumnLayout {
-                anchors.fill: parent
-                anchors.margins: 12
-                spacing: 8
-
-                Text {
-                    text: "MENU"
-                    font.bold: true
-                    font.pixelSize: 14
-                    color: "#8D6E63"
-                    Layout.bottomMargin: 6
-                }
-
-                Button {
-                    Layout.fillWidth: true
-                    implicitHeight: 44
-                    text: "☕  Đồ uống"
-                    checkable: true
-                    checked: orderPageRoot.selectedCategory === "Drink" && !showingInventory && !showingHistory
-                    onClicked: {
-                        showingInventory = false
-                        showingHistory = false
-                        orderPageRoot.selectedCategory = "Drink"
-                        menuGrid.model = getMenuData("Drink")
-                    }
-                }
-
-                Button {
-                    Layout.fillWidth: true
-                    implicitHeight: 44
-                    text: "🍰  Món ăn"
-                    checkable: true
-                    checked: orderPageRoot.selectedCategory === "Food" && !showingInventory && !showingHistory
-                    onClicked: {
-                        showingInventory = false
-                        showingHistory = false
-                        orderPageRoot.selectedCategory = "Food"
-                        menuGrid.model = getMenuData("Food")
-                    }
-                }
-
-                Rectangle { Layout.fillWidth: true; height: 1; color: "#E0D5C8"; Layout.topMargin: 8; Layout.bottomMargin: 8 }
-
-                // Button {
-                //     Layout.fillWidth: true
-                //     implicitHeight: 44
-                //     text: "📦  Tồn kho"
-                //     checkable: true
-                //     checked: showingInventory
-                //     onClicked: {
-                //         showingInventory = true
-                //         showingHistory = false
-                //     }
-                // }
-
-                // Button {
-                //     Layout.fillWidth: true
-                //     implicitHeight: 44
-                //     text: "📜  Lịch sử"
-                //     checkable: true
-                //     checked: showingHistory
-                //     onClicked: {
-                //         showingHistory = true
-                //         showingInventory = false
-                //     }
-                // }
-
-                Item { Layout.fillHeight: true }
-            }
-        }
-
-        // =====================================================================
         // 2. KHU VỰC GIỮA (Menu / Tồn kho / Lịch sử)
         // =====================================================================
         Item {
@@ -220,28 +142,154 @@ Item {
             // MENU ĐỒ UỐNG / MÓN ĂN
             ColumnLayout {
                 anchors.fill: parent
-                spacing: 12
+                spacing: 16
                 visible: !showingInventory && !showingHistory
 
-                RowLayout {
+                // ===== THANH TÌM KIẾM + LỌC =====
+                Rectangle {
                     Layout.fillWidth: true
-                    spacing: 10
+                    height: 52
+                    radius: 14
+                    color: "#FFFFFF"
+                    border.color: "#BFDBFE"
+                    border.width: 1.5
 
-                    TextField {
-                        id: searchField
-                        Layout.fillWidth: true
-                        placeholderText: "🔍  Tìm món theo tên..."
-                        selectByMouse: true
-                        onTextChanged: filterMenu()
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.leftMargin: 16
+                        anchors.rightMargin: 10
+                        spacing: 12
+
+                        Text {
+                            text: "🔍"
+                            font.pixelSize: 18
+                            color: "#60A5FA"
+                        }
+
+                        TextField {
+                            id: searchField
+                            Layout.fillWidth: true
+                            placeholderText: "Tìm món theo tên..."
+                            font.pixelSize: 15
+                            color: "#1E3A5F"
+                            background: Item {}
+                            selectByMouse: true
+                            onTextChanged: filterMenu()
+                        }
+
+                        // Chỉ dùng 1 ComboBox làm nút Lọc
+                        ComboBox {
+                            id: categoryFilter
+                            Layout.preferredWidth: 120
+                            Layout.preferredHeight: 38
+
+                            model: orderPageRoot.selectedCategory === "Drink"
+                                   ? ["Tất cả", "Cà phê", "Cà phê pha máy", "Trà trái cây", "Trà sữa", "Đá xay", "Nước ép", "Cacao"]
+                                   : ["Tất cả", "Bánh ngọt", "Bánh quy", "Dessert", "Combo"]
+
+                            onCurrentTextChanged: filterMenu()
+
+                            background: Rectangle {
+                                radius: 10
+                                color: "#3B82F6"
+                            }
+
+                            contentItem: Text {
+                                text: "Lọc  ▾"
+                                color: "white"
+                                font.bold: true
+                                font.pixelSize: 14
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                            }
+
+                            indicator: Item {}     // ẩn mũi tên mặc định
+
+                            popup: Popup {
+                                y: parent.height + 6
+                                width: 190
+                                padding: 6
+
+                                background: Rectangle {
+                                    radius: 12
+                                    color: "white"
+                                    border.color: "#BFDBFE"
+                                    border.width: 1
+                                }
+
+                                contentItem: ListView {
+                                    clip: true
+                                    implicitHeight: contentHeight
+                                    model: categoryFilter.popup.visible ? categoryFilter.delegateModel : null
+                                    currentIndex: categoryFilter.highlightedIndex
+
+                                    delegate: ItemDelegate {
+                                        width: 178
+                                        height: 40
+                                        highlighted: categoryFilter.highlightedIndex === index
+
+                                        background: Rectangle {
+                                            color: highlighted ? "#DBEAFE" : "transparent"
+                                            radius: 8
+                                        }
+
+                                        contentItem: Text {
+                                            text: modelData
+                                            color: "#1E3A5F"
+                                            font.pixelSize: 14
+                                            leftPadding: 12
+                                            verticalAlignment: Text.AlignVCenter
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
+                }
+                // ===== THANH DANH MỤC NGANG =====
+                Row {
+                    spacing: 10
+                    Layout.leftMargin: 4
 
-                    ComboBox {
-                        id: categoryFilter
-                        Layout.preferredWidth: 180
-                        model: orderPageRoot.selectedCategory === "Drink"
-                               ? ["Tất cả", "Cà phê", "Cà phê pha máy", "Trà trái cây", "Trà sữa", "Đá xay", "Nước ép", "Cacao"]
-                               : ["Tất cả", "Bánh ngọt", "Bánh quy", "Dessert" ,"Combo"]
-                        onCurrentTextChanged: filterMenu()
+                    Repeater {
+                        model: [
+                            { text: "☕  Đồ uống", type: "Drink" },
+                            { text: "🍰  Món ăn",  type: "Food" }
+                        ]
+
+                        delegate: Rectangle {
+                            width: tabText.implicitWidth + 32
+                            height: 40
+                            radius: 20
+                            color: orderPageRoot.selectedCategory === modelData.type && !showingInventory && !showingHistory
+                                   ? "#3B82F6" : "#EFF6FF"
+                            border.color: orderPageRoot.selectedCategory === modelData.type ? "#3B82F6" : "#BFDBFE"
+                            border.width: 1
+
+                            Text {
+                                id: tabText
+                                anchors.centerIn: parent
+                                text: modelData.text
+                                font.pixelSize: 14
+                                font.bold: true
+                                color: orderPageRoot.selectedCategory === modelData.type ? "white" : "#1E40AF"
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    showingInventory = false
+                                    showingHistory = false
+                                    orderPageRoot.selectedCategory = modelData.type
+                                    menuGrid.model = getMenuData(modelData.type)
+                                    categoryFilter.currentIndex = 0
+                                    Qt.callLater(function() {
+                                        filterMenu()
+                                    })
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -250,8 +298,8 @@ Item {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     clip: true
-                    cellWidth: Math.floor(width / 2) - 4
-                    cellHeight: 100
+                    cellWidth: Math.floor(width / 2) - 6
+                    cellHeight: 110
                     model: getMenuData(orderPageRoot.selectedCategory)
 
                     delegate: Item {
@@ -263,20 +311,21 @@ Item {
 
                         Rectangle {
                             anchors.fill: parent
-                            anchors.margins: 4
-                            color: !isAvailable ? "#E0E0E0" : (mouseArea.containsMouse ? "#F2EBE1" : "#FFFDF9")
-                            border.color: !isAvailable ? "#B0BEC5" : (mouseArea.containsMouse ? "#8B5A2B" : "#D8C4B6")
-                            radius: 10
-                            opacity: isAvailable ? 1.0 : 0.6
+                            anchors.margins: 5
+                            radius: 14
+                            color: !isAvailable ? "#F1F5F9" : (mouseArea.containsMouse ? "#EFF6FF" : "#FFFFFF")
+                            border.color: !isAvailable ? "#CBD5E1" : (mouseArea.containsMouse ? "#3B82F6" : "#DBEAFE")
+                            border.width: 1.5
+                            opacity: isAvailable ? 1.0 : 0.65
 
                             RowLayout {
                                 anchors.fill: parent
-                                anchors.margins: 8
-                                spacing: 10
+                                anchors.margins: 10
+                                spacing: 12
 
                                 Image {
-                                    Layout.preferredWidth: 64
-                                    Layout.preferredHeight: 64
+                                    Layout.preferredWidth: 70
+                                    Layout.preferredHeight: 70
                                     source: getImagePath(modelData.name, orderPageRoot.selectedCategory)
                                     fillMode: Image.PreserveAspectCrop
                                     clip: true
@@ -284,37 +333,37 @@ Item {
 
                                 ColumnLayout {
                                     Layout.fillWidth: true
-                                    spacing: 3
+                                    spacing: 4
 
                                     Text {
                                         text: modelData.name || ""
                                         font.bold: true
                                         font.pixelSize: 13
-                                        color: isAvailable ? "#2C1D11" : "#757575"
+                                        color: isAvailable ? "#1E3A5F" : "#64748B"
                                         elide: Text.ElideRight
                                         Layout.fillWidth: true
                                     }
 
                                     Text {
                                         text: formatVND(modelData.price)
-                                        font.pixelSize: 13
+                                        font.pixelSize: 14
                                         font.bold: true
-                                        color: isAvailable ? "#8B5A2B" : "#757575"
+                                        color: isAvailable ? "#2563EB" : "#94A3B8"
                                     }
 
                                     Rectangle {
                                         visible: !isAvailable || maxStock <= 5
-                                        implicitWidth: lblStock.implicitWidth + 8
-                                        implicitHeight: 18
-                                        radius: 4
-                                        color: !isAvailable ? "#D32F2F" : "#E65100"
+                                        implicitWidth: lblStock.implicitWidth + 10
+                                        implicitHeight: 20
+                                        radius: 6
+                                        color: !isAvailable ? "#EF4444" : "#F59E0B"
 
                                         Text {
                                             id: lblStock
                                             anchors.centerIn: parent
                                             text: !isAvailable ? "HẾT HÀNG" : ("Còn " + maxStock)
                                             color: "white"
-                                            font.pixelSize: 10
+                                            font.pixelSize: 11
                                             font.bold: true
                                         }
                                     }
@@ -376,21 +425,21 @@ Item {
             Layout.preferredWidth: (showingInventory || showingHistory) ? 0 : 320
             Layout.fillHeight: true
             visible: !showingInventory && !showingHistory
-            color: "#F9F6F0"
-            border.color: "#D8C4B6"
-            radius: 12
+            color: "#F0F9FF"
+            border.color: "#BAE6FD"
+            radius: 16
             clip: true
 
             ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: 12
-                spacing: 10
+                anchors.margins: 14
+                spacing: 12
 
                 Text {
                     text: "🛒 Chi tiết đơn hàng"
                     font.bold: true
                     font.pixelSize: 16
-                    color: "#2C1D11"
+                    color: "#0C4A6E"
                 }
 
                 ListView {
@@ -488,7 +537,7 @@ Item {
                 Rectangle {
                     Layout.fillWidth: true
                     height: 1
-                    color: "#D8C4B6"
+                    color: "#BAE6FD"
                 }
 
                 // ComboBox {
@@ -554,7 +603,7 @@ Item {
                         text: "THANH TOÁN:"
                         font.bold: true
                         font.pixelSize: 15
-                        color: "#2C1D11"
+                        color: "#0C4A6E"
                     }
 
                     Item { Layout.fillWidth: true }
@@ -563,14 +612,14 @@ Item {
                         text: formatVND(Math.max(0, calculateGrandTotal() - voucherDiscount))
                         font.bold: true
                         font.pixelSize: 18
-                        color: "#C0392B"
+                        color: "#0369A1"
                     }
                 }
 
                 Button {
                     text: "THANH TOÁN"
                     Layout.fillWidth: true
-                    implicitHeight: 40
+                    implicitHeight: 44
                     highlighted: true
                     enabled: cartModel.count > 0
 
@@ -607,7 +656,6 @@ Item {
             }
         }
     }
-
     // =========================================================================
     // DIALOG TÙY CHỌN MÓN
     // =========================================================================
@@ -704,8 +752,8 @@ Item {
 
         background: Rectangle {
             radius: 20
-            color: "#FFFCFA"
-            border.color: "#E8DDD2"
+            color: "#F8FAFC"
+            border.color: "#BFDBFE"
             border.width: 1
         }
 
@@ -779,8 +827,8 @@ Item {
                                 width: 72
                                 height: 38
                                 radius: 10
-                                color: itemDialog.selectedSize === modelData ? "#6D4C41" : "#F5F0EB"
-                                border.color: itemDialog.selectedSize === modelData ? "#6D4C41" : "#E0D5C8"
+                                color: itemDialog.selectedSize === modelData ? "#3B82F6" : "#EFF6FF"
+                                border.color: itemDialog.selectedSize === modelData ? "#3B82F6" : "#BFDBFE"
                                 border.width: 1.5
 
                                 Text {
@@ -788,7 +836,7 @@ Item {
                                     text: modelData
                                     font.bold: true
                                     font.pixelSize: 14
-                                    color: itemDialog.selectedSize === modelData ? "white" : "#5D4037"
+                                    color: itemDialog.selectedSize === modelData ? "white" : "#1E40AF"
                                 }
 
                                 MouseArea {
@@ -797,12 +845,15 @@ Item {
                                     onClicked: {
                                         itemDialog.selectedSize = modelData
 
+                                        // Cập nhật số lượng tối đa theo size mới
                                         if (typeof ingredientManager !== "undefined" && ingredientManager && itemDialog.itemData) {
                                             itemDialog.maxAllowedQuantity =
                                                 ingredientManager.getMaxServings(itemDialog.itemData.id, modelData)
 
+                                            // Nếu số lượng hiện tại vượt max mới → kéo về max
                                             if (itemDialog.quantityValue > itemDialog.maxAllowedQuantity) {
                                                 itemDialog.quantityValue = Math.max(1, itemDialog.maxAllowedQuantity)
+                                                quantityField.text = "" + itemDialog.quantityValue   // ← quan trọng
                                             }
                                         }
 
@@ -832,15 +883,15 @@ Item {
                             width: 40
                             height: 40
                             radius: 10
-                            color: itemDialog.quantityValue <= 1 ? "#F0EBE6" : "#EFEBE9"
-                            border.color: "#D7CCC8"
+                            color: itemDialog.quantityValue <= 1 ? "#3B82F6" : "#EFF6FF"
+                            border.color: "#BFDBFE"
 
                             Text {
                                 anchors.centerIn: parent
                                 text: "−"
                                 font.pixelSize: 20
                                 font.bold: true
-                                color: itemDialog.quantityValue <= 1 ? "#BCAAA4" : "#5D4037"
+                                color: itemDialog.quantityValue <= 1 ? "white" : "#1E40AF"
                             }
 
                             MouseArea {
@@ -873,7 +924,7 @@ Item {
 
                             background: Rectangle {
                                 color: "#FFFFFF"
-                                border.color: quantityField.activeFocus ? "#A1887F" : "#D7CCC8"
+                                border.color: quantityField.activeFocus ? "#3B82F6" : "#BFDBFE"
                                 border.width: 1.5
                             }
 
@@ -905,15 +956,15 @@ Item {
                             width: 40
                             height: 40
                             radius: 10
-                            color: itemDialog.quantityValue >= itemDialog.maxAllowedQuantity ? "#F0EBE6" : "#EFEBE9"
-                            border.color: "#D7CCC8"
+                            color: itemDialog.quantityValue >= itemDialog.maxAllowedQuantity ? "#3B82F6" : "#EFF6FF"
+                            border.color: "#BFDBFE"
 
                             Text {
                                 anchors.centerIn: parent
                                 text: "+"
                                 font.pixelSize: 20
                                 font.bold: true
-                                color: itemDialog.quantityValue >= itemDialog.maxAllowedQuantity ? "#BCAAA4" : "#5D4037"
+                                color: itemDialog.quantityValue >= itemDialog.maxAllowedQuantity ? "white" : "#1E40AF"
                             }
 
                             MouseArea {
@@ -964,8 +1015,8 @@ Item {
 
                         background: Rectangle {
                             radius: 10
-                            color: "#FFFFFF"
-                            border.color: parent.activeFocus ? "#A1887F" : "#E0D5C8"
+                            color: "#EFF6FF"
+                            border.color: parent.activeFocus ?"#3B82F6" : "#BFDBFE"
                             border.width: 1.5
                         }
                     }
@@ -994,8 +1045,8 @@ Item {
                                 width: iceLabel.implicitWidth + 20
                                 height: 34
                                 radius: 17
-                                color: itemDialog.selectedIce === modelData ? "#5D4037" : "#F5F0EB"
-                                border.color: itemDialog.selectedIce === modelData ? "#5D4D37" : "#E0D5C8"
+                                color: itemDialog.selectedIce === modelData ? "#3B82F6" : "#EFF6FF"
+                                border.color: itemDialog.selectedIce === modelData ? "#3B82F6" : "#BFDBFE"
                                 border.width: 1.5
 
                                 Text {
@@ -1004,7 +1055,7 @@ Item {
                                     text: modelData
                                     font.pixelSize: 12
                                     font.bold: itemDialog.selectedIce === modelData
-                                    color: itemDialog.selectedIce === modelData ? "white" : "#5D4037"
+                                    color: itemDialog.selectedIce === modelData ?"white" : "#1E40AF"
                                 }
 
                                 MouseArea {
@@ -1052,8 +1103,8 @@ Item {
                                 property real toppingPrice: modelData.price
                                 property string toppingName: modelData.name
 
-                                color: checked ? "#6D4C41" : "#FFFFFF"
-                                border.color: checked ? "#6D4C41" : "#E0D5C8"
+                                color: checked ? "#3B82F6" : "#EFF6FF"
+                                border.color: checked ? "#3B82F6" : "#BFDBFE"
                                 border.width: 1.5
 
                                 Column {
@@ -1065,7 +1116,7 @@ Item {
                                         text: modelData.name
                                         font.pixelSize: 12
                                         font.bold: true
-                                        color: checked ? "white" : "#3E2723"
+                                        color: checked ? "white" : "#1E40AF"
                                     }
                                     Text {
                                         anchors.horizontalCenter: parent.horizontalCenter
@@ -1093,8 +1144,8 @@ Item {
                     Layout.fillWidth: true
                     height: 50
                     radius: 12
-                    color: "#FFF3E0"
-                    border.color: "#FFCC80"
+                    color: "#EFF6FF"
+                    border.color: "#93C5FD"
                     border.width: 1
 
                     RowLayout {
@@ -1105,7 +1156,7 @@ Item {
                             text: "Thành tiền"
                             font.bold: true
                             font.pixelSize: 14
-                            color: "#E65100"
+                            color: "#1D4ED8"
                         }
 
                         Item { Layout.fillWidth: true }
@@ -1151,8 +1202,8 @@ Item {
                     width: 100
                     height: 38
                     radius: 10
-                    color: "#F5F0EB"
-                    border.color: "#D7CCC8"
+                    color: "#F1F5F9"
+                    border.color: "#CBD5E1"
                     border.width: 1
 
                     Text {
@@ -1160,7 +1211,7 @@ Item {
                         text: "HỦY"
                         font.bold: true
                         font.pixelSize: 13
-                        color: "#5D4037"
+                        color: "#475569"
                     }
 
                     MouseArea {
@@ -1174,7 +1225,7 @@ Item {
                     width: 120
                     height: 38
                     radius: 10
-                    color: itemDialog.isQuantityValid ? "#5D4037" : "#BDBDBD"
+                    color: itemDialog.isQuantityValid ? "#3B82F6" : "#94A3B8"
                     opacity: itemDialog.isQuantityValid ? 1.0 : 0.6
 
                     Text {
@@ -1707,6 +1758,7 @@ Item {
                         cartModel.clear()
                         menuGrid.model = getMenuData(orderPageRoot.selectedCategory)
 
+                        fireworksOverlay.explode()
                         invoiceDialog.close()
                     }
                 }
@@ -1771,6 +1823,224 @@ Item {
             if (!showingInventory && !showingHistory) {
                 menuGrid.model = getMenuData(orderPageRoot.selectedCategory)
             }
+        }
+    }
+    // ==================== PHÁO HOA ====================
+    Item {
+        id: fireworksOverlay
+        anchors.fill: parent
+        z: 99999
+        visible: false
+
+        property var colors: [
+            "#FFD700", "#FFA500", "#FF4500",   // vàng - cam
+            "#00BFFF", "#1E90FF", "#00CED1",   // xanh dương
+            "#FF69B4", "#DA70D6", "#FF1493",   // hồng - tím
+            "#FFFFFF", "#FFFACD"
+        ]
+
+        function explode() {
+            visible = true
+
+            while (particleContainer.children.length > 0)
+                particleContainer.children[0].destroy()
+
+            // Bắn 7 quả pháo hoa
+            for (var k = 0; k < 7; k++) {
+                Qt.callLater(function() {
+                    var cx = 120 + Math.random() * (width - 240)
+                    var cy = 90 + Math.random() * (height * 0.4)
+
+                    createCenterGlow(cx, cy)
+                    createStreaks(cx, cy, 28 + Math.floor(Math.random() * 12))
+                    createSparks(cx, cy, 40 + Math.floor(Math.random() * 25))
+                }, k * 160)
+            }
+
+            hideTimer.restart()
+        }
+
+        // Lõi sáng ở giữa
+        function createCenterGlow(cx, cy) {
+            glowComp.createObject(particleContainer, {
+                x: cx - 22,
+                y: cy - 22
+            })
+        }
+
+        // Các tia dài
+        function createStreaks(cx, cy, count) {
+            for (var i = 0; i < count; i++) {
+                var angle = (Math.PI * 2 * i) / count + Math.random() * 0.3
+                var length = 90 + Math.random() * 130
+                var color = colors[Math.floor(Math.random() * colors.length)]
+
+                streakComp.createObject(particleContainer, {
+                    cx: cx,
+                    cy: cy,
+                    angle: angle * 180 / Math.PI,
+                    streakLength: length,
+                    streakColor: color
+                })
+            }
+        }
+
+        // Hạt lấp lánh nhỏ
+        function createSparks(cx, cy, count) {
+            for (var i = 0; i < count; i++) {
+                var angle = Math.random() * Math.PI * 2
+                var dist  = 40 + Math.random() * 160
+                var color = colors[Math.floor(Math.random() * colors.length)]
+                var size  = 2 + Math.random() * 5
+
+                sparkComp.createObject(particleContainer, {
+                    x: cx,
+                    y: cy,
+                    particleColor: color,
+                    particleSize: size,
+                    targetX: cx + Math.cos(angle) * dist,
+                    targetY: cy + Math.sin(angle) * dist
+                })
+            }
+        }
+
+        Item {
+            id: particleContainer
+            anchors.fill: parent
+        }
+
+        // === Component lõi sáng ===
+        Component {
+            id: glowComp
+            Rectangle {
+                id: glow
+                width: 44
+                height: 44
+                radius: 22
+                color: "#FFFFFF"
+                opacity: 0.95
+                scale: 0.15
+
+                ParallelAnimation {
+                    running: true
+                    NumberAnimation {
+                        target: glow; property: "scale"
+                        to: 2.6; duration: 380
+                        easing.type: Easing.OutCubic
+                    }
+                    NumberAnimation {
+                        target: glow; property: "opacity"
+                        to: 0; duration: 480
+                        easing.type: Easing.InQuad
+                    }
+                    onFinished: glow.destroy()
+                }
+            }
+        }
+
+        // === Component tia dài ===
+        Component {
+            id: streakComp
+            Rectangle {
+                id: streak
+                width: 3
+                height: 8
+                radius: 1.5
+                color: streakColor
+                opacity: 1
+                transformOrigin: Item.Bottom
+
+                property real cx: 0
+                property real cy: 0
+                property real angle: 0
+                property real streakLength: 100
+                property color streakColor: "#FFD700"
+
+                x: cx - width / 2
+                y: cy - height
+
+                rotation: angle
+
+                ParallelAnimation {
+                    running: true
+
+                    NumberAnimation {
+                        target: streak; property: "height"
+                        to: streakLength
+                        duration: 420
+                        easing.type: Easing.OutCubic
+                    }
+                    NumberAnimation {
+                        target: streak; property: "opacity"
+                        to: 0
+                        duration: 900
+                        easing.type: Easing.InQuad
+                    }
+                    NumberAnimation {
+                        target: streak; property: "width"
+                        to: 1.2
+                        duration: 700
+                    }
+                    onFinished: streak.destroy()
+                }
+            }
+        }
+
+        // === Component hạt lấp lánh ===
+        Component {
+            id: sparkComp
+            Rectangle {
+                id: spark
+                width: particleSize
+                height: particleSize
+                radius: width / 2
+                color: particleColor
+                opacity: 1
+                scale: 0.4
+
+                property real particleSize: 4
+                property color particleColor: "white"
+                property real targetX: 0
+                property real targetY: 0
+
+                ParallelAnimation {
+                    running: true
+
+                    NumberAnimation {
+                        target: spark; property: "x"; to: targetX
+                        duration: 700 + Math.random() * 500
+                        easing.type: Easing.OutCubic
+                    }
+                    NumberAnimation {
+                        target: spark; property: "y"; to: targetY
+                        duration: 700 + Math.random() * 500
+                        easing.type: Easing.OutCubic
+                    }
+                    SequentialAnimation {
+                        NumberAnimation {
+                            target: spark; property: "scale"
+                            to: 1.4; duration: 200
+                            easing.type: Easing.OutBack
+                        }
+                        NumberAnimation {
+                            target: spark; property: "scale"
+                            to: 0.1; duration: 800
+                        }
+                    }
+                    NumberAnimation {
+                        target: spark; property: "opacity"
+                        to: 0; duration: 1100
+                        easing.type: Easing.InQuad
+                    }
+                    onFinished: spark.destroy()
+                }
+            }
+        }
+
+        Timer {
+            id: hideTimer
+            interval: 3200
+            onTriggered: fireworksOverlay.visible = false
         }
     }
 }
