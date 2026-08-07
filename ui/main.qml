@@ -28,13 +28,13 @@ ApplicationWindow {
         if (typeof savesDir !== "undefined" && savesDir !== "") {
             var base = savesDir.toString().replace(/[\\\/]+$/, "")
             base = base.replace(/[\\\/]saves$/i, "")
-            var path = base + "/data/themeNavigator.png"
+            var path = base + "/data/catBG.png"
             path = path.replace(/\\/g, "/")
             console.log("Image path:", "file:///" + path)
             return "file:///" + path
         }
         if (typeof applicationDir !== "undefined" && applicationDir !== "") {
-            var p = applicationDir.toString().replace(/\\/g, "/") + "/data/themeNavigator.png"
+            var p = applicationDir.toString().replace(/\\/g, "/") + "/data/catBG.png"
             return "file:///" + p
         }
         return ""
@@ -165,6 +165,7 @@ ApplicationWindow {
                         property string btnText: ""
                         property string targetPage: ""
                         property bool checkAccess: true
+                        property bool alignRight: false
 
                         property bool isActive: appWindow.getBaseName(appWindow.currentActivePage) === appWindow.getBaseName(targetPage)
 
@@ -187,14 +188,21 @@ ApplicationWindow {
                         contentItem: RowLayout {
                             spacing: 12
                             anchors.left: parent.left
-                            anchors.leftMargin: 12
                             anchors.right: parent.right
+                            anchors.leftMargin: 12
                             anchors.rightMargin: 12
+
+                            // Spacer bên trái → đẩy nội dung sang phải khi alignRight = true
+                            Item {
+                                Layout.fillWidth: btn.alignRight
+                                visible: btn.alignRight
+                            }
 
                             Text {
                                 text: btn.iconStr
                                 font.pixelSize: 18
                             }
+
                             Text {
                                 text: btn.btnText
                                 font.pixelSize: 15
@@ -202,8 +210,13 @@ ApplicationWindow {
                                 color: btn.isActive ? "#0369A1" : "#0F172A"
                                 style: btn.isActive ? Text.Normal : Text.Outline
                                 styleColor: "#FFFFFF"
-                                Layout.fillWidth: true
                                 elide: Text.ElideRight
+                            }
+
+                            // Spacer bên phải → giữ nội dung bên trái khi alignRight = false
+                            Item {
+                                Layout.fillWidth: !btn.alignRight
+                                visible: !btn.alignRight
                             }
                         }
 
@@ -214,7 +227,7 @@ ApplicationWindow {
                         }
                     }
 
-                    MenuButton { iconStr: "🏠"; btnText: "Trang Chủ Quản Lý"; targetPage: "ManagerPage.qml"; checkAccess: isAdmin }
+                    MenuButton { iconStr: "🏠"; btnText: "Trang Chủ"; targetPage: "ManagerPage.qml"; checkAccess: isAdmin }
                     MenuButton { iconStr: "🕒"; btnText: "Điểm Danh Ca Làm"; targetPage: "EmployeePage.qml"; checkAccess: isStaff && !isAdmin }
                     MenuButton { iconStr: "🛒"; btnText: "Bán Hàng"; targetPage: "OrderPage.qml"; checkAccess: isAdmin || isStaff }
                     MenuButton { iconStr: "📦"; btnText: "Quản Lý Kho Hàng"; targetPage: "InventoryPage.qml"; checkAccess: isAdmin || isStaff }
@@ -224,30 +237,33 @@ ApplicationWindow {
 
                     Rectangle { Layout.fillWidth: true; height: 1; color: "#90FFFFFF"; Layout.topMargin: 6; Layout.bottomMargin: 6; visible: isAdmin }
 
-                    MenuButton { iconStr: "🔐"; btnText: "Quản Lý Nhân Sự"; targetPage: "EmployeeManagementPage.qml"; checkAccess: isAdmin }
-                    MenuButton { iconStr: "📋"; btnText: "Báo Cáo Điểm Danh"; targetPage: "AttendanceReportPage.qml"; checkAccess: isAdmin }
-                    MenuButton { iconStr: "📈"; btnText: "Quản Lý Tài Chính"; targetPage: "FinancePage.qml"; checkAccess: isAdmin }
+                    MenuButton { btnText: "Quản Lý Nhân Sự"; iconStr: "🔐"; targetPage: "EmployeeManagementPage.qml"; checkAccess: isAdmin; alignRight: true }
+                    MenuButton { btnText: "Báo Cáo Điểm Danh"; iconStr: "📋"; targetPage: "AttendanceReportPage.qml"; checkAccess: isAdmin; alignRight: true }
+                    MenuButton { btnText: "Quản Lý Tài Chính"; iconStr: "📈"; targetPage: "FinancePage.qml"; checkAccess: isAdmin; alignRight: true }
 
                     Rectangle { Layout.fillWidth: true; height: 1; color: "#90FFFFFF"; Layout.topMargin: 8; Layout.bottomMargin: 8 }
+                }
 
-                    Button {
-                        Layout.fillWidth: true
-                        implicitHeight: 44
+                Button {
+                    Layout.fillWidth: true
+                    implicitHeight: 44
+                    implicitWidth: 130
+                    anchors.bottom: parent.bottom
+                    anchors.right: parent.right
 
-                        HoverHandler { cursorShape: Qt.PointingHandCursor }
+                    HoverHandler { cursorShape: Qt.PointingHandCursor }
 
-                        background: Rectangle { color: parent.pressed ? "#B91C1C" : "#DC2626"; radius: 10 }
+                    background: Rectangle { color: parent.pressed ? "#B91C1C" : "#DC2626"; radius: 12 }
 
-                        contentItem: Text {
-                            text: "🚪 Đăng xuất";
-                            color: "white";
-                            font.bold: true;
-                            font.pixelSize: 15;
-                            horizontalAlignment: Text.AlignHCenter;
-                            verticalAlignment: Text.AlignVCenter
-                        }
-                        onClicked: logoutDialog.open()
+                    contentItem: Text {
+                        text: "🚪 Đăng xuất";
+                        color: "white";
+                        font.bold: true;
+                        font.pixelSize: 15;
+                        horizontalAlignment: Text.AlignHCenter;
+                        verticalAlignment: Text.AlignVCenter
                     }
+                    onClicked: logoutDialog.open()
                 }
             }
         }
