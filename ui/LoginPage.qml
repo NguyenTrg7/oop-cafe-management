@@ -2,12 +2,19 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtMultimedia
 
-
 Rectangle {
     id: root
     width: parent.width
     height: parent.height
     color: "#000000"
+
+    // Timer giúp ép con trỏ nhấp nháy vào ô Tên đăng nhập sau khi trang render xong
+    Timer {
+        id: focusTimer
+        interval: 150
+        repeat: false
+        onTriggered: loginUserInput.forceActiveFocus()
+    }
 
     function syncNavBar() {
         var win = typeof appWindow !== "undefined" ? appWindow : (typeof ApplicationWindow !== "undefined" ? ApplicationWindow.window : null)
@@ -24,7 +31,6 @@ Rectangle {
             base = base.replace(/[\\\/]saves$/i, "")
             var path = base + "/data/background.mp4"
             path = path.replace(/\\/g, "/")
-            console.log("Video path:", "file:///" + path)
             return "file:///" + path
         }
         if (typeof applicationDir !== "undefined" && applicationDir !== "") {
@@ -42,6 +48,7 @@ Rectangle {
         }
         bgPlayer.source = getVideoSource()
         bgPlayer.play()
+        focusTimer.restart()
     }
 
     StackView.onDeactivating: {
@@ -52,51 +59,8 @@ Rectangle {
         syncNavBar()
         bgPlayer.source = getVideoSource()
         bgPlayer.play()
+        focusTimer.restart()
     }
-    // Item {
-    //     id: snowContainer
-    //     anchors.fill: parent
-    //     clip: true
-
-    //     Repeater {
-    //         model: 40
-
-    //         Rectangle {
-    //             id: flake
-    //             property real speed: Math.random() * 5000 + 4000
-    //             property real initialDelay: Math.random() * 7000
-
-    //             width: Math.random() * 5 + 3
-    //             height: width
-    //             radius: width / 2
-    //             color: "#FFFFFF"
-    //             opacity: Math.random() * 0.6 + 0.3
-    //             x: Math.random() * root.width
-    //             y: -20
-
-    //             SequentialAnimation on y {
-    //                 loops: Animation.Infinite
-    //                 running: true
-
-    //                 PauseAnimation { duration: flake.initialDelay }
-
-    //                 NumberAnimation {
-    //                     from: -20
-    //                     to: root.height + 20
-    //                     duration: flake.speed
-    //                     easing.type: Easing.Linear
-    //                 }
-
-    //                 ScriptAction {
-    //                     script: {
-    //                         flake.initialDelay = 0;
-    //                         flake.x = Math.random() * root.width;
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
 
     MediaPlayer {
         id: bgPlayer
@@ -106,7 +70,6 @@ Rectangle {
 
         onErrorOccurred: function(error, errorString) {
             console.log("MediaPlayer ERROR:", error, errorString)
-            console.log("Source was:", source)
         }
     }
 
@@ -146,6 +109,7 @@ Rectangle {
             loginErrorText.color = "#E53935"
             loginErrorText.visible = true
             loginPassInput.text = ""
+            loginPassInput.forceActiveFocus()
         } else if (role === "manager" || role === "staff") {
             loginErrorText.visible = false
             bgPlayer.stop()
@@ -169,12 +133,10 @@ Rectangle {
 
     Rectangle {
         id: glassBox
-        // Tự động căn chỉnh độ rộng theo màn hình, tối đa 420px
         width: Math.min(380, parent.width * 0.88)
         height: Math.min(370, parent.height * 0.78)
         anchors.centerIn: parent
-        // color: "#80FFFFFF"
-        color: "#dcfbfbFF"
+        color:"#dcfbfbFF"
         radius: 20
         border.color: "#FFFFFF"
         border.width: 2
@@ -183,45 +145,43 @@ Rectangle {
 
         Image {
             id: logoImage
-            width: 130
-            height: 130
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
-            anchors.topMargin: -55
-            z: 20
+                       width: 130
+                       height: 130
+                       anchors.horizontalCenter: parent.horizontalCenter
+                       anchors.top: parent.top
+                       anchors.topMargin: -55
+                       z: 20
 
-                source: {
-                    if (typeof savesDir !== "undefined" && savesDir !== "") {
-                        var base = savesDir.toString().replace(/[\\\/]+$/, "")
-                        base = base.replace(/[\\\/]saves$/i, "")
-                        var path = base + "/data/logo.png"
-                        return "file:///" + path.replace(/\\/g, "/")
-                    }
-                    if (typeof applicationDir !== "undefined" && applicationDir !== "") {
-                        return "file:///" + applicationDir.toString().replace(/\\/g, "/") + "/data/logo.png"
-                    }
-                    return ""
+            source: {
+                if (typeof savesDir !== "undefined" && savesDir !== "") {
+                    var base = savesDir.toString().replace(/[\\\/]+$/, "")
+                    base = base.replace(/[\\\/]saves$/i, "")
+                    return "file:///" + (base + "/data/logo.png").replace(/\\/g, "/")
                 }
-                fillMode: Image.PreserveAspectFit
-                smooth: true
-                mipmap: true
+                if (typeof applicationDir !== "undefined" && applicationDir !== "") {
+                    return "file:///" + applicationDir.toString().replace(/\\/g, "/") + "/data/logo.png"
+                }
+                return ""
             }
+            fillMode: Image.PreserveAspectFit
+            smooth: true
+            mipmap: true
+        }
 
-            Column {
-                anchors.centerIn: parent
-                width: parent.width * 0.85
-                spacing: 16
-                topPadding: 24                  // chừa chỗ cho logo
+        Column {
+            anchors.centerIn: parent
+            width: parent.width * 0.85
+            spacing: 16
+            topPadding: 24
 
-                // Tên quán (không còn icon bên cạnh)
-                Text {
-                    id: titleText
-                    text: qsTr("GIANG'S COFFEE")
-                    font.pixelSize: Math.max(18, Math.min(26, glassBox.width * 0.075))
-                    font.bold: true
-                    color: "#0369A1"
-                    anchors.horizontalCenter: parent.horizontalCenter
-                }
+            Text {
+                id: titleText
+                text: qsTr("GIANG'S COFFEE")
+                font.pixelSize: Math.max(18, Math.min(26, glassBox.width * 0.075))
+                font.bold: true
+                color: "#0369A1"
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
 
             Column {
                 id: loginForm
@@ -232,18 +192,31 @@ Rectangle {
                     width: parent.width
                     spacing: 5
                     Text { text: qsTr("Tên đăng nhập"); font.pixelSize: 14; font.bold: true; color: "#0284C7" }
+
                     TextField {
                         id: loginUserInput
                         focus: true
-                        placeholderText: qsTr("Nhập tài khoản của bạn ...")
                         leftPadding: 40
-                        width: parent.width // Mở rộng full theo cột
+                        width: parent.width
                         height: 48
                         font.pixelSize: 15
                         color: "#333333"
                         verticalAlignment: TextInput.AlignVCenter
                         background: Rectangle { radius: 12; color: "#FFFFFF"; border.color: "#BAE6FD"; border.width: 1 }
+
                         Text { text: "👤"; font.pixelSize: 18; anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter; anchors.leftMargin: 12; opacity: 0.7 }
+
+                        // Chữ gợi ý mờ luôn hiển thị cho tới khi ĐÃ GÕ chữ
+                        Text {
+                            text: qsTr("Nhập tài khoản của bạn ...")
+                            color: "#94A3B8"
+                            font.pixelSize: 15
+                            anchors.left: parent.left
+                            anchors.leftMargin: 40
+                            anchors.verticalCenter: parent.verticalCenter
+                            visible: loginUserInput.text === ""
+                        }
+
                         onAccepted: loginPassInput.forceActiveFocus()
                     }
                 }
@@ -252,14 +225,14 @@ Rectangle {
                     width: parent.width
                     spacing: 5
                     Text { text: qsTr("Mật khẩu"); font.pixelSize: 14; font.bold: true; color: "#0284C7" }
+
                     TextField {
                         id: loginPassInput
                         property bool showPassword: false
-                        placeholderText: qsTr("Nhập mật khẩu...")
                         echoMode: showPassword ? TextInput.Normal : TextInput.Password
                         leftPadding: 40
                         rightPadding: 44
-                        width: parent.width // Mở rộng full theo cột
+                        width: parent.width
                         height: 48
                         font.pixelSize: 15
                         color: "#333333"
@@ -267,22 +240,34 @@ Rectangle {
                         background: Rectangle { radius: 12; color: "#FFFFFF"; border.color: "#BAE6FD"; border.width: 1 }
 
                         Text { text: "🔒"; font.pixelSize: 18; anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter; anchors.leftMargin: 12; opacity: 0.7 }
+
+                        // Chữ gợi ý mờ cho mật khẩu
+                        Text {
+                            text: qsTr("Nhập mật khẩu...")
+                            color: "#94A3B8"
+                            font.pixelSize: 15
+                            anchors.left: parent.left
+                            anchors.leftMargin: 40
+                            anchors.verticalCenter: parent.verticalCenter
+                            visible: loginPassInput.text === ""
+                        }
+
                         onAccepted: doLogin()
 
                         Text {
-                                text: loginPassInput.showPassword ? "🕶" : "👁"
-                                font.pixelSize: 16
-                                anchors.right: parent.right
-                                anchors.verticalCenter: parent.verticalCenter
-                                anchors.rightMargin: 12
-                                opacity: 0.75
-                                MouseArea {
-                                    anchors.fill: parent
-                                    anchors.margins: -6
-                                    cursorShape: Qt.PointingHandCursor
-                                    onClicked: loginPassInput.showPassword = !loginPassInput.showPassword
-                                }
+                            text: loginPassInput.showPassword ? "🕶" : "👁"
+                            font.pixelSize: 16
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.rightMargin: 12
+                            opacity: 0.75
+                            MouseArea {
+                                anchors.fill: parent
+                                anchors.margins: -6
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: loginPassInput.showPassword = !loginPassInput.showPassword
                             }
+                        }
                     }
                 }
 
@@ -298,25 +283,43 @@ Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
 
-                Button {
+                // Nút Đăng nhập bo tròn chuẩn không bị viền vuông khi Hover
+                Rectangle {
                     id: loginBtn
-                    text: qsTr("ĐĂNG NHẬP")
-                    width: parent.width // Co giãn nút bấm
+                    width: parent.width
                     height: 52
+                    radius: 12
                     anchors.horizontalCenter: parent.horizontalCenter
-                    background: Rectangle {
-                        radius: 12
-                        gradient: Gradient {
-                            GradientStop { position: 0.0; color: "#38BDF8" }
-                            GradientStop { position: 1.0; color: "#0284C7" }
+
+                    gradient: Gradient {
+                        GradientStop {
+                            position: 0.0
+                            color: loginBtnMouseArea.pressed ? "#0284C7" : (loginBtnMouseArea.containsMouse ? "#38BDF8" : "#0284C7")
                         }
-                        border.width: parent.pressed ? 2 : 0; border.color: "#FFFFFF"
+                        GradientStop {
+                            position: 1.0
+                            color: loginBtnMouseArea.pressed ? "#0369A1" : (loginBtnMouseArea.containsMouse ? "#0284C7" : "#0369A1")
+                        }
                     }
-                    contentItem: Text {
-                        text: parent.text; color: "white"; font.bold: true; font.pixelSize: 17
-                        horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
+
+                    border.width: loginBtnMouseArea.pressed ? 2 : 0
+                    border.color: "#FFFFFF"
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: qsTr("ĐĂNG NHẬP")
+                        color: "white"
+                        font.bold: true
+                        font.pixelSize: 17
                     }
-                    onClicked: doLogin()
+
+                    MouseArea {
+                        id: loginBtnMouseArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: doLogin()
+                    }
                 }
             }
         }
