@@ -14,6 +14,7 @@
 #include "GiangCoffeeSystem.h"   // Import Header Singleton xử lý Menu
 #include "IngredientManager.h"
 #include "OrderHistoryManager.h"
+#include "SupplierManager.h"     // <--- 1. BỔ SUNG HEADER SUPPLIER MANAGER
 
 // Fallback nếu không chạy từ CMake
 #ifndef SAVE_DIR_PATH
@@ -86,6 +87,11 @@ int main(int argc, char *argv[])
     historyManager->loadFromCSV(historyPath);
 
     // ==========================================
+    // 4.5. XỬ LÝ NHÀ CUNG CẤP (SUPPLIER MANAGER)
+    // ==========================================
+    SupplierManager supplierManager; // <--- 2. KHỞI TẠO SUPPLIER MANAGER
+
+    // ==========================================
     // 5. ĐĂNG KÝ QML CONTEXT PROPERTIES
     // ==========================================
     // Lấy đường dẫn tuyệt đối của thư mục save (cùng chỗ load CSV)
@@ -103,6 +109,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("coffeeSystem", systemInstance);
     engine.rootContext()->setContextProperty("ingredientManager", &ingManager);
     engine.rootContext()->setContextProperty("orderHistoryManager", historyManager);
+    engine.rootContext()->setContextProperty("supplierManager", &supplierManager); // <--- 3. ĐĂNG KÝ VỚI ENGINE QML
     engine.rootContext()->setContextProperty("applicationDir", QCoreApplication::applicationDirPath());
 
     // ==========================================

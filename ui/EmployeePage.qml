@@ -29,6 +29,59 @@ Page {
         return ""
     }
 
+    // ===== HÀM ĐỌC & ÉP KIỂU THỜI GIAN ĐA NĂNG =====
+    function parseTimeString(tStr) {
+        if (!tStr) return null
+        var str = tStr.toString().trim().toLowerCase()
+
+        // Định dạng "07:00", "7:00", "07:00:00"
+        var m1 = str.match(/^(\d{1,2}):(\d{2})/)
+        if (m1) {
+            var d1 = new Date()
+            d1.setHours(parseInt(m1[1], 10), parseInt(m1[2], 10), 0, 0)
+            return d1
+        }
+
+        // Định dạng "7h", "7h30", "15h00"
+        var m2 = str.match(/^(\d{1,2})h(\d{2})?/)
+        if (m2) {
+            var hrs = parseInt(m2[1], 10)
+            var mins = m2[2] ? parseInt(m2[2], 10) : 0
+            var d2 = new Date()
+            d2.setHours(hrs, mins, 0, 0)
+            return d2
+        }
+
+        return null
+    }
+
+    function parseShiftTime(shiftObj) {
+        if (!shiftObj) return { start: null, end: null }
+
+        var startStr = shiftObj.startTime || shiftObj.start || shiftObj.timeStart || shiftObj.shiftStart || ""
+        var endStr = shiftObj.endTime || shiftObj.end || shiftObj.timeEnd || shiftObj.shiftEnd || ""
+
+        // Tìm trong chuỗi gộp kiểu "07:00 - 15:00" hoặc "7h - 15h"
+        if ((!startStr || !endStr) && (shiftObj.time || shiftObj.shiftTime || shiftObj.name)) {
+            var fullStr = shiftObj.time || shiftObj.shiftTime || shiftObj.name || ""
+            var parts = fullStr.split(/[-–—]/)
+            if (parts.length >= 2) {
+                startStr = parts[0].trim()
+                endStr = parts[1].trim()
+            }
+        }
+
+        var startDate = parseTimeString(startStr)
+        var endDate = parseTimeString(endStr)
+
+        if (startDate && endDate && endDate <= startDate) {
+            // Xử lý ca đêm qua ngày hôm sau
+            endDate.setDate(endDate.getDate() + 1)
+        }
+
+        return { start: startDate, end: endDate, startStr: startStr, endStr: endStr }
+    }
+
     StackView.onActivating: syncNavBar()
     Component.onCompleted: syncNavBar()
 
@@ -38,38 +91,38 @@ Page {
 
         ColumnLayout {
             anchors.centerIn: parent
-            width: Math.min(780, parent.width * 0.92)
-            spacing: 32
+            width: Math.min(800, parent.width * 0.9)
+            spacing: 28
 
-            // ===== LOGO + TÊN QUÁN =====
-            Row {
+            // ===== LOGO + TÊN QUÁN (TỰ ĐỘNG CO GIẢN CÂN BẰNG) =====
+            RowLayout {
                 Layout.alignment: Qt.AlignHCenter
-                spacing: 20
+                spacing: Math.max(8, Math.min(16, employeePage.width * 0.015))
 
                 Text {
                     text: "GIANG'S COFFEE"
-                    font.pixelSize: 80
+                    font.pixelSize: Math.max(28, Math.min(52, Math.round(employeePage.width * 0.045)))
                     font.bold: true
                     font.family: "Poppins Bold"
                     color: "#846559"
-                    anchors.verticalCenter: parent.verticalCenter
+                    Layout.alignment: Qt.AlignVCenter
                 }
 
                 Image {
-                    width: 180
-                    height: 180
+                    Layout.preferredWidth: Math.max(60, Math.min(110, Math.round(employeePage.width * 0.09)))
+                    Layout.preferredHeight: Layout.preferredWidth
                     source: getLogoSource()
                     fillMode: Image.PreserveAspectFit
                     smooth: true
                     mipmap: true
-                    anchors.verticalCenter: parent.verticalCenter
+                    Layout.alignment: Qt.AlignVCenter
                 }
             }
 
             // ===== TIÊU ĐỀ PHỤ =====
             Text {
                 text: "CA LÀM VIỆC CỦA BẠN"
-                font.pixelSize: 35
+                font.pixelSize: 32
                 font.bold: true
                 color: "#1E293B"
                 Layout.alignment: Qt.AlignHCenter
@@ -78,12 +131,12 @@ Page {
             // ===== 2 NÚT CHECK-IN / CHECK-OUT =====
             RowLayout {
                 Layout.alignment: Qt.AlignHCenter
-                spacing: 45
+                spacing: 40
 
                 // CHECK-IN
                 Rectangle {
                     width: 300
-                    height: 160
+                    height: 150
                     radius: 22
                     color: "#FFFFFF"
                     border.color: "#BBF7D0"
@@ -114,26 +167,26 @@ Page {
                             spacing: 4
                             Text {
                                 text: "CHECK-IN"
-                                font.pixelSize: 24
+                                font.pixelSize: 22
                                 font.bold: true
                                 color: "#16A34A"
                             }
                             Text {
                                 text: "CA LÀM"
-                                font.pixelSize: 20
+                                font.pixelSize: 18
                                 font.bold: true
                                 color: "#15803D"
                             }
                             Text {
                                 text: "Bắt đầu ca làm việc"
-                                font.pixelSize: 20
+                                font.pixelSize: 18
                                 color: "#64748B"
                             }
                         }
 
                         Text {
                             text: "→"
-                            font.pixelSize: 25
+                            font.pixelSize: 24
                             color: "#22C55E"
                             Layout.alignment: Qt.AlignVCenter
                         }
@@ -155,7 +208,7 @@ Page {
                 // CHECK-OUT
                 Rectangle {
                     width: 300
-                    height: 160
+                    height: 150
                     radius: 22
                     color: "#FFFFFF"
                     border.color: "#FECACA"
@@ -192,20 +245,20 @@ Page {
                             }
                             Text {
                                 text: "CA LÀM"
-                                font.pixelSize: 20
+                                font.pixelSize: 18
                                 font.bold: true
                                 color: "#B91C1C"
                             }
                             Text {
                                 text: "Kết thúc ca làm việc"
-                                font.pixelSize: 20
+                                font.pixelSize: 18
                                 color: "#64748B"
                             }
                         }
 
                         Text {
                             text: "←"
-                            font.pixelSize: 25
+                            font.pixelSize: 24
                             color: "#EF4444"
                             Layout.alignment: Qt.AlignVCenter
                         }
@@ -237,9 +290,9 @@ Page {
             }
 
             Item {
-                    Layout.fillHeight: true          // đẩy slogan xuống đáy
-                    Layout.minimumHeight: 40
-                }
+                Layout.fillHeight: true
+                Layout.minimumHeight: 20
+            }
 
             // ===== SLOGAN =====
             Text {
@@ -253,11 +306,11 @@ Page {
         }
     }
 
-    // ===== DIALOG XÁC NHẬN (giữ nguyên logic cũ) =====
+    // ===== DIALOG XÁC NHẬN VỚI LOGIC SIẾT THỜI GIAN TẬN GỐC =====
     Popup {
         id: confirmDialog
-        width: Math.min(380, employeePage.width * 0.9)
-        height: 290
+        width: Math.min(440, employeePage.width * 0.9)
+        height: 320
         modal: true
         focus: true
         anchors.centerIn: parent
@@ -312,7 +365,7 @@ Page {
                 id: lblDialogError
                 text: ""
                 color: "#DC2626"
-                font.pixelSize: 12
+                font.pixelSize: 13
                 font.bold: true
                 visible: false
                 Layout.alignment: Qt.AlignHCenter
@@ -369,6 +422,7 @@ Page {
                             return
                         }
 
+                        // 1. Kiểm tra thông tin nhân viên
                         var isValid = false
                         var employeeName = ""
                         var phoneToRecord = inputStr
@@ -392,32 +446,95 @@ Page {
                         }
 
                         if (!isValid) {
-                            lblDialogError.text = "Thông tin chưa được gán bởi Quản lý!"
+                            lblDialogError.text = "⚠️ Nhân viên chưa được đăng ký trong hệ thống!"
                             lblDialogError.visible = true
                             return
                         }
 
-                        var todayStr = Qt.formatDateTime(new Date(), "dd/MM/yyyy")
-                        var hasShiftToday = false
+                        // 2. Tìm ca làm hôm nay
+                        var todayStr1 = Qt.formatDateTime(new Date(), "dd/MM/yyyy")
+                        var todayStr2 = Qt.formatDateTime(new Date(), "yyyy-MM-dd")
+                        var userShift = null
 
                         if (typeof coffeeSystem !== "undefined" && coffeeSystem.loadShifts) {
-                            var todayShifts = coffeeSystem.loadShifts(todayStr)
-                            for (var s = 0; s < todayShifts.length; s++) {
-                                if (todayShifts[s].phone === phoneToRecord || todayShifts[s].id === empId || todayShifts[s].id === inputStr) {
-                                    hasShiftToday = true
-                                    break
+                            var todayShifts = coffeeSystem.loadShifts(todayStr1)
+                            if (!todayShifts || todayShifts.length === 0) {
+                                todayShifts = coffeeSystem.loadShifts(todayStr2)
+                            }
+                            if (!todayShifts || todayShifts.length === 0) {
+                                todayShifts = coffeeSystem.loadShifts()
+                            }
+
+                            if (todayShifts && todayShifts.length > 0) {
+                                for (var s = 0; s < todayShifts.length; s++) {
+                                    var sh = todayShifts[s]
+                                    var shPhone = sh.phone || sh.employeePhone || sh.identifier || ""
+                                    var shId = sh.id || sh.employeeId || sh.empId || ""
+
+                                    if ((shPhone && shPhone === phoneToRecord) ||
+                                        (shId && shId === empId) ||
+                                        (shId && shId === inputStr) ||
+                                        (shPhone && shPhone === inputStr)) {
+                                        userShift = sh
+                                        break
+                                    }
                                 }
                             }
-                        } else {
-                            hasShiftToday = true
                         }
 
-                        if (!hasShiftToday) {
-                            lblDialogError.text = "⚠️ Bạn không có ca làm việc đăng ký hôm nay (" + todayStr + ")!"
+                        // Bắt buộc phải tìm thấy ca đăng ký
+                        if (!userShift) {
+                            lblDialogError.text = "⚠️ Bạn không có ca làm việc đăng ký hôm nay (" + todayStr1 + ")!"
                             lblDialogError.visible = true
                             return
                         }
 
+                        // 3. Phân tích giờ bắt đầu & kết thúc ca
+                        var shiftTimes = parseShiftTime(userShift)
+                        if (!shiftTimes.start || !shiftTimes.end) {
+                            lblDialogError.text = "⚠️ Không thể xác định giờ ca làm (" + (userShift.time || userShift.startTime || "") + ")!"
+                            lblDialogError.visible = true
+                            return
+                        }
+
+                        // 4. KIỂM TRA THỜI GIAN THỰC ĐIỂM DANH (SIẾT CHẶT LOGIC 10 PHÚT)
+                        var now = new Date()
+                        var tenMinsMs = 10 * 60 * 1000 // 10 phút tính bằng millisecond
+
+                        var minCheckIn = new Date(shiftTimes.start.getTime() - tenMinsMs)
+                        var maxCheckIn = shiftTimes.end
+                        var minCheckOut = new Date(shiftTimes.end.getTime() - tenMinsMs)
+
+                        var startStr = Qt.formatDateTime(shiftTimes.start, "hh:mm")
+                        var endStr = Qt.formatDateTime(shiftTimes.end, "hh:mm")
+                        var minCheckInStr = Qt.formatDateTime(minCheckIn, "hh:mm")
+                        var minCheckOutStr = Qt.formatDateTime(minCheckOut, "hh:mm")
+
+                        if (employeePage.currentAction === "CHECK_IN") {
+                            if (now < minCheckIn) {
+                                lblDialogError.text = "⚠️ Ca làm từ " + startStr + " đến " + endStr + ".\nBạn chỉ được Check-In sớm tối đa 10 phút (từ " + minCheckInStr + ")!"
+                                lblDialogError.visible = true
+                                return
+                            }
+                            if (now > maxCheckIn) {
+                                lblDialogError.text = "⚠️ Ca làm việc (" + startStr + " - " + endStr + ") đã kết thúc, không thể Check-In!"
+                                lblDialogError.visible = true
+                                return
+                            }
+                        } else if (employeePage.currentAction === "CHECK_OUT") {
+                            if (now < shiftTimes.start) {
+                                lblDialogError.text = "⚠️ Ca làm bắt đầu lúc " + startStr + ".\nChưa đến thời gian ca làm đăng ký, không thể Check-Out!"
+                                lblDialogError.visible = true
+                                return
+                            }
+                            if (now < minCheckOut) {
+                                lblDialogError.text = "⚠️ Ca làm kết thúc lúc " + endStr + ".\nBạn chỉ được Check-Out sớm tối đa 10 phút (từ " + minCheckOutStr + ")!"
+                                lblDialogError.visible = true
+                                return
+                            }
+                        }
+
+                        // 5. Kiểm tra tuần tự Check-in / Check-out
                         if (typeof coffeeSystem !== "undefined" && coffeeSystem.loadAttendance) {
                             var attendanceList = coffeeSystem.loadAttendance()
                             var lastAction = ""
@@ -439,6 +556,7 @@ Page {
                             }
                         }
 
+                        // 6. Ghi nhận thời gian thực công nhận
                         var currentTime = Qt.formatDateTime(new Date(), "hh:mm dd/MM/yyyy")
                         var displayName = employeeName !== "" ? employeeName : ("SĐT " + phoneToRecord)
 

@@ -9,7 +9,6 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick)
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick Multimedia)
 
 qt_policy(SET QTP0001 NEW)
@@ -31,6 +30,7 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/include/Menu.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/Ingredient.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/Supplier.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/SupplierManager.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/Seating.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/Account.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/MenuManager.h"
@@ -52,6 +52,7 @@ set(LOGIC_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/src/Menu.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/Ingredient.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/Supplier.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/SupplierManager.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/Seating.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/Account.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/MenuManager.cpp"
@@ -73,6 +74,7 @@ set(UI_FILES
     "ui/InvoiceDialog.qml"
     "ui/AttendanceReportPage.qml"
     "ui/OrderHistoryPage.qml"
+    "ui/SupplierPage.qml"
 )
 
 # Phân nhóm file hiển thị trên Tree structure của IDE (Visual Studio / CLion / Qt Creator)

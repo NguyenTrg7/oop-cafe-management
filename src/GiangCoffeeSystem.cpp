@@ -643,50 +643,98 @@ QVariantList GiangCoffeeSystem::calculateMonthlyPayroll(int month, int year)
     QVariantList payrollList;
     QVariantList employees = loadEmployees();
 
+    // Cấu trúc lưu trữ điểm danh tạm thời
+    struct AttendanceEntry {
+        QString type; // "CHECK_IN" hoặc "CHECK_OUT"
+        QDateTime time;
+    };
+
+    // Nhóm điểm danh theo: Identifier (Mã/SĐT) -> Ngày -> Danh sách lượt điểm danh
+    QMap<QString, QMap<QDate, QList<AttendanceEntry>>> empAttendanceMap;
+
+    QString attPath = getSaveFilePath("attendance.csv");
+    QFile attFile(attPath);
+    if (attFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QTextStream in(&attFile);
+        while (!in.atEnd()) {
+            QString line = in.readLine().trimmed();
+            if (line.isEmpty()) continue;
+
+            QStringList fields = line.split(",");
+            if (fields.size() >= 3) {
+                QString identifier = fields[0].trimmed();
+                QString type = fields[1].trimmed();
+                QString timeStr = fields[2].trimmed(); // Định dạng "hh:mm dd/MM/yyyy"
+
+                QDateTime dt = QDateTime::fromString(timeStr, "HH:mm dd/MM/yyyy");
+                if (dt.isValid() && dt.date().month() == month && dt.date().year() == year) {
+                    empAttendanceMap[identifier][dt.date()].append({type, dt});
+                }
+            }
+        }
+        attFile.close();
+    }
+
+    // Duyệt qua từng nhân viên để tính số giờ thực tế
     for (const QVariant& item : std::as_const(employees)) {
         QVariantMap empMap = item.toMap();
-        QString empId = empMap["id"].toString();
+        QString empId = empMap["id"].toString().trimmed();
+        QString empPhone = empMap["phone"].toString().trimmed();
         double salaryPerHour = empMap["salary"].toDouble();
 
         double totalNormalHours = 0.0;
         double totalWeekdayOtHours = 0.0;
         double totalSundayOtHours = 0.0;
 
-        QString path = getSaveFilePath("Shift.csv");
-        QFile file(path);
-        if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            QTextStream in(&file);
-            QMap<QDate, double> dailyNetHours;
+        // Lấy danh sách điểm danh theo ID hoặc SĐT
+        QMap<QDate, QList<AttendanceEntry>> dailyRecords;
+        if (empAttendanceMap.contains(empId)) {
+            dailyRecords = empAttendanceMap[empId];
+        } else if (empAttendanceMap.contains(empPhone)) {
+            dailyRecords = empAttendanceMap[empPhone];
+        }
 
-            while (!in.atEnd()) {
-                QString line = in.readLine().trimmed();
-                if (line.isEmpty()) continue;
+        for (auto it = dailyRecords.begin(); it != dailyRecords.end(); ++it) {
+            QDate date = it.key();
+            QList<AttendanceEntry> records = it.value();
 
-                QStringList fields = line.split(",");
-                if (fields.size() >= 5 && fields[0] == empId) {
-                    QDate shiftDate = QDate::fromString(fields[3], "dd/MM/yyyy");
-                    if (shiftDate.isValid() && shiftDate.month() == month && shiftDate.year() == year) {
-                        double netHours = getNetWorkingHours(fields[4]);
-                        dailyNetHours[shiftDate] += netHours;
+            // Sắp xếp các mốc thời gian điểm danh tăng dần
+            std::sort(records.begin(), records.end(), [](const AttendanceEntry &a, const AttendanceEntry &b) {
+                return a.time < b.time;
+            });
+
+            double dailyHours = 0.0;
+            QDateTime lastCheckIn;
+            bool isCheckedIn = false;
+
+            // Bắt cặp CHECK_IN và CHECK_OUT để tính số giờ làm thực tế
+            for (const auto &rec : records) {
+                if (rec.type == "CHECK_IN") {
+                    lastCheckIn = rec.time;
+                    isCheckedIn = true;
+                } else if (rec.type == "CHECK_OUT" && isCheckedIn) {
+                    qint64 secs = lastCheckIn.secsTo(rec.time);
+                    if (secs > 0) {
+                        dailyHours += (secs / 3600.0);
                     }
+                    isCheckedIn = false;
                 }
             }
-            file.close();
 
-            for (auto it = dailyNetHours.begin(); it != dailyNetHours.end(); ++it) {
-                QDate d = it.key();
-                double net = it.value();
+            // Quy định trừ 0.5h nghỉ nếu ca làm thực tế từ 6 tiếng trở lên
+            if (dailyHours >= 6.0) {
+                dailyHours -= 0.5;
+            }
 
-                double normal = qMin(8.0, net);
-                double ot = qMax(0.0, net - 8.0);
+            double normal = qMin(8.0, dailyHours);
+            double ot = qMax(0.0, dailyHours - 8.0);
 
-                if (d.dayOfWeek() == 7) {
-                    totalNormalHours += normal;
-                    totalSundayOtHours += ot;
-                } else {
-                    totalNormalHours += normal;
-                    totalWeekdayOtHours += ot;
-                }
+            if (date.dayOfWeek() == 7) { // Chủ Nhật
+                totalNormalHours += normal;
+                totalSundayOtHours += ot;
+            } else { // Ngày thường
+                totalNormalHours += normal;
+                totalWeekdayOtHours += ot;
             }
         }
 
