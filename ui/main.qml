@@ -23,14 +23,12 @@ ApplicationWindow {
     property bool isAdmin: typeof accountHandler !== "undefined" && accountHandler !== null && accountHandler.currentUserPhone === "admin"
     property bool isStaff: typeof accountHandler !== "undefined" && accountHandler !== null && accountHandler.currentUserPhone !== "admin" && accountHandler.currentUserPhone !== ""
 
-    // Hàm lấy đường dẫn ảnh nền động
     function getImageSource() {
         if (typeof savesDir !== "undefined" && savesDir !== "") {
             var base = savesDir.toString().replace(/[\\\/]+$/, "")
             base = base.replace(/[\\\/]saves$/i, "")
             var path = base + "/data/catBG.png"
             path = path.replace(/\\/g, "/")
-            console.log("Image path:", "file:///" + path)
             return "file:///" + path
         }
         if (typeof applicationDir !== "undefined" && applicationDir !== "") {
@@ -115,7 +113,7 @@ ApplicationWindow {
     // ---------------------------------------------------
     Rectangle {
         id: sideBar
-        width: 260
+        width: Math.max(220, Math.min(280, appWindow.width * 0.20))
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.bottom: parent.bottom
@@ -124,7 +122,6 @@ ApplicationWindow {
         z: 100
         clip: true
 
-        // Ảnh nền thanh điều hướng
         Image {
             anchors.fill: parent
             source: appWindow.getImageSource()
@@ -134,168 +131,217 @@ ApplicationWindow {
 
         ColumnLayout {
             anchors.fill: parent
-            anchors.margins: 12
-            spacing: 10
+            anchors.margins: Math.max(6, sideBar.width * 0.04)
+            spacing: Math.max(4, sideBar.height * 0.008)
 
             Label {
                 text: "☕ GIANG'S COFFEE"
-                font.pixelSize: 21
+                font.pixelSize: Math.max(15, Math.min(19, sideBar.width * 0.07))
                 font.bold: true
                 color: "#0F172A"
                 style: Text.Outline
                 styleColor: "#FFFFFF"
                 Layout.alignment: Qt.AlignHCenter
-                Layout.topMargin: 5
-                Layout.bottomMargin: 5
+                Layout.topMargin: 4
+                Layout.bottomMargin: 4
             }
 
-            ScrollView {
+            component MenuButton : Button {
+                id: btn
+                property string iconStr: ""
+                property string btnText: ""
+                property string targetPage: ""
+                property bool checkAccess: true
+                property bool alignRight: false
+
+                property bool isActive: appWindow.getBaseName(appWindow.currentActivePage) === appWindow.getBaseName(targetPage)
+
+                visible: checkAccess
+                hoverEnabled: true
+
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                clip: true
-                ScrollBar.vertical.policy: ScrollBar.AsNeeded
+                Layout.minimumHeight: 30
+                Layout.maximumHeight: 46
 
-                ColumnLayout {
-                    width: parent.width - 6
-                    spacing: 8
+                Layout.leftMargin: btn.alignRight ? (sideBar.width * 0.236) : (sideBar.width * 0.02)
+                Layout.rightMargin: !btn.alignRight ? (sideBar.width * 0.205) : (sideBar.width * 0.02)
 
-                    component MenuButton : Button {
-                        id: btn
-                        property string iconStr: ""
-                        property string btnText: ""
-                        property string targetPage: ""
-                        property bool checkAccess: true
-                        property bool alignRight: false
-
-                        property bool isActive: appWindow.getBaseName(appWindow.currentActivePage) === appWindow.getBaseName(targetPage)
-
-                        visible: checkAccess
-                        Layout.fillWidth: true
-                        implicitHeight: 44
-
-                        HoverHandler {
-                            cursorShape: Qt.PointingHandCursor
-                        }
-
-                        // Khung trong suốt dạng kính (Glassmorphism)
-                        background: Rectangle {
-                            color: btn.isActive ? "#FFFFFF" : (btn.pressed ? "#60FFFFFF" : (btn.hovered ? "#40FFFFFF" : "#25FFFFFF"))
-                            radius: 10
-                            border.color: btn.isActive ? "#0284C7" : (btn.hovered ? "#FFFFFF" : "#80FFFFFF")
-                            border.width: btn.isActive ? 2 : 1
-                        }
-
-                        contentItem: RowLayout {
-                            spacing: 12
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.leftMargin: 12
-                            anchors.rightMargin: 12
-
-                            // Spacer bên trái → đẩy nội dung sang phải khi alignRight = true
-                            Item {
-                                Layout.fillWidth: btn.alignRight
-                                visible: btn.alignRight
-                            }
-
-                            Text {
-                                text: btn.iconStr
-                                font.pixelSize: 18
-                            }
-
-                            Text {
-                                text: btn.btnText
-                                font.pixelSize: 15
-                                font.bold: true
-                                color: btn.isActive ? "#0369A1" : "#0F172A"
-                                style: btn.isActive ? Text.Normal : Text.Outline
-                                styleColor: "#FFFFFF"
-                                elide: Text.ElideRight
-                            }
-
-                            // Spacer bên phải → giữ nội dung bên trái khi alignRight = false
-                            Item {
-                                Layout.fillWidth: !btn.alignRight
-                                visible: !btn.alignRight
-                            }
-                        }
-
-                        onClicked: {
-                            if (targetPage !== "") {
-                                appWindow.switchPage(targetPage)
-                            }
-                        }
-                    }
-
-                    MenuButton { iconStr: "🏠"; btnText: "Trang Chủ"; targetPage: "ManagerPage.qml"; checkAccess: isAdmin }
-                    MenuButton { iconStr: "🕒"; btnText: "Điểm Danh Ca Làm"; targetPage: "EmployeePage.qml"; checkAccess: isStaff && !isAdmin }
-                    MenuButton { iconStr: "🛒"; btnText: "Bán Hàng"; targetPage: "OrderPage.qml"; checkAccess: isAdmin || isStaff }
-                    MenuButton { iconStr: "📦"; btnText: "Quản Lý Kho Hàng"; targetPage: "InventoryPage.qml"; checkAccess: isAdmin || isStaff }
-                    MenuButton { iconStr: "📜"; btnText: "Lịch Sử Đơn Hàng"; targetPage: "OrderHistoryPage.qml"; checkAccess: isAdmin || isStaff }
-                    MenuButton { iconStr: "🪑"; btnText: "Sơ Đồ Bàn"; targetPage: "SeatingPage.qml"; checkAccess: isAdmin || isStaff }
-                    MenuButton { iconStr: "🎁"; btnText: "Tích điểm"; targetPage: "LoyaltyPage.qml"; checkAccess: isAdmin || isStaff }
-
-                    Rectangle { Layout.fillWidth: true; height: 1; color: "#90FFFFFF"; Layout.topMargin: 6; Layout.bottomMargin: 6; visible: isAdmin }
-
-                    MenuButton { btnText: "Quản Lý Nhân Sự"; iconStr: "🔐"; targetPage: "EmployeeManagementPage.qml"; checkAccess: isAdmin; alignRight: true }
-                    MenuButton { btnText: "Báo Cáo Điểm Danh"; iconStr: "📋"; targetPage: "AttendanceReportPage.qml"; checkAccess: isAdmin; alignRight: true }
-                    MenuButton { btnText: "Quản Lý Tài Chính"; iconStr: "📈"; targetPage: "FinancePage.qml"; checkAccess: isAdmin; alignRight: true }
-
-                    Rectangle { Layout.fillWidth: true; height: 1; color: "#90FFFFFF"; Layout.topMargin: 8; Layout.bottomMargin: 8 }
+                HoverHandler {
+                    cursorShape: Qt.PointingHandCursor
                 }
 
-                Button {
-                    Layout.fillWidth: true
-                    implicitHeight: 44
-                    implicitWidth: 130
-                    anchors.bottom: parent.bottom
-                    anchors.right: parent.right
+                background: Rectangle {
+                    radius: 10
+                    clip: true
+                    color: btn.isActive ? "#FFFFFF" : (btn.pressed ? "#70FFFFFF" : (btn.hovered ? "#45FFFFFF" : "#20FFFFFF"))
+                    border.color: btn.isActive ? "#0284C7" : (btn.hovered ? "#FFFFFF" : "#80FFFFFF")
+                    border.width: btn.isActive ? 2 : 1
 
-                    HoverHandler { cursorShape: Qt.PointingHandCursor }
+                    Behavior on color { ColorAnimation { duration: 120 } }
+                    Behavior on border.color { ColorAnimation { duration: 120 } }
+                }
 
-                    background: Rectangle { color: parent.pressed ? "#B91C1C" : "#DC2626"; radius: 12 }
+                contentItem: RowLayout {
+                    anchors.fill: parent
+                    spacing: 6
 
-                    contentItem: Text {
-                        text: "🚪 Đăng xuất";
-                        color: "white";
-                        font.bold: true;
-                        font.pixelSize: 15;
-                        horizontalAlignment: Text.AlignHCenter;
+                    Item { Layout.fillWidth: true }
+
+                    Text {
+                        text: btn.iconStr
+                        font.pixelSize: Math.max(12, Math.min(16, btn.height * 0.42))
                         verticalAlignment: Text.AlignVCenter
                     }
-                    onClicked: logoutDialog.open()
+
+                    Text {
+                        text: btn.btnText
+                        font.pixelSize: Math.max(11, Math.min(14, btn.height * 0.36))
+                        font.bold: true
+                        color: btn.isActive ? "#0369A1" : "#0F172A"
+                        style: btn.isActive ? Text.Normal : Text.Outline
+                        styleColor: "#FFFFFF"
+                        elide: Text.ElideRight
+                        verticalAlignment: Text.AlignVCenter
+                    }
+
+                    Item { Layout.fillWidth: true }
                 }
+
+                onClicked: {
+                    if (targetPage !== "") {
+                        appWindow.switchPage(targetPage)
+                    }
+                }
+            }
+
+            // 🔴 TRANG CHỦ: Mở cho cả Admin & Nhân viên (Admin -> ManagerPage.qml, Staff -> EmployeePage.qml)
+            MenuButton {
+                iconStr: "🏠"
+                btnText: "Trang Chủ"
+                targetPage: isAdmin ? "ManagerPage.qml" : "EmployeePage.qml"
+                checkAccess: isAdmin || isStaff
+                alignRight: false
+            }
+
+            MenuButton { iconStr: "🛒"; btnText: "Bán Hàng"; targetPage: "OrderPage.qml"; checkAccess: isAdmin || isStaff; alignRight: false }
+            MenuButton { iconStr: "📦"; btnText: "Quản Lý Kho Hàng"; targetPage: "InventoryPage.qml"; checkAccess: isAdmin || isStaff; alignRight: false }
+            MenuButton { iconStr: "🚚"; btnText: "Nhà Cung Cấp"; targetPage: "SupplierPage.qml"; checkAccess: isAdmin || isStaff; alignRight: false }
+            MenuButton { iconStr: "📜"; btnText: "Lịch Sử Đơn Hàng"; targetPage: "OrderHistoryPage.qml"; checkAccess: isAdmin || isStaff; alignRight: !isAdmin }
+
+            // Nhóm dưới: Né mèo bên trái
+            MenuButton { iconStr: "🪑"; btnText: "Sơ Đồ Bàn"; targetPage: "SeatingPage.qml"; checkAccess: isAdmin || isStaff; alignRight: true }
+            MenuButton { iconStr: "🎁"; btnText: "Tích điểm"; targetPage: "LoyaltyPage.qml"; checkAccess: isAdmin || isStaff; alignRight: true }
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: "#60FFFFFF"
+                visible: isAdmin
+            }
+
+            MenuButton { btnText: "Quản Lý Nhân Sự"; iconStr: "🔐"; targetPage: "EmployeeManagementPage.qml"; checkAccess: isAdmin; alignRight: true }
+            MenuButton { btnText: "Báo Cáo Điểm Danh"; iconStr: "📋"; targetPage: "AttendanceReportPage.qml"; checkAccess: isAdmin; alignRight: true }
+            MenuButton { btnText: "Quản Lý Tài Chính"; iconStr: "📈"; targetPage: "FinancePage.qml"; checkAccess: isAdmin; alignRight: true }
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: "#60FFFFFF"
+            }
+
+            Button {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 38
+                Layout.leftMargin: sideBar.width * 0.236
+                Layout.rightMargin: sideBar.width * 0.02
+                hoverEnabled: true
+
+                HoverHandler {
+                    cursorShape: Qt.PointingHandCursor
+                }
+
+                background: Rectangle {
+                    radius: 10
+                    clip: true
+                    color: parent.pressed ? "#B91C1C" : (parent.hovered ? "#EF4444" : "#DC2626")
+                    Behavior on color { ColorAnimation { duration: 120 } }
+                }
+
+                contentItem: Text {
+                    text: "🚪 Đăng xuất"
+                    color: "white"
+                    font.bold: true
+                    font.pixelSize: 13
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+                onClicked: logoutDialog.open()
             }
         }
     }
 
+    // Dialog Xác nhận đăng xuất
     Dialog {
         id: logoutDialog
         width: Math.min(320, parent.width * 0.9)
-        height: 160
+        height: 170
         modal: true
         anchors.centerIn: parent
-        title: "Xác nhận"
 
         background: Rectangle { color: "#FFFFFF"; radius: 12; border.color: "#E2E8F0" }
-        header: Item { height: 40; Text { text: "Xác nhận đăng xuất"; font.bold: true; font.pixelSize: 16; color: "#1E293B"; anchors.centerIn: parent } }
 
         ColumnLayout {
-            anchors.fill: parent; anchors.margins: 10; spacing: 20
-            Text { text: "Bạn có chắc chắn muốn đăng xuất?"; font.pixelSize: 14; color: "#475569"; Layout.alignment: Qt.AlignHCenter }
+            anchors.fill: parent
+            anchors.margins: 16
+            spacing: 16
+
+            Text {
+                text: "Xác nhận đăng xuất"
+                font.bold: true
+                font.pixelSize: 16
+                color: "#1E293B"
+                Layout.alignment: Qt.AlignHCenter
+            }
+
+            Text {
+                text: "Bạn có chắc chắn muốn đăng xuất?"
+                font.pixelSize: 14
+                color: "#475569"
+                Layout.alignment: Qt.AlignHCenter
+            }
 
             RowLayout {
-                Layout.fillWidth: true; spacing: 15
+                Layout.fillWidth: true
+                spacing: 12
+
                 Button {
-                    text: "Không"; Layout.fillWidth: true; Layout.preferredHeight: 40
+                    text: "Không"
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 40
                     background: Rectangle { color: "#F1F5F9"; radius: 6 }
-                    contentItem: Text { text: parent.text; color: "#1E293B"; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                    contentItem: Text {
+                        text: parent.text
+                        color: "#1E293B"
+                        font.bold: true
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
                     onClicked: logoutDialog.close()
                 }
+
                 Button {
-                    text: "Có, đăng xuất"; Layout.fillWidth: true; Layout.preferredHeight: 40
+                    text: "Có, đăng xuất"
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 40
                     background: Rectangle { color: "#DC2626"; radius: 6 }
-                    contentItem: Text { text: parent.text; color: "white"; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                    contentItem: Text {
+                        text: parent.text
+                        color: "white"
+                        font.bold: true
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
                     onClicked: {
                         logoutDialog.close()
                         if (typeof accountHandler !== "undefined" && accountHandler !== null) {
