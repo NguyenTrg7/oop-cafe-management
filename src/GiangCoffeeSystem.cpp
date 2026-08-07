@@ -183,8 +183,22 @@ QVariantList GiangCoffeeSystem::loadEmployees()
         if (fields.size() >= 8) {
             QVariantMap emp;
             emp["id"] = fields[0].trimmed();
-            emp["name"] = fields[1].trimmed();
-            emp["phone"] = fields[2].trimmed();
+
+            QString val1 = fields[1].trimmed();
+            QString val2 = fields[2].trimmed();
+
+            // Tự động nhận diện và đảo lại nếu dữ liệu trong CSV cũ bị ngược thứ tự Tên <-> SĐT
+            bool isVal1Phone = !val1.isEmpty() && val1.at(0).isDigit() && (val1.length() >= 9 && val1.length() <= 11);
+            bool isVal2Phone = !val2.isEmpty() && val2.at(0).isDigit() && (val2.length() >= 9 && val2.length() <= 11);
+
+            if (isVal1Phone && !isVal2Phone) {
+                emp["name"] = val2;
+                emp["phone"] = val1;
+            } else {
+                emp["name"] = val1;
+                emp["phone"] = val2;
+            }
+
             emp["salary"] = fields[3].trimmed().toDouble();
             emp["gender"] = fields[4].trimmed();
             emp["jobRole"] = fields[5].trimmed();
@@ -239,9 +253,11 @@ bool GiangCoffeeSystem::updateEmployeeCSV(const QString &id, const QString &name
         QString line = in.readLine();
         QStringList fields = line.split(",");
         if (!fields.isEmpty() && fields[0].trimmed() == id) {
-            line = QString("%1,%2,%3,%4,%5,%6,%7,%8,%9,%10,%11,%12,%13")
-            .arg(id, name, phone, QString::number(salary), gender, jobRole)
-                .arg(dob, cccd, shiftDate, shiftTime, avatar, cccdFront, cccdBack);
+            QStringList updatedFields = {
+                id, name, phone, QString::number(salary), gender, jobRole,
+                dob, cccd, shiftDate, shiftTime, avatar, cccdFront, cccdBack
+            };
+            line = updatedFields.join(",");
         }
         lines.append(line);
     }
@@ -793,14 +809,48 @@ QVariantMap GiangCoffeeSystem::importEmployeesNoDuplicate(const QString &filePat
         QStringList fields = line.split(",");
         if (fields.size() >= 8) {
             QString newId = fields[0].trimmed();
-            QString newPhone = fields[2].trimmed();
+            QString val1 = fields[1].trimmed();
+            QString val2 = fields[2].trimmed();
+
+            QString newName = val1;
+            QString newPhone = val2;
+
+            if (!val1.isEmpty() && val1.at(0).isDigit() && val1.length() >= 9 && val1.length() <= 11) {
+                newName = val2;
+                newPhone = val1;
+            }
 
             if (existingIds.contains(newId) || existingPhones.contains(newPhone)) {
                 skippedCount++;
                 continue;
             }
 
-            addEmployeeCSV(newId, fields[1].trimmed(), newPhone, fields[3].toDouble(), fields[4].trimmed(), fields[5].trimmed(), fields[6].trimmed(), fields[7].trimmed());
+            double salary = fields[3].toDouble();
+            QString gender = fields[4].trimmed();
+            QString jobRole = fields[5].trimmed();
+
+            QString dob = "01/01/2000";
+            QString cccd = "";
+            QString shiftDate = "";
+            QString shiftTime = "";
+            QString avatar = "";
+            QString cccdFront = "";
+            QString cccdBack = "";
+
+            if (fields.size() >= 13) {
+                dob = fields[6].trimmed();
+                cccd = fields[7].trimmed();
+                shiftDate = fields[8].trimmed();
+                shiftTime = fields[9].trimmed();
+                avatar = fields[10].trimmed();
+                cccdFront = fields[11].trimmed();
+                cccdBack = fields[12].trimmed();
+            } else {
+                shiftDate = fields[6].trimmed();
+                shiftTime = fields[7].trimmed();
+            }
+
+            addEmployeeCSV(newId, newName, newPhone, salary, gender, jobRole, dob, cccd, shiftDate, shiftTime, avatar, cccdFront, cccdBack);
             existingIds.insert(newId);
             existingPhones.insert(newPhone);
             addedCount++;

@@ -33,9 +33,10 @@ QVariant EmployeeModel::data(const QModelIndex &index, int role) const
     Employee *emp = m_employees[index.row()];
     switch (role) {
     case IdRole: return emp->getId();
-    case PhoneRole: return emp->getPhone();
     case NameRole: return emp->getName();
+    case PhoneRole: return emp->getPhone();
     case SalaryRole: return emp->getSalary();
+    case GenderRole: return emp->getGender();
     case JobRoleRole: return emp->getJobRole();
     case DobRole: return emp->getDob();
     case CccdRole: return emp->getCccd();
@@ -52,9 +53,10 @@ QHash<int, QByteArray> EmployeeModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
     roles[IdRole] = "id";
-    roles[PhoneRole] = "phone";
     roles[NameRole] = "name";
+    roles[PhoneRole] = "phone";
     roles[SalaryRole] = "salary";
+    roles[GenderRole] = "gender";
     roles[JobRoleRole] = "jobRole";
     roles[DobRole] = "dob";
     roles[CccdRole] = "cccd";
@@ -66,23 +68,23 @@ QHash<int, QByteArray> EmployeeModel::roleNames() const
     return roles;
 }
 
-void EmployeeModel::addEmployee(const QString &id, const QString &phone, const QString &name, double salary, const QString &gender, const QString &jobRole, const QString &dob, const QString &cccd, const QString &shiftDate, const QString &shiftTime, const QString &avatar, const QString &cccdFront, const QString &cccdBack)
+void EmployeeModel::addEmployee(const QString &id, const QString &name, const QString &phone, double salary, const QString &gender, const QString &jobRole, const QString &dob, const QString &cccd, const QString &shiftDate, const QString &shiftTime, const QString &avatar, const QString &cccdFront, const QString &cccdBack)
 {
     beginInsertRows(QModelIndex(), m_employees.count(), m_employees.count());
-    m_employees.append(new Employee(id, phone, name, salary, gender, jobRole, dob, cccd, shiftDate, shiftTime, avatar, cccdFront, cccdBack));
+    m_employees.append(new Employee(id, name, phone, salary, gender, jobRole, dob, cccd, shiftDate, shiftTime, avatar, cccdFront, cccdBack));
     endInsertRows();
 
     QString defaultPath = GiangCoffeeSystem::getSaveFilePath("Employee.csv");
     exportCSV(defaultPath);
 }
 
-void EmployeeModel::updateEmployee(int index, const QString &id, const QString &phone, const QString &name, double salary, const QString &gender, const QString &jobRole, const QString &dob, const QString &cccd, const QString &shiftDate, const QString &shiftTime, const QString &avatar, const QString &cccdFront, const QString &cccdBack)
+void EmployeeModel::updateEmployee(int index, const QString &id, const QString &name, const QString &phone, double salary, const QString &gender, const QString &jobRole, const QString &dob, const QString &cccd, const QString &shiftDate, const QString &shiftTime, const QString &avatar, const QString &cccdFront, const QString &cccdBack)
 {
     if (index < 0 || index >= m_employees.size()) return;
     Employee *emp = m_employees[index];
     emp->setId(id);
-    emp->setPhone(phone);
     emp->setName(name);
+    emp->setPhone(phone);
     emp->setSalary(salary);
     emp->setGender(gender);
     emp->setJobRole(jobRole);
@@ -161,7 +163,17 @@ void EmployeeModel::importCSV(const QString &filePath)
         if (!id.empty()) {
             double salary = 0.0;
             if (!salaryStr.empty()) salary = std::stod(salaryStr);
-            m_employees.append(new Employee(QString::fromStdString(id), QString::fromStdString(phone), QString::fromStdString(name), salary, QString::fromStdString(gender), QString::fromStdString(jobRole), "", "", QString::fromStdString(shiftDate), QString::fromStdString(shiftTime)));
+            m_employees.append(new Employee(
+                QString::fromStdString(id),
+                QString::fromStdString(name),
+                QString::fromStdString(phone),
+                salary,
+                QString::fromStdString(gender),
+                QString::fromStdString(jobRole),
+                "", "",
+                QString::fromStdString(shiftDate),
+                QString::fromStdString(shiftTime)
+                ));
         }
     }
     file.close();
@@ -178,10 +190,14 @@ void EmployeeModel::exportCSV(const QString &filePath)
 
     file << "ID,Name,Phone,Salary,Gender,JobRole,ShiftDate,ShiftTime\n";
     for (Employee *emp : m_employees) {
-        file << emp->getId().toStdString() << "," << emp->getName().toStdString() << ","
-             << emp->getPhone().toStdString() << "," << emp->getSalary() << ","
-             << emp->getGender().toStdString() << "," << emp->getJobRole().toStdString() << ","
-             << emp->getShiftDate().toStdString() << "," << emp->getShiftTime().toStdString() << "\n";
+        file << emp->getId().toStdString() << ","
+             << emp->getName().toStdString() << ","
+             << emp->getPhone().toStdString() << ","
+             << emp->getSalary() << ","
+             << emp->getGender().toStdString() << ","
+             << emp->getJobRole().toStdString() << ","
+             << emp->getShiftDate().toStdString() << ","
+             << emp->getShiftTime().toStdString() << "\n";
     }
     file.close();
 }
