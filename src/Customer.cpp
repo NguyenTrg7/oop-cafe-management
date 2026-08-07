@@ -1,4 +1,5 @@
 #include "Customer.h"
+#include "GiangCoffeeSystem.h"
 #include <QDebug>
 #include <QRandomGenerator>
 #include <QFile>
@@ -251,7 +252,7 @@ void Customer::resetToGuest()
 
 static QString loyaltyFilePath()
 {
-    return QCoreApplication::applicationDirPath() + "/saves/loyalty.csv";
+    return GiangCoffeeSystem::getSaveFilePath("loyalty.csv");
 }
 
 bool Customer::loadByPhone(const QString &phone)

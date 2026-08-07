@@ -22,19 +22,22 @@ Page {
     property int editingTable: -1
 
     property var tablePositions: [
-        {num: 1,  x: 40,  y: 40},
-        {num: 2,  x: 180, y: 40},
-        {num: 3,  x: 320, y: 40},
-        {num: 4,  x: 460, y: 40},
-        {num: 5,  x: 40,  y: 200},
-        {num: 6,  x: 180, y: 200},
-        {num: 7,  x: 320, y: 200},
-        {num: 8,  x: 460, y: 200},
-        {num: 9,  x: 40,  y: 360},
-        {num: 10, x: 180, y: 360},
-        {num: 11, x: 320, y: 360},
-        {num: 12, x: 460, y: 360}
+        {num: 1,  x: 0,   y: 0},
+        {num: 2,  x: 140, y: 0},
+        {num: 3,  x: 280, y: 0},
+        {num: 4,  x: 420, y: 0},
+        {num: 5,  x: 0,   y: 160},
+        {num: 6,  x: 140, y: 160},
+        {num: 7,  x: 280, y: 160},
+        {num: 8,  x: 420, y: 160},
+        {num: 9,  x: 0,   y: 320},
+        {num: 10, x: 140, y: 320},
+        {num: 11, x: 280, y: 320},
+        {num: 12, x: 420, y: 320}
     ]
+
+    readonly property int gridWidth: 540   // 420 + 120
+    readonly property int gridHeight: 450  // 320 + 130
 
     function refresh() {
         if (typeof coffeeSystem !== "undefined" && coffeeSystem.getSeatingList)
@@ -291,9 +294,12 @@ Page {
             clip: true
 
             ScrollView {
+                id: seatingScroll
                 anchors.fill: parent
-                contentWidth: 580
-                contentHeight: 490
+                anchors.margins: 8
+                clip: true
+                contentWidth: Math.max(gridWidth + 40, availableWidth)
+                contentHeight: Math.max(gridHeight + 40, availableHeight)
 
                 Item {
                     id: tableMap

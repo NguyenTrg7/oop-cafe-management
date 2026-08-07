@@ -1470,7 +1470,7 @@ Item {
 
                                 // Mức đá
                                 Text {
-                                    visible: model.ice && modela.ice !== "" && model.ice !== "Bình thường"
+                                    visible: model.ice && model.ice !== "" && model.ice !== "Bình thường"
                                     text: model.ice
                                     font.pixelSize: 11
                                     color: "#0277BD"
@@ -1669,13 +1669,22 @@ Item {
                             customerHandler.save()
                         }
 
-                        if (phone !== "" && /^0\d{9}$/.test(phone)) {
-                            var earned = calculateLoyaltyPoints()
-                            if (earned > 0 && typeof customerHandler !== "undefined" && customerHandler) {
-                                customerHandler.loadByPhone(phone)
-                                customerHandler.addPoints(earned)
-                                customerHandler.save()
+                        if (phone !== "" && /^0\d{9}$/.test(phone) && typeof customerHandler !== "undefined" && customerHandler) {
+                            customerHandler.loadByPhone(phone)
+
+                            if (selectedVoucherCode !== "") {
+                                customerHandler.useVoucher(selectedVoucherCode)
                             }
+
+                            var earned = calculateLoyaltyPoints()
+                            if (earned > 0) {
+                                customerHandler.addPoints(earned)
+                            }
+
+                            customerHandler.save()
+                        } else if (selectedVoucherCode !== "" && typeof customerHandler !== "undefined" && customerHandler) {
+                            customerHandler.useVoucher(selectedVoucherCode)
+                            customerHandler.save()
                         }
 
                         if (typeof orderHistoryManager !== "undefined" && orderHistoryManager) {
