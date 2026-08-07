@@ -1,14 +1,13 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
+import QtMultimedia
+
 
 Rectangle {
     id: root
     width: parent.width
     height: parent.height
-    gradient: Gradient {
-        GradientStop { position: 0.0; color: "#BAE6FD" }
-        GradientStop { position: 1.0; color: "#F0F9FF" }
-    }
+    color: "#000000"
 
     function syncNavBar() {
         var win = typeof appWindow !== "undefined" ? appWindow : (typeof ApplicationWindow !== "undefined" ? ApplicationWindow.window : null)
@@ -19,59 +18,103 @@ Rectangle {
         }
     }
 
+    function getVideoSource() {
+        if (typeof savesDir !== "undefined" && savesDir !== "") {
+            var base = savesDir.toString().replace(/[\\\/]+$/, "")
+            base = base.replace(/[\\\/]saves$/i, "")
+            var path = base + "/data/background.mp4"
+            path = path.replace(/\\/g, "/")
+            console.log("Video path:", "file:///" + path)
+            return "file:///" + path
+        }
+        if (typeof applicationDir !== "undefined" && applicationDir !== "") {
+            var p = applicationDir.toString().replace(/\\/g, "/") + "/data/background.mp4"
+            return "file:///" + p
+        }
+        return ""
+    }
+
     StackView.onActivating: {
         syncNavBar()
         clearFields()
         if (typeof accountHandler !== "undefined") {
             accountHandler.setCurrentUserPhone("")
         }
+        bgPlayer.source = getVideoSource()
+        bgPlayer.play()
     }
 
-    Component.onCompleted: syncNavBar()
+    StackView.onDeactivating: {
+        bgPlayer.stop()
+    }
 
-    Item {
-        id: snowContainer
-        anchors.fill: parent
-        clip: true
+    Component.onCompleted: {
+        syncNavBar()
+        bgPlayer.source = getVideoSource()
+        bgPlayer.play()
+    }
+    // Item {
+    //     id: snowContainer
+    //     anchors.fill: parent
+    //     clip: true
 
-        Repeater {
-            model: 40
+    //     Repeater {
+    //         model: 40
 
-            Rectangle {
-                id: flake
-                property real speed: Math.random() * 5000 + 4000
-                property real initialDelay: Math.random() * 7000
+    //         Rectangle {
+    //             id: flake
+    //             property real speed: Math.random() * 5000 + 4000
+    //             property real initialDelay: Math.random() * 7000
 
-                width: Math.random() * 5 + 3
-                height: width
-                radius: width / 2
-                color: "#FFFFFF"
-                opacity: Math.random() * 0.6 + 0.3
-                x: Math.random() * root.width
-                y: -20
+    //             width: Math.random() * 5 + 3
+    //             height: width
+    //             radius: width / 2
+    //             color: "#FFFFFF"
+    //             opacity: Math.random() * 0.6 + 0.3
+    //             x: Math.random() * root.width
+    //             y: -20
 
-                SequentialAnimation on y {
-                    loops: Animation.Infinite
-                    running: true
+    //             SequentialAnimation on y {
+    //                 loops: Animation.Infinite
+    //                 running: true
 
-                    PauseAnimation { duration: flake.initialDelay }
+    //                 PauseAnimation { duration: flake.initialDelay }
 
-                    NumberAnimation {
-                        from: -20
-                        to: root.height + 20
-                        duration: flake.speed
-                        easing.type: Easing.Linear
-                    }
+    //                 NumberAnimation {
+    //                     from: -20
+    //                     to: root.height + 20
+    //                     duration: flake.speed
+    //                     easing.type: Easing.Linear
+    //                 }
 
-                    ScriptAction {
-                        script: {
-                            flake.initialDelay = 0;
-                            flake.x = Math.random() * root.width;
-                        }
-                    }
-                }
-            }
+    //                 ScriptAction {
+    //                     script: {
+    //                         flake.initialDelay = 0;
+    //                         flake.x = Math.random() * root.width;
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+
+    MediaPlayer {
+        id: bgPlayer
+        videoOutput: bgVideo
+        loops: MediaPlayer.Infinite
+        autoPlay: true
+
+        onErrorOccurred: function(error, errorString) {
+            console.log("MediaPlayer ERROR:", error, errorString)
+            console.log("Source was:", source)
         }
+    }
+
+    VideoOutput {
+        id: bgVideo
+        anchors.fill: parent
+        fillMode: VideoOutput.PreserveAspectCrop
+        z: 0
     }
 
     function clearFields() {
@@ -105,6 +148,7 @@ Rectangle {
             loginPassInput.text = ""
         } else if (role === "manager" || role === "staff") {
             loginErrorText.visible = false
+            bgPlayer.stop()
 
             var targetPage = (role === "manager") ? "ManagerPage.qml" : "EmployeePage.qml"
 
@@ -132,7 +176,7 @@ Rectangle {
         radius: 20
         border.color: "#FFFFFF"
         border.width: 2
-
+        z: 10
         Column {
             anchors.centerIn: parent
             spacing: 25
