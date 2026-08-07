@@ -6,7 +6,6 @@ Item {
     id: root
     anchors.fill: parent
 
-    property string mode: "morning"
     property string filterType: "All"
 
     function syncNavBar() {
@@ -44,55 +43,17 @@ Item {
         anchors.margins: 20
         spacing: 12
 
-        RowLayout {
-            Layout.fillWidth: true
-
-            Text {
-                text: mode === "morning" ? "📥 NHẬP TỒN ĐẦU NGÀY" : "📤 KIỂM TRA TỒN CUỐI NGÀY"
-                font.pixelSize: 22
-                font.bold: true
-                color: "#3E2723"
-            }
-
-            Item { Layout.fillWidth: true }
-
-            Button {
-                text: "← Quay lại"
-                onClicked: {
-                    Qt.callLater(function() {
-                        if (typeof orderPageRoot !== "undefined") {
-                            orderPageRoot.showingInventory = false
-                            orderPageRoot.showingHistory = false
-                        }
-                        else if (StackView.view) {
-                            StackView.view.pop()
-                        }
-                    })
-                }
-            }
+        // Tiêu đề
+        Text {
+            text: "📥 NHẬP TỒN KHO"
+            font.pixelSize: 22
+            font.bold: true
+            color: "#3E2723"
         }
 
+        // Bộ lọc
         RowLayout {
             spacing: 10
-
-            ButtonGroup { id: modeGroup }
-
-            Button {
-                text: "Đầu ngày"
-                checkable: true
-                checked: mode === "morning"
-                ButtonGroup.group: modeGroup
-                onClicked: mode = "morning"
-            }
-            Button {
-                text: "Cuối ngày"
-                checkable: true
-                checked: mode === "evening"
-                ButtonGroup.group: modeGroup
-                onClicked: mode = "evening"
-            }
-
-            Item { width: 24 }
 
             ButtonGroup { id: filterGroup }
 
@@ -128,6 +89,7 @@ Item {
             }
         }
 
+        // Header bảng
         Rectangle {
             Layout.fillWidth: true
             height: 36
@@ -174,13 +136,13 @@ Item {
             }
         }
 
+        // Danh sách nguyên liệu
         ListView {
             id: ingredientList
             Layout.fillWidth: true
             Layout.fillHeight: true
             clip: true
             spacing: 6
-
             model: getFilteredIngredients()
 
             delegate: Rectangle {
@@ -248,6 +210,7 @@ Item {
             }
         }
 
+        // Nút lưu
         Button {
             text: "💾 Lưu tồn kho ra file"
             Layout.fillWidth: true
@@ -255,17 +218,12 @@ Item {
             highlighted: true
             onClicked: {
                 if (typeof ingredientManager !== "undefined") {
+                    // Gọi setQuantity lại để trigger autoSave
                     var list = ingredientManager.getAllIngredients()
-                    console.log("Số nguyên liệu trong memory:", list.length)
                     for (var i = 0; i < list.length; i++) {
-                        if (list[i].id && list[i].id.indexOf("ING1") === 0)
-                            console.log(list[i].id, list[i].name, list[i].quantity)
+                        ingredientManager.setQuantity(list[i].id, list[i].quantity)
                     }
-                    for (var j = 0; j < list.length; j++) {
-                        if (list[j].id && list[j].id.indexOf("ING1") === 0)
-                            ingredientManager.setQuantity(list[j].id, list[j].quantity)
-                    }
-                    console.log("Đã gọi setQuantity → autoSave")
+                    console.log("Đã lưu tồn kho")
                 }
             }
         }
