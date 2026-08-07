@@ -16,15 +16,29 @@ ApplicationWindow {
     property color colorText: "#1E293B"
 
     property string currentActivePage: "OrderPage.qml"
-
-    // Xóa property sidebarPinned vì thanh nav giờ cố định
-
     property var pageCache: ({})
 
     background: Rectangle { color: colorBackground }
 
     property bool isAdmin: typeof accountHandler !== "undefined" && accountHandler !== null && accountHandler.currentUserPhone === "admin"
     property bool isStaff: typeof accountHandler !== "undefined" && accountHandler !== null && accountHandler.currentUserPhone !== "admin" && accountHandler.currentUserPhone !== ""
+
+    // Hàm lấy đường dẫn ảnh nền động
+    function getImageSource() {
+        if (typeof savesDir !== "undefined" && savesDir !== "") {
+            var base = savesDir.toString().replace(/[\\\/]+$/, "")
+            base = base.replace(/[\\\/]saves$/i, "")
+            var path = base + "/data/themeNavigator.png"
+            path = path.replace(/\\/g, "/")
+            console.log("Image path:", "file:///" + path)
+            return "file:///" + path
+        }
+        if (typeof applicationDir !== "undefined" && applicationDir !== "") {
+            var p = applicationDir.toString().replace(/\\/g, "/") + "/data/themeNavigator.png"
+            return "file:///" + p
+        }
+        return ""
+    }
 
     function getBaseName(url) {
         if (!url) return "";
@@ -42,7 +56,6 @@ ApplicationWindow {
         }
     }
 
-    // StackView sẽ được đùn sang bên phải của SideBar khi có nhân viên đăng nhập
     StackView {
         id: stackView
         anchors.left: (isAdmin || isStaff) ? sideBar.right : parent.left
@@ -98,7 +111,7 @@ ApplicationWindow {
     }
 
     // ---------------------------------------------------
-    // SIDEBAR NAVIGATION - LUÔN Ở BÊN TRÁI VÀ CỐ ĐỊNH
+    // SIDEBAR NAVIGATION
     // ---------------------------------------------------
     Rectangle {
         id: sideBar
@@ -106,9 +119,18 @@ ApplicationWindow {
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.bottom: parent.bottom
-        color: colorPrimary
+        color: "#96D2F5"
         visible: (isAdmin || isStaff)
         z: 100
+        clip: true
+
+        // Ảnh nền thanh điều hướng
+        Image {
+            anchors.fill: parent
+            source: appWindow.getImageSource()
+            fillMode: Image.PreserveAspectCrop
+            verticalAlignment: Image.AlignBottom
+        }
 
         ColumnLayout {
             anchors.fill: parent
@@ -117,9 +139,11 @@ ApplicationWindow {
 
             Label {
                 text: "☕ GIANG'S COFFEE"
-                font.pixelSize: 20
+                font.pixelSize: 21
                 font.bold: true
-                color: "#FFFFFF"
+                color: "#0F172A"
+                style: Text.Outline
+                styleColor: "#FFFFFF"
                 Layout.alignment: Qt.AlignHCenter
                 Layout.topMargin: 5
                 Layout.bottomMargin: 5
@@ -136,6 +160,7 @@ ApplicationWindow {
                     spacing: 8
 
                     component MenuButton : Button {
+                        id: btn
                         property string iconStr: ""
                         property string btnText: ""
                         property string targetPage: ""
@@ -151,24 +176,34 @@ ApplicationWindow {
                             cursorShape: Qt.PointingHandCursor
                         }
 
+                        // Khung trong suốt dạng kính (Glassmorphism)
                         background: Rectangle {
-                            color: parent.isActive ? "#0284C7" : (parent.pressed ? "#0369A1" : (parent.hovered ? "#38BDF8" : "transparent"))
-                            radius: 8
-                            border.color: parent.isActive ? "#7DD3FC" : "transparent"
-                            border.width: parent.isActive ? 1 : 0
+                            color: btn.isActive ? "#FFFFFF" : (btn.pressed ? "#60FFFFFF" : (btn.hovered ? "#40FFFFFF" : "#25FFFFFF"))
+                            radius: 10
+                            border.color: btn.isActive ? "#0284C7" : (btn.hovered ? "#FFFFFF" : "#80FFFFFF")
+                            border.width: btn.isActive ? 2 : 1
                         }
 
                         contentItem: RowLayout {
                             spacing: 12
                             anchors.left: parent.left
-                            anchors.leftMargin: 10
-                            Text { text: parent.parent.iconStr; font.pixelSize: 18; color: "white" }
+                            anchors.leftMargin: 12
+                            anchors.right: parent.right
+                            anchors.rightMargin: 12
+
                             Text {
-                                text: parent.parent.btnText
+                                text: btn.iconStr
+                                font.pixelSize: 18
+                            }
+                            Text {
+                                text: btn.btnText
                                 font.pixelSize: 15
                                 font.bold: true
-                                color: "white"
+                                color: btn.isActive ? "#0369A1" : "#0F172A"
+                                style: btn.isActive ? Text.Normal : Text.Outline
+                                styleColor: "#FFFFFF"
                                 Layout.fillWidth: true
+                                elide: Text.ElideRight
                             }
                         }
 
@@ -187,13 +222,13 @@ ApplicationWindow {
                     MenuButton { iconStr: "🪑"; btnText: "Sơ Đồ Bàn"; targetPage: "SeatingPage.qml"; checkAccess: isAdmin || isStaff }
                     MenuButton { iconStr: "🎁"; btnText: "Tích điểm"; targetPage: "LoyaltyPage.qml"; checkAccess: isAdmin || isStaff }
 
-                    Rectangle { Layout.fillWidth: true; height: 1; color: "#38BDF8"; Layout.topMargin: 6; Layout.bottomMargin: 6; visible: isAdmin }
+                    Rectangle { Layout.fillWidth: true; height: 1; color: "#90FFFFFF"; Layout.topMargin: 6; Layout.bottomMargin: 6; visible: isAdmin }
 
                     MenuButton { iconStr: "🔐"; btnText: "Quản Lý Nhân Sự"; targetPage: "EmployeeManagementPage.qml"; checkAccess: isAdmin }
                     MenuButton { iconStr: "📋"; btnText: "Báo Cáo Điểm Danh"; targetPage: "AttendanceReportPage.qml"; checkAccess: isAdmin }
                     MenuButton { iconStr: "📈"; btnText: "Quản Lý Tài Chính"; targetPage: "FinancePage.qml"; checkAccess: isAdmin }
 
-                    Rectangle { Layout.fillWidth: true; height: 1; color: "#38BDF8"; Layout.topMargin: 8; Layout.bottomMargin: 8 }
+                    Rectangle { Layout.fillWidth: true; height: 1; color: "#90FFFFFF"; Layout.topMargin: 8; Layout.bottomMargin: 8 }
 
                     Button {
                         Layout.fillWidth: true
@@ -201,7 +236,7 @@ ApplicationWindow {
 
                         HoverHandler { cursorShape: Qt.PointingHandCursor }
 
-                        background: Rectangle { color: parent.pressed ? "#B91C1C" : "#DC2626"; radius: 8 }
+                        background: Rectangle { color: parent.pressed ? "#B91C1C" : "#DC2626"; radius: 10 }
 
                         contentItem: Text {
                             text: "🚪 Đăng xuất";
