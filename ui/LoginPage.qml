@@ -170,32 +170,61 @@ Rectangle {
     Rectangle {
         id: glassBox
         // Tự động căn chỉnh độ rộng theo màn hình, tối đa 420px
-        width: Math.min(420, parent.width * 0.9)
-        height: Math.min(420, parent.height * 0.9)
+        width: Math.min(380, parent.width * 0.88)
+        height: Math.min(380, parent.height * 0.78)
         anchors.centerIn: parent
         color: "#80FFFFFF"
         radius: 20
         border.color: "#FFFFFF"
         border.width: 2
         z: 10
-        Column {
-            anchors.centerIn: parent
-            width: parent.width * 0.85
-            spacing: 25
 
-            Text {
-                id: titleText
-                text: qsTr("☕ GIANG'S COFFEE")
-                font.pixelSize: Math.max(18, Math.min(28, glassBox.width * 0.08)) // Chữ tự nhỏ lại
-                font.bold: true
-                color: "#0369A1"
+        Image {
+                id: logoImage
+                width: 110
+                height: 110
                 anchors.horizontalCenter: parent.horizontalCenter
+                anchors.top: parent.top
+                anchors.topMargin: -36          // một nửa chiều cao → đè lên viền
+                z: 20
+
+                source: {
+                    if (typeof savesDir !== "undefined" && savesDir !== "") {
+                        var base = savesDir.toString().replace(/[\\\/]+$/, "")
+                        base = base.replace(/[\\\/]saves$/i, "")
+                        var path = base + "/data/logo.png"
+                        return "file:///" + path.replace(/\\/g, "/")
+                    }
+                    if (typeof applicationDir !== "undefined" && applicationDir !== "") {
+                        return "file:///" + applicationDir.toString().replace(/\\/g, "/") + "/data/logo.png"
+                    }
+                    return ""
+                }
+                fillMode: Image.PreserveAspectFit
+                smooth: true
+                mipmap: true
             }
+
+            Column {
+                anchors.centerIn: parent
+                width: parent.width * 0.85
+                spacing: 16
+                topPadding: 24                  // chừa chỗ cho logo
+
+                // Tên quán (không còn icon bên cạnh)
+                Text {
+                    id: titleText
+                    text: qsTr("GIANG'S COFFEE")
+                    font.pixelSize: Math.max(18, Math.min(26, glassBox.width * 0.075))
+                    font.bold: true
+                    color: "#0369A1"
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
 
             Column {
                 id: loginForm
                 width: parent.width
-                spacing: 15
+                spacing: 12
 
                 Column {
                     width: parent.width
