@@ -26,11 +26,12 @@ Page {
 
         ColumnLayout {
             anchors.centerIn: parent
+            width: parent.width * 0.9 // Responsive width
             spacing: 20
 
             Text {
                 text: "☕ CA LÀM VIỆC NHÂN VIÊN"
-                font.pixelSize: 26
+                font.pixelSize: Math.max(18, Math.min(26, parent.width * 0.05))
                 font.bold: true
                 color: "#0369A1"
                 Layout.alignment: Qt.AlignHCenter
@@ -46,11 +47,13 @@ Page {
             RowLayout {
                 spacing: 20
                 Layout.alignment: Qt.AlignHCenter
+                Layout.fillWidth: true
+                Layout.maximumWidth: 450 // Không dãn quá to trên màn hình lớn
 
                 Button {
                     id: btnCheckIn
-                    implicitWidth: 185
-                    implicitHeight: 48
+                    Layout.fillWidth: true // Tự động co giãn theo RowLayout
+                    Layout.preferredHeight: 48
 
                     HoverHandler { cursorShape: Qt.PointingHandCursor }
 
@@ -82,8 +85,8 @@ Page {
 
                 Button {
                     id: btnCheckOut
-                    implicitWidth: 185
-                    implicitHeight: 48
+                    Layout.fillWidth: true // Tự động co giãn theo RowLayout
+                    Layout.preferredHeight: 48
 
                     HoverHandler { cursorShape: Qt.PointingHandCursor }
 
@@ -128,7 +131,7 @@ Page {
 
     Popup {
         id: confirmDialog
-        width: 380
+        width: Math.min(380, employeePage.width * 0.9)
         height: 290
         modal: true
         focus: true

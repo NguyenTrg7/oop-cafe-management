@@ -7,8 +7,8 @@ ApplicationWindow {
     visible: true
     width: 1280
     height: 800
-    minimumWidth: 1024
-    minimumHeight: 700
+    minimumWidth: 800
+    minimumHeight: 600
     title: qsTr("Giang's Coffee - Management System")
 
     property color colorBackground: "#F8FAFC"
@@ -16,13 +16,13 @@ ApplicationWindow {
     property color colorText: "#1E293B"
 
     property string currentActivePage: "OrderPage.qml"
-    property bool sidebarPinned: false
+
+    // Xóa property sidebarPinned vì thanh nav giờ cố định
 
     property var pageCache: ({})
 
     background: Rectangle { color: colorBackground }
 
-    // Đã kiểm tra null an toàn cho accountHandler
     property bool isAdmin: typeof accountHandler !== "undefined" && accountHandler !== null && accountHandler.currentUserPhone === "admin"
     property bool isStaff: typeof accountHandler !== "undefined" && accountHandler !== null && accountHandler.currentUserPhone !== "admin" && accountHandler.currentUserPhone !== ""
 
@@ -33,7 +33,6 @@ ApplicationWindow {
         return parts[parts.length - 1];
     }
 
-    // Đồng bộ trạng thái Sidebar Nav & Title khi sub-tab hoặc trang con thay đổi
     function updateNavigation(pageUrl, pageTitle) {
         currentActivePage = pageUrl;
         if (pageTitle && pageTitle !== "") {
@@ -43,20 +42,20 @@ ApplicationWindow {
         }
     }
 
+    // StackView sẽ được đùn sang bên phải của SideBar khi có nhân viên đăng nhập
     StackView {
         id: stackView
-        anchors.fill: parent
+        anchors.left: (isAdmin || isStaff) ? sideBar.right : parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
         initialItem: "LoginPage.qml"
     }
 
-    // =========================================================================
-    // HÀM CHUYỂN TRANG TỐI ƯU HIỆU NĂNG & ĐỒNG BỘ TRẠNG THÁI NAV BAR
-    // =========================================================================
     function switchPage(pageUrl) {
         if (getBaseName(currentActivePage) === getBaseName(pageUrl)) return;
 
         if (pageUrl === "LoginPage.qml") {
-            sidebarPinned = false;
             currentActivePage = "";
             for (var key in pageCache) {
                 if (pageCache[key]) {
@@ -84,7 +83,6 @@ ApplicationWindow {
         var targetItem = pageCache[pageUrl];
         stackView.replace(null, targetItem, StackView.Immediate);
 
-        // ĐỒNG BỘ: Cập nhật tiêu đề cửa sổ dựa trên title của trang đang active
         if (typeof targetItem.title !== "undefined" && targetItem.title !== "") {
             appWindow.title = "Giang's Coffee - " + targetItem.title;
         } else {
@@ -99,79 +97,18 @@ ApplicationWindow {
         }
     }
 
-    MouseArea {
-        id: edgeHoverArea
-        width: 10
-        anchors.left: parent.left
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        hoverEnabled: true
-        visible: (isAdmin || isStaff)
-        enabled: (isAdmin || isStaff)
-        z: 99
-    }
-
     // ---------------------------------------------------
-    // SIDEBAR NAVIGATION (Đã tích hợp ScrollView chứa cả nút Đăng xuất)
+    // SIDEBAR NAVIGATION - LUÔN Ở BÊN TRÁI VÀ CỐ ĐỊNH
     // ---------------------------------------------------
     Rectangle {
         id: sideBar
         width: 260
+        anchors.left: parent.left
         anchors.top: parent.top
         anchors.bottom: parent.bottom
-
-        HoverHandler {
-            id: sideBarHover
-            enabled: (isAdmin || isStaff)
-        }
-
-        x: (sidebarPinned || edgeHoverArea.containsMouse || sideBarHover.hovered || toggleBtnHover.hovered) && (isAdmin || isStaff) ? 0 : -width
         color: colorPrimary
         visible: (isAdmin || isStaff)
         z: 100
-
-        Behavior on x {
-            NumberAnimation { duration: 250; easing.type: Easing.OutQuart }
-        }
-
-        Rectangle {
-            id: toggleHandle
-            width: 32
-            height: 60
-            color: colorPrimary
-            radius: 8
-            anchors.left: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            visible: (isAdmin || isStaff)
-
-            Rectangle {
-                width: 16
-                height: 60
-                color: colorPrimary
-                anchors.left: parent.left
-            }
-
-            HoverHandler {
-                id: toggleBtnHover
-                cursorShape: Qt.PointingHandCursor
-                enabled: (isAdmin || isStaff)
-            }
-
-            Text {
-                anchors.centerIn: parent
-                text: sideBar.x === 0 ? "◀" : "▶"
-                color: "#FFFFFF"
-                font.bold: true
-                font.pixelSize: 14
-            }
-
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                enabled: (isAdmin || isStaff)
-                onClicked: sidebarPinned = !sidebarPinned
-            }
-        }
 
         ColumnLayout {
             anchors.fill: parent
@@ -188,7 +125,6 @@ ApplicationWindow {
                 Layout.bottomMargin: 5
             }
 
-            // Vùng chứa tất cả menu + nút Đăng xuất (Tự động cuộn khi cửa sổ thu nhỏ height)
             ScrollView {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -259,7 +195,6 @@ ApplicationWindow {
 
                     Rectangle { Layout.fillWidth: true; height: 1; color: "#38BDF8"; Layout.topMargin: 8; Layout.bottomMargin: 8 }
 
-                    // Nút Đăng xuất đưa vào đây để luôn cuộn tới được khi màn hình nhỏ
                     Button {
                         Layout.fillWidth: true
                         implicitHeight: 44
@@ -285,7 +220,7 @@ ApplicationWindow {
 
     Dialog {
         id: logoutDialog
-        width: 320
+        width: Math.min(320, parent.width * 0.9)
         height: 160
         modal: true
         anchors.centerIn: parent
