@@ -15,6 +15,11 @@
 #define SAVE_DIR_PATH "./saves"
 #endif
 
+
+#ifndef DATA_DIR_PATH
+#define DATA_DIR_PATH "./data"
+#endif
+
 GiangCoffeeSystem *GiangCoffeeSystem::m_instance = nullptr;
 
 QString GiangCoffeeSystem::getSaveFilePath(const QString &fileName)
@@ -24,6 +29,28 @@ QString GiangCoffeeSystem::getSaveFilePath(const QString &fileName)
         dir.mkpath(".");
     }
     return dir.filePath(fileName);
+}
+
+void GiangCoffeeSystem::initializeSavesDirectory()
+{
+    QDir saveDir(SAVE_DIR_PATH);
+    if (!saveDir.exists()) {
+        saveDir.mkpath(".");
+    }
+
+    QDir dataDir(DATA_DIR_PATH);
+    if (dataDir.exists()) {
+        QFileInfoList entries = dataDir.entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
+        for (const QFileInfo &fileInfo :std::as_const( entries)) {
+            QString destPath = saveDir.filePath(fileInfo.fileName());
+            // Nếu file trong saves không tồn tại thì mới copy qua (tránh đè dữ liệu user)
+            if (!QFile::exists(destPath)) {
+                QFile::copy(fileInfo.absoluteFilePath(), destPath);
+                // Cấp quyền đọc/ghi cho file copy sang để tránh lỗi Read-Only
+                QFile::setPermissions(destPath, QFile::ReadOwner | QFile::WriteOwner | QFile::ReadUser | QFile::WriteUser);
+            }
+        }
+    }
 }
 
 GiangCoffeeSystem *GiangCoffeeSystem::getInstance()
@@ -40,6 +67,7 @@ GiangCoffeeSystem::GiangCoffeeSystem(QObject *parent)
     m_address = "VNU-HCM University of Science";
     m_menuManager = new MenuManager(this);
 
+    initializeSavesDirectory();
     loadSeating();
 
     if(m_tables.isEmpty()) {
@@ -760,7 +788,7 @@ QVariantList GiangCoffeeSystem::calculateMonthlyPayroll(int month, int year)
                         QTime inTime = lastCheckIn.time();
                         QTime outTime = rec.time.time();
 
-                        for (const auto& shift : scheduledShifts) {
+                        for (const auto& shift :std::as_const(scheduledShifts)) {
                             // Chỉ khớp với ca trùng hoặc gần nhất với khoảng điểm danh
                             if (inTime <= shift.endTime && outTime >= shift.startTime) {
                                 if (inTime < shift.startTime) effectiveIn.setTime(shift.startTime);

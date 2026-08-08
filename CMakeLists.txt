@@ -117,10 +117,13 @@ set(DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data")
 
 # 2. Chuẩn hóa đường dẫn thành dạng Unix '/' để tránh lỗi escape character dấu '\' trên Windows
 file(TO_CMAKE_PATH "${SAVE_DIR}" SAVE_DIR_CLEAN)
+file(TO_CMAKE_PATH "${DATA_DIR}" DATA_DIR_CLEAN)
 
 # 3. Truyền đường dẫn đã chuẩn hóa vào C++ dưới dạng Macro chuỗi
-target_compile_definitions(GiangsCoffee PRIVATE SAVE_DIR_PATH="${SAVE_DIR_CLEAN}")
-
+target_compile_definitions(GiangsCoffee PRIVATE
+    SAVE_DIR_PATH="${SAVE_DIR_CLEAN}"
+    DATA_DIR_PATH="${DATA_DIR_CLEAN}"
+)
 # 4. Tự động tạo thư mục saves (nếu chưa có) và copy LẦN LƯỢT các file/folder từ data/
 # (Nếu saves đã có nhưng thiếu file/folder gốc nào đó, nó sẽ tự động copy bù vào mà không ghi đè file cũ)
 if(NOT EXISTS "${SAVE_DIR_CLEAN}")

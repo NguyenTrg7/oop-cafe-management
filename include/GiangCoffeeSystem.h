@@ -35,6 +35,7 @@ private:
 
     void updateEmployeeInShifts(const QString &id, const QString &newName, const QString &newPhone);
     void deleteEmployeeShifts(const QString &id);
+    void initializeSavesDirectory();
 
     double parseShiftDurationHours(const QString &timeStr);
     double getNetWorkingHours(const QString &timeStr);
