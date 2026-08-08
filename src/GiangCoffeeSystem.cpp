@@ -615,12 +615,37 @@ QVariantList GiangCoffeeSystem::loadFinance()
 bool GiangCoffeeSystem::addTransactionCSV(const QString &date, const QString &type, double amount, const QString &note)
 {
     QString path = getSaveFilePath("finance.csv");
+
+    // 1. Kiểm tra ký tự cuối cùng của file xem đã có dấu xuống dòng chưa
+    bool needsNewline = false;
+    QFile checkFile(path);
+    if (checkFile.open(QIODevice::ReadOnly)) {
+        if (checkFile.size() > 0) {
+            checkFile.seek(checkFile.size() - 1);
+            char lastChar;
+            checkFile.read(&lastChar, 1);
+            // Nếu ký tự cuối không phải là \n hoặc \r, đánh dấu cần thêm xuống dòng
+            if (lastChar != '\n' && lastChar != '\r') {
+                needsNewline = true;
+            }
+        }
+        checkFile.close();
+    }
+
+    // 2. Ghi thêm giao dịch (Append)
     QFile file(path);
     if (!file.open(QIODevice::Append | QIODevice::Text)) return false;
 
     QTextStream out(&file);
+
+    // Bổ sung xuống dòng trước khi ghi nếu file cũ bị thiếu
+    if (needsNewline) {
+        out << "\n";
+    }
+
     out << date << "," << type << "," << amount << "," << note << "\n";
     file.close();
+
     return true;
 }
 
