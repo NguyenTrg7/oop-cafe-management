@@ -1,8 +1,4 @@
 Date,Type,Amount,Note
-<<<<<<< HEAD
-2026-07-20,Thu,1500000,Doanh thu ban hang
-2026-07-21,Chi,500000,Nhap nguyen lieu ca phe2026-07-26 16:04:42,Thu,145000,Bán hàng (4 món)
-=======
 2026-01-10,Thu,12500000,Doanh thu tuần 2 tháng 1
 2026-01-15,Chi,4500000,Nhập nguyên liệu đầu năm
 2026-01-28,Thu,15000000,Doanh thu Tết Nguyên Đán
@@ -31,4 +27,3 @@ Date,Type,Amount,Note
 2026-08-03,Chi,1500000,Phí vệ sinh và internet
 2026-08-05,Thu,4200000,Bán hàng giữa tuần
 2026-08-06,Thu,2800000,Doanh thu hôm nay
->>>>>>> afe6c00c3135d8e2393b4c103e548335d72df726

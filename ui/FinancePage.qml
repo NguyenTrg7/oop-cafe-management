@@ -27,10 +27,16 @@ Page {
     property var hitBoxes: []
 
     Component.onCompleted: {
-        // Init years model
+        // Init years model (Chỉ khảo sát 2025 - 2027)
         cbYear.model = ["2025", "2026", "2027"];
-        cbYear.currentIndex = 1; // Focus vào năm hiện tại
-        cbMonth.currentIndex = new Date().getMonth();
+        cbYear.currentIndex = 1; // Focus vào năm 2026
+
+        var now = new Date();
+        cbMonth.currentIndex = now.getMonth();
+
+        // Tự động chọn tuần hiện tại (Tính từ ngày hiện tại: ngày 1-7 là tuần 1, 8-14 là tuần 2...)
+        var currentDay = now.getDate();
+        cbWeek.currentIndex = Math.min(Math.floor((currentDay - 1) / 7), 3);
 
         refreshData();
     }
@@ -59,7 +65,7 @@ Page {
         return sign + Math.round(absVal).toString();
     }
 
-    // Hàm lấy chính xác Date và Time để chuẩn hóa và sắp xếp
+    // Hàm lấy chính xác Date và Time để chuẩn hóa (Fix lỗi số 08, 09 ở hệ Octal)
     function parseDateStrFull(dateStr) {
         if (!dateStr) return new Date(0);
         var cleanStr = dateStr.toString().trim();
@@ -68,26 +74,34 @@ Page {
         var timeOnly = parts.length > 1 ? parts[1] : "00:00:00";
 
         var y = 0, m = 0, d = 0;
-        var dParts = dateOnly.split("/");
-        if (dParts.length === 3) {
-            y = parseInt(dParts[2]);
-            m = parseInt(dParts[1]) - 1;
-            d = parseInt(dParts[0]);
-        } else {
-            dParts = dateOnly.split("-");
-            if (dParts.length === 3) {
-                y = parseInt(dParts[0]);
-                m = parseInt(dParts[1]) - 1;
-                d = parseInt(dParts[2]);
-            } else {
-                return new Date(cleanStr);
+        if (dateOnly.indexOf("/") !== -1) {
+            var dParts = dateOnly.split("/");
+            if (dParts.length >= 3) {
+                y = parseInt(dParts[2], 10);
+                m = parseInt(dParts[1], 10) - 1;
+                d = parseInt(dParts[0], 10);
             }
+        } else if (dateOnly.indexOf("-") !== -1) {
+            var dParts2 = dateOnly.split("-");
+            if (dParts2.length >= 3) {
+                y = parseInt(dParts2[0], 10);
+                m = parseInt(dParts2[1], 10) - 1;
+                d = parseInt(dParts2[2], 10);
+            }
+        } else {
+            return new Date(cleanStr);
         }
 
+        var hh = 0, min = 0, ss = 0;
         var tParts = timeOnly.split(":");
-        var hh = tParts.length > 0 ? parseInt(tParts[0]) : 0;
-        var min = tParts.length > 1 ? parseInt(tParts[1]) : 0;
-        var ss = tParts.length > 2 ? parseInt(tParts[2]) : 0;
+        if (tParts.length > 0) hh = parseInt(tParts[0], 10);
+        if (tParts.length > 1) min = parseInt(tParts[1], 10);
+        if (tParts.length > 2) ss = parseInt(tParts[2], 10);
+
+        if (isNaN(y) || isNaN(m) || isNaN(d)) return new Date(0);
+        if (isNaN(hh)) hh = 0;
+        if (isNaN(min)) min = 0;
+        if (isNaN(ss)) ss = 0;
 
         return new Date(y, m, d, hh, min, ss);
     }
@@ -106,28 +120,13 @@ Page {
         return yy + "-" + mm + "-" + dd + " " + h + ":" + min + ":" + sec;
     }
 
-    function parseDateStr(dateStr) {
-        if (!dateStr) return new Date();
-        var cleanStr = dateStr.toString().trim();
-        var dateOnly = cleanStr.split(" ")[0];
-        var parts = dateOnly.split("/");
-        if (parts.length === 3) {
-            return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
-        }
-        parts = dateOnly.split("-");
-        if (parts.length === 3) {
-            return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-        }
-        return new Date(cleanStr);
-    }
-
     function refreshFinance() {
         rawFinanceModel.clear();
         filteredFinanceModel.clear();
 
         var tempArr = [];
 
-        // 1. Tải dữ liệu từ finance.csv (Chi phí cố định, vv..)
+        // 1. Tải dữ liệu từ finance.csv (Chi phí cố định, giao dịch tay)
         if (typeof coffeeSystem !== "undefined" && coffeeSystem.loadFinance) {
             var data = coffeeSystem.loadFinance();
             for (var i = 0; i < data.length; i++) {
@@ -140,7 +139,7 @@ Page {
             }
         }
 
-        // 2. Tải dữ liệu từ OrderHistoryManager (Lịch sử bán hàng)
+        // 2. Tải dữ liệu từ OrderHistoryManager (Lịch sử bán hàng tự động)
         if (typeof orderHistoryManager !== "undefined") {
             var orders = orderHistoryManager.getHistory();
             for (var j = 0; j < orders.length; j++) {
@@ -175,13 +174,20 @@ Page {
     }
 
     function applyFilters() {
-        var m_mode = cbViewMode.currentIndex; // 0: Tuần, 1: Tháng, 2: Năm
-        var m_year = parseInt(cbYear.currentText);
+        var m_mode = cbViewMode.currentIndex;
+        if (m_mode < 0) m_mode = 0;
+
+        var m_year = parseInt(cbYear.currentText, 10);
         if (isNaN(m_year)) m_year = new Date().getFullYear();
 
         var m_month = cbMonth.currentIndex;
+        if (m_month < 0) m_month = new Date().getMonth();
+
         var m_week = cbWeek.currentIndex;
+        if (m_week < 0) m_week = 0;
+
         var m_measure = cbYearMeasure.currentIndex;
+        if (m_measure < 0) m_measure = 0;
 
         var labels = [];
         var rev = [];
@@ -239,9 +245,9 @@ Page {
         var totalRevChart = 0.0;
         var totalExpChart = 0.0;
 
-        for (var i = 0; i < rawFinanceModel.count; i++) {
-            var item = rawFinanceModel.get(i);
-            var itemDate = parseDateStr(item.date);
+        for (var idx1 = 0; idx1 < rawFinanceModel.count; idx1++) {
+            var item = rawFinanceModel.get(idx1);
+            var itemDate = parseDateStrFull(item.date);
             var dYear = itemDate.getFullYear();
             var dMonth = itemDate.getMonth();
             var dDate = itemDate.getDate();
@@ -301,10 +307,11 @@ Page {
         var searchTxt = searchInput.text ? searchInput.text.toLowerCase().trim() : "";
         var filterExactDate = filterDateField.text.trim();
         var typeFilter = typeFilterCombo.currentIndex;
+        if (typeFilter < 0) typeFilter = 0;
 
-        for (var idx = 0; idx < rawFinanceModel.count; idx++) {
-            var fItem = rawFinanceModel.get(idx);
-            var fDate = parseDateStr(fItem.date);
+        for (var idx2 = 0; idx2 < rawFinanceModel.count; idx2++) {
+            var fItem = rawFinanceModel.get(idx2);
+            var fDate = parseDateStrFull(fItem.date);
             var fdYear = fDate.getFullYear();
             var fdMonth = fDate.getMonth();
             var fdDate = fDate.getDate();
@@ -350,7 +357,7 @@ Page {
             ColumnLayout {
                 spacing: 2
                 Label { text: "📊 Quản Lý Tài Chính & Ngân Sách"; font.pixelSize: 22; font.bold: true; color: "#1E293B" }
-                Label { text: "Theo dõi doanh thu, chi phí, biểu đồ và ngân sách hệ thống"; font.pixelSize: 13; color: "#64748B" }
+                Label { text: "Theo dõi doanh thu, chi phí và biểu đồ lợi nhuận"; font.pixelSize: 13; color: "#64748B" }
             }
 
             Item { Layout.fillWidth: true }
@@ -380,7 +387,7 @@ Page {
                 ComboBox {
                     id: cbViewMode
                     model: ["Tuần", "Tháng", "Năm"]
-                    currentIndex: 1
+                    currentIndex: 0 // Đặt mặc định là Tuần
                     onCurrentIndexChanged: Qt.callLater(applyFilters)
                 }
 
@@ -587,7 +594,7 @@ Page {
                             var hProf = ((profitData[b] - pMin) / pRange) * chartH;
                             profitPointsX.push(xCenter);
                             profitPointsY.push(h - paddingBottom - hProf);
-                            financePage.hitBoxes.push({type: 'node', name: 'Lợi nhuận', label: labels[b], val: profitData[b], x: xCenter, y: h - paddingBottom - hProf});
+                            financePage.hitBoxes.push({type: 'node', name: 'Lợi nhuận ròng', label: labels[b], val: profitData[b], x: xCenter, y: h - paddingBottom - hProf});
                         }
 
                         ctx.fillStyle = "#334155";
@@ -774,7 +781,7 @@ Page {
                         anchors.rightMargin: 15
                         spacing: 10
 
-                        Text { text: "THỜI GIAN"; font.bold: true; font.pixelSize: 12; color: "#64748B"; Layout.preferredWidth: 150 }
+                        Text { text: "THỜI GIAN"; font.bold: true; font.pixelSize: 12; color: "#64748B"; Layout.preferredWidth: 160 }
                         Text { text: "LOẠI"; font.bold: true; font.pixelSize: 12; color: "#64748B"; Layout.preferredWidth: 90 }
                         Text { text: "SỐ TIỀN"; font.bold: true; font.pixelSize: 12; color: "#64748B"; Layout.preferredWidth: 150 }
                         Text { text: "GHI CHÚ / DIỄN GIẢI"; font.bold: true; font.pixelSize: 12; color: "#64748B"; Layout.fillWidth: true }
@@ -803,7 +810,7 @@ Page {
                             anchors.rightMargin: 15
                             spacing: 10
 
-                            Text { text: model.date; Layout.preferredWidth: 150; color: "#334155"; font.pixelSize: 13 }
+                            Text { text: model.date; Layout.preferredWidth: 160; color: "#334155"; font.pixelSize: 13 }
 
                             Item {
                                 Layout.preferredWidth: 90
@@ -846,9 +853,17 @@ Page {
     Dialog {
         id: addTransactionDialog
         title: "Thêm Giao Dịch Mới"
-        width: 380; height: 360
+        width: 380; height: 320
         anchors.centerIn: parent
         modal: true
+
+        // Reset dữ liệu mỗi khi mở popup
+        onOpened: {
+            inputAmount.text = "";
+            inputNote.text = "";
+            errorMsg.visible = false;
+            inputType.currentIndex = 0;
+        }
 
         ColumnLayout {
             anchors.fill: parent; spacing: 12
@@ -861,22 +876,28 @@ Page {
 
             TextField {
                 id: inputAmount
-                placeholderText: "Số tiền (VNĐ)"
+                placeholderText: "Số tiền (VD: 150000)"
                 Layout.fillWidth: true
-                inputMethodHints: Qt.ImhDigitsOnly
-            }
+                inputMethodHints: Qt.ImhDigitsOnly // Gợi ý bàn phím số trên thiết bị di động
 
-            TextField {
-                id: inputDate
-                placeholderText: "Ngày (dd/MM/yyyy)"
-                text: Qt.formatDate(new Date(), "dd/MM/yyyy")
-                Layout.fillWidth: true
+                onTextChanged: errorMsg.visible = false // Ẩn lỗi khi người dùng bắt đầu sửa lại
             }
 
             TextField {
                 id: inputNote
                 placeholderText: "Ghi chú giao dịch"
                 Layout.fillWidth: true
+            }
+
+            Text {
+                id: errorMsg
+                text: "⚠️ Số tiền không hợp lệ!\n(Phải > 0, không có số 0 ở đầu, chỉ chứa chữ số)"
+                color: "#DC2626"
+                font.pixelSize: 12
+                font.italic: true
+                visible: false
+                Layout.alignment: Qt.AlignHCenter
+                horizontalAlignment: Text.AlignHCenter
             }
 
             RowLayout {
@@ -887,25 +908,84 @@ Page {
                     onClicked: addTransactionDialog.close()
                 }
                 Button {
-                    text: "Lưu Giao Dịch"
+                    text: "Tiếp tục"
                     Layout.fillWidth: true
                     background: Rectangle { color: "#0284C7"; radius: 6 }
                     contentItem: Text { text: parent.text; color: "white"; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                     onClicked: {
-                        var amt = parseFloat(inputAmount.text.trim());
-                        if (isNaN(amt) || amt <= 0) return;
+                        var rawAmount = inputAmount.text.trim();
 
-                        var dateStr = inputDate.text.trim();
+                        // Kiểm tra định dạng số tiền bằng Regex (không số 0 ở đầu, chỉ chứa số)
+                        var isValid = /^[1-9][0-9]*$/.test(rawAmount);
+
+                        if (!isValid) {
+                            errorMsg.visible = true;
+                            return;
+                        }
+
+                        // Nếu hợp lệ, mở popup xác nhận
+                        errorMsg.visible = false;
+                        confirmAddDialog.open();
+                    }
+                }
+            }
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // POPUP XÁC NHẬN LƯU GIAO DỊCH
+    // -------------------------------------------------------------------------
+    Dialog {
+        id: confirmAddDialog
+        width: 350
+        height: 200
+        modal: true
+        anchors.centerIn: parent
+        title: "Xác nhận"
+
+        background: Rectangle { color: "#FFFFFF"; radius: 12; border.color: "#E2E8F0" }
+        header: Item { height: 40; Text { text: "Xác nhận tạo giao dịch"; font.bold: true; font.pixelSize: 16; color: "#1E293B"; anchors.centerIn: parent } }
+
+        ColumnLayout {
+            anchors.fill: parent; anchors.margins: 15; spacing: 15
+
+            Text {
+                text: "Bạn có chắc chắn muốn lưu giao dịch này?\nThời gian sẽ được ghi nhận ngay lúc này."
+                font.pixelSize: 14
+                color: "#475569"
+                wrapMode: Text.WordWrap
+                horizontalAlignment: Text.AlignHCenter
+                Layout.fillWidth: true
+            }
+
+            RowLayout {
+                Layout.fillWidth: true; spacing: 15
+                Button {
+                    text: "Quay lại"
+                    Layout.fillWidth: true; Layout.preferredHeight: 40
+                    background: Rectangle { color: "#F1F5F9"; radius: 6 }
+                    contentItem: Text { text: parent.text; color: "#1E293B"; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                    onClicked: confirmAddDialog.close()
+                }
+                Button {
+                    text: "Lưu ngay"
+                    Layout.fillWidth: true; Layout.preferredHeight: 40
+                    background: Rectangle { color: "#16A34A"; radius: 6 }
+                    contentItem: Text { text: parent.text; color: "white"; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                    onClicked: {
+                        var amt = parseFloat(inputAmount.text.trim());
                         var noteStr = inputNote.text.trim();
 
+                        // Lấy chính xác thời gian ngay lúc bấm nút Lưu ngay (HH cho giờ 24h)
+                        var exactCurrentTime = Qt.formatDateTime(new Date(), "yyyy-MM-dd HH:mm:ss");
+
                         if (typeof coffeeSystem !== "undefined" && coffeeSystem.addTransactionCSV) {
-                            coffeeSystem.addTransactionCSV(dateStr, inputType.currentText, amt, noteStr);
+                            coffeeSystem.addTransactionCSV(exactCurrentTime, inputType.currentText, amt, noteStr);
                             refreshFinance();
                         }
 
+                        confirmAddDialog.close();
                         addTransactionDialog.close();
-                        inputAmount.text = "";
-                        inputNote.text = "";
                     }
                 }
             }
