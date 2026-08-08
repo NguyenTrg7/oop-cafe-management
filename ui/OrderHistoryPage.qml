@@ -63,97 +63,83 @@ Item {
         return Qt.locale("vi_VN").toString(value) + " VNĐ"
     }
 
+    function timeToMins(timeStr) {
+        if (!timeStr) return 0;
+        var p = timeStr.split(":");
+        return parseInt(p[0]) * 60 + parseInt(p[1]);
+    }
+
     function loadHistory() {
-        rawHistory = []
-        filteredHistoryModel.clear()
-
-        if (typeof orderHistoryManager === "undefined" || !orderHistoryManager) {
-            console.warn("orderHistoryManager không tồn tại")
-            return
+        if (typeof orderHistoryManager !== "undefined") {
+            rawHistory = orderHistoryManager.getHistory();
+            applyFilters();
         }
-
-        var list = []
-
-        // Thử các tên hàm phổ biến
-        if (typeof orderHistoryManager.getAllOrders === "function")
-            list = orderHistoryManager.getAllOrders() || []
-        else if (typeof orderHistoryManager.getHistory === "function")
-            list = orderHistoryManager.getHistory() || []
-        else if (typeof orderHistoryManager.getOrders === "function")
-            list = orderHistoryManager.getOrders() || []
-        else if (orderHistoryManager.orders !== undefined)
-            list = orderHistoryManager.orders || []
-        else if (typeof orderHistoryManager.toList === "function")
-            list = orderHistoryManager.toList() || []
-
-        console.log("Số đơn đọc được:", list.length)
-
-        if (list.length === 0) {
-            console.warn("OrderHistory trống hoặc không đọc được CSV")
-            return
-        }
-
-        // Mới nhất lên đầu
-        list = list.slice().sort(function(a, b) {
-            var da = (a.date || "") + " " + (a.time || "")
-            var db = (b.date || "") + " " + (b.time || "")
-            return db.localeCompare(da)
-        })
-
-        rawHistory = list
-        applyFilters()
     }
 
     function applyFilters() {
-        filteredHistoryModel.clear()
-        if (!rawHistory || rawHistory.length === 0)
-            return
+        filteredHistoryModel.clear();
 
-        var day   = cbDay.currentIndex > 0   ? cbDay.currentText   : ""
-        var month = cbMonth.currentIndex > 0 ? cbMonth.currentText : ""
-        var year  = cbYear.currentIndex > 0  ? cbYear.currentText  : ""
-        var tFrom = cbStartTime.currentIndex > 0 ? cbStartTime.currentText : ""
-        var tTo   = cbEndTime.currentIndex > 0   ? cbEndTime.currentText   : ""
+        var selDay = cbDay.currentIndex > 0 ? parseInt(cbDay.currentText) : -1;
+        var selMonth = cbMonth.currentIndex > 0 ? parseInt(cbMonth.currentText) : -1;
+        var selYear = cbYear.currentIndex > 0 ? parseInt(cbYear.currentText) : -1;
+        var startMins = cbStartTime.currentIndex > 0 ? timeToMins(cbStartTime.currentText) : -1;
+        var endMins = cbEndTime.currentIndex > 0 ? timeToMins(cbEndTime.currentText) : -1;
 
         for (var i = 0; i < rawHistory.length; i++) {
-            var o = rawHistory[i]
-            var d = o.date || ""          // dạng dd/MM/yyyy
-            var t = o.time || ""          // dạng HH:mm:ss hoặc HH:mm
+            var item = rawHistory[i];
 
-            // Lọc ngày / tháng / năm
-            if (day || month || year) {
-                var parts = d.split("/")
-                if (parts.length >= 3) {
-                    var od = parts[0].replace(/^0/, "")
-                    var om = parts[1].replace(/^0/, "")
-                    var oy = parts[2]
-                    if (day   && od !== day)   continue
-                    if (month && om !== month) continue
-                    if (year  && oy !== year)  continue
-                }
+            // Xử lý ngày (định dạng có thể là DD/MM/YYYY hoặc YYYY-MM-DD)
+            var dYear = -1, dMonth = -1, dDay = -1;
+            if (item.date.indexOf("/") !== -1) {
+                var dParts = item.date.split("/");
+                dDay = parseInt(dParts[0]);
+                dMonth = parseInt(dParts[1]);
+                dYear = parseInt(dParts[2]);
+            } else {
+                var dParts2 = item.date.split("-");
+                dYear = parseInt(dParts2[0]);
+                dMonth = parseInt(dParts2[1]);
+                dDay = parseInt(dParts2[2]);
             }
 
-            // Lọc giờ
-            if (tFrom || tTo) {
-                var tm = t.substring(0, 5)   // lấy HH:mm
-                if (tFrom && tm < tFrom) continue
-                if (tTo   && tm > tTo)   continue
-            }
+            // Xử lý thời gian
+            var itemMins = timeToMins(item.time);
 
-            filteredHistoryModel.append({
-                invoiceNumber: o.invoiceNumber || "",
-                date: o.date || "",
-                time: o.time || "",
-                customerName: o.customerName || "Khách vãng lai",
-                itemCount: (o.items && o.items.length) ? o.items.length : (o.itemCount || 0),
-                totalAmount: o.totalAmount || 0
-            })
+            // Kiểm tra các điều kiện lọc
+            if (selDay !== -1 && dDay !== selDay) continue;
+            if (selMonth !== -1 && dMonth !== selMonth) continue;
+            if (selYear !== -1 && dYear !== selYear) continue;
+            if (startMins !== -1 && itemMins < startMins) continue;
+            if (endMins !== -1 && itemMins > endMins) continue;
+
+            filteredHistoryModel.append(item);
         }
     }
 
-    Rectangle {
-        anchors.fill: parent
-        color: "#F0F9FF"
+    // Component ComboBox giới hạn chiều cao tối đa (250px) để không bị che khuất màn hình
+    component FilterCombo : ComboBox {
+        id: control
+        popup: Popup {
+            y: control.height - 1
+            width: control.width
+            implicitHeight: Math.min(250, contentItem.implicitHeight)
+            padding: 1
+
+            contentItem: ListView {
+                clip: true
+                implicitHeight: contentHeight
+                model: control.popup.visible ? control.delegateModel : null
+                currentIndex: control.highlightedIndex
+                ScrollIndicator.vertical: ScrollIndicator { }
+            }
+
+            background: Rectangle {
+                border.color: "#CBD5E1"
+                border.width: 1
+                radius: 4
+                color: "#FFFFFF"
+            }
+        }
     }
 
     ColumnLayout {
@@ -188,77 +174,65 @@ Item {
                 spacing: 10
 
                 Text { text: "Ngày:"; font.bold: true; color: "#334155" }
-                ComboBox {
-                    id: cbDay
-                    model: dayList
-                    Layout.preferredWidth: 90
+                FilterCombo {
+                    id: cbDay; model: dayList
                     onCurrentIndexChanged: Qt.callLater(applyFilters)
                 }
 
                 Text { text: "Tháng:"; font.bold: true; color: "#334155" }
-                ComboBox {
-                    id: cbMonth
-                    model: monthList
-                    Layout.preferredWidth: 100
+                FilterCombo {
+                    id: cbMonth; model: monthList
                     onCurrentIndexChanged: Qt.callLater(applyFilters)
                 }
 
                 Text { text: "Năm:"; font.bold: true; color: "#334155" }
-                ComboBox {
-                    id: cbYear
-                    model: yearList
-                    Layout.preferredWidth: 100
+                FilterCombo {
+                    id: cbYear; model: yearList
                     onCurrentIndexChanged: Qt.callLater(applyFilters)
                 }
 
                 Item { Layout.preferredWidth: 10 }
 
                 Text { text: "Từ giờ:"; font.bold: true; color: "#334155" }
-                ComboBox {
-                    id: cbStartTime
-                    model: timeList
-                    Layout.preferredWidth: 90
+                FilterCombo {
+                    id: cbStartTime; model: timeList
                     onCurrentIndexChanged: Qt.callLater(applyFilters)
                 }
 
                 Text { text: "Đến giờ:"; font.bold: true; color: "#334155" }
-                ComboBox {
-                    id: cbEndTime
-                    model: timeList
-                    Layout.preferredWidth: 90
+                FilterCombo {
+                    id: cbEndTime; model: timeList
                     onCurrentIndexChanged: Qt.callLater(applyFilters)
                 }
 
                 Item { Layout.fillWidth: true }
             }
         }
+
         ListView {
             id: historyList
             Layout.fillWidth: true
             Layout.fillHeight: true
             clip: true
-            spacing: 10
+            spacing: 8
 
             model: filteredHistoryModel
 
             delegate: Rectangle {
                 width: historyList.width
-                height: 86
-                radius: 12
-                color: selectedInvoice === modelData.invoiceNumber ? "#E0F2FE" : "#FFFFFF"
-                border.color: selectedInvoice === modelData.invoiceNumber ? "#3B82F6" : "#BAE6FD"
-                border.width: selectedInvoice === modelData.invoiceNumber ? 2 : 1.5
+                height: 82
+                radius: 10
+                // Lưu ý: Đã sửa từ modelData thành model
+                color: selectedInvoice === model.invoiceNumber ? "#E0F2FE" : "#FFFFFF"
+                border.color: selectedInvoice === model.invoiceNumber ? "#3B82F6" : "#BAE6FD"
+
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {
                         selectedInvoice = model.invoiceNumber
-                        if (typeof orderHistoryManager !== "undefined" && orderHistoryManager
-                            && typeof orderHistoryManager.getOrderDetail === "function") {
-                            var detail = orderHistoryManager.getOrderDetail(model.invoiceNumber)
-                            if (typeof invoiceDialog !== "undefined" && invoiceDialog)
-                                invoiceDialog.openWith(detail)
-                        }
+                        var detail = orderHistoryManager.getOrderDetail(model.invoiceNumber)
+                        invoiceDialog.openWith(detail)
                     }
                 }
 
