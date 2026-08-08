@@ -64,7 +64,8 @@ Page {
                         Column {
                             Text { text: "Tổng NCC"; font.pixelSize: 11; color: "#0369A1" }
                             Text {
-                                text: typeof supplierManager !== "undefined" ? supplierManager.rowCount() : "0"
+                                // ===> [CHỈNH SỬA 4]: Đổi từ .rowCount() sang thuộc tính reactive .totalCount
+                                text: typeof supplierManager !== "undefined" ? supplierManager.totalCount : "0"
                                 font.pixelSize: 16
                                 font.bold: true
                                 color: "#0C4A6E"
@@ -147,7 +148,7 @@ Page {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 clip: true
-                spacing: 12
+                spacing: 0
                 topMargin: 8
                 bottomMargin: 16
                 model: typeof supplierManager !== "undefined" ? supplierManager : null
@@ -184,7 +185,6 @@ Page {
                         border.color: mouseArea.containsMouse ? "#38BDF8" : "#E2E8F0"
                         border.width: mouseArea.containsMouse ? 2 : 1
 
-                        // Nhấp vào bất kỳ đâu trên ô để mở Bảng chi tiết
                         MouseArea {
                             id: mouseArea
                             anchors.fill: parent
@@ -279,7 +279,6 @@ Page {
                                 spacing: 8
                                 Layout.alignment: Qt.AlignVCenter
 
-                                // Nút Xem Chi Tiết
                                 Button {
                                     text: "👁️ Chi tiết"
                                     implicitHeight: 36
@@ -326,7 +325,7 @@ Page {
         }
     }
 
-    // BẢNG THÔNG TIN CHI TIẾT NHÀ CUNG CẤP (CHO NHÂN VIÊN & ADMIN)
+    // DIALOG CHI TIẾT
     Dialog {
         id: detailDialog
         width: Math.min(560, supplierPage.width * 0.92)
@@ -367,7 +366,6 @@ Page {
             anchors.fill: parent
             spacing: 0
 
-            // Header Dialog
             Rectangle {
                 Layout.fillWidth: true
                 implicitHeight: 70
@@ -444,7 +442,6 @@ Page {
                 }
             }
 
-            // Bảng nội dung chi tiết
             ColumnLayout {
                 Layout.fillWidth: true
                 Layout.margins: 20
@@ -456,7 +453,6 @@ Page {
                     rowSpacing: 12
                     Layout.fillWidth: true
 
-                    // Ô Người liên hệ
                     Rectangle {
                         Layout.fillWidth: true
                         implicitHeight: 60
@@ -473,7 +469,6 @@ Page {
                         }
                     }
 
-                    // Ô Số điện thoại
                     Rectangle {
                         Layout.fillWidth: true
                         implicitHeight: 60
@@ -490,7 +485,6 @@ Page {
                         }
                     }
 
-                    // Ô Email
                     Rectangle {
                         Layout.fillWidth: true
                         Layout.columnSpan: 2
@@ -508,7 +502,6 @@ Page {
                         }
                     }
 
-                    // Ô Địa chỉ
                     Rectangle {
                         Layout.fillWidth: true
                         Layout.columnSpan: 2
@@ -526,7 +519,6 @@ Page {
                         }
                     }
 
-                    // Ô Nguyên liệu cung cấp
                     Rectangle {
                         Layout.fillWidth: true
                         Layout.columnSpan: 2
@@ -1016,57 +1008,92 @@ Page {
     // DIALOG XÁC NHẬN XÓA (ADMIN)
     Dialog {
         id: deleteConfirmDialog
-        width: 340
+        width: 360
         modal: true
         x: Math.round((parent.width - width) / 2)
         y: Math.round((parent.height - height) / 2)
-        title: "Xác nhận xóa"
+        padding: 0
 
         property string targetId: ""
         property string targetName: ""
 
-        background: Rectangle { color: "#FFFFFF"; radius: 14; border.color: "#E2E8F0" }
+        background: Rectangle {
+            color: "#FFFFFF"
+            radius: 16
+            border.color: "#E2E8F0"
+            border.width: 1
+        }
 
         ColumnLayout {
             anchors.fill: parent
-            anchors.margins: 18
-            spacing: 16
+            spacing: 0
 
-            Text {
-                text: "⚠️ Bạn có chắc chắn muốn xóa nhà cung cấp:\n" + deleteConfirmDialog.targetName + " (" + deleteConfirmDialog.targetId + ")?";
-                font.pixelSize: 13;
-                color: "#1E293B";
-                wrapMode: Text.WordWrap;
-                Layout.fillWidth: true;
-                horizontalAlignment: Text.AlignHCenter
-            }
-
-            RowLayout {
+            Rectangle {
                 Layout.fillWidth: true
-                spacing: 10
+                implicitHeight: 48
+                color: "#F8FAFC"
+                radius: 16
 
-                Button {
-                    text: "Không"
-                    Layout.fillWidth: true
-                    implicitHeight: 38
-                    HoverHandler { cursorShape: Qt.PointingHandCursor }
-                    background: Rectangle { color: parent.pressed ? "#CBD5E1" : "#F1F5F9"; radius: 8 }
-                    contentItem: Text { text: parent.text; color: "#334155"; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
-                    onClicked: deleteConfirmDialog.close()
+                Rectangle {
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    height: 16
+                    color: "#F8FAFC"
                 }
 
-                Button {
-                    text: "Xóa"
+                Text {
+                    anchors.centerIn: parent
+                    text: "Xác nhận xóa"
+                    font.bold: true
+                    font.pixelSize: 15
+                    color: "#0F172A"
+                }
+            }
+
+            Rectangle { Layout.fillWidth: true; height: 1; color: "#E2E8F0" }
+
+            ColumnLayout {
+                Layout.fillWidth: true
+                Layout.margins: 20
+                spacing: 16
+
+                Text {
+                    text: "⚠️ Bạn có chắc chắn muốn xóa nhà cung cấp:\n" + deleteConfirmDialog.targetName + " (" + deleteConfirmDialog.targetId + ")?"
+                    font.pixelSize: 13
+                    color: "#1E293B"
+                    wrapMode: Text.WordWrap
                     Layout.fillWidth: true
-                    implicitHeight: 38
-                    HoverHandler { cursorShape: Qt.PointingHandCursor }
-                    background: Rectangle { color: parent.pressed ? "#991B1B" : "#DC2626"; radius: 8 }
-                    contentItem: Text { text: parent.text; color: "white"; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
-                    onClicked: {
-                        if (typeof supplierManager !== "undefined") {
-                            supplierManager.deleteSupplier(deleteConfirmDialog.targetId)
+                    horizontalAlignment: Text.AlignHCenter
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 10
+
+                    Button {
+                        text: "Không"
+                        Layout.fillWidth: true
+                        implicitHeight: 38
+                        HoverHandler { cursorShape: Qt.PointingHandCursor }
+                        background: Rectangle { color: parent.pressed ? "#CBD5E1" : "#F1F5F9"; radius: 8 }
+                        contentItem: Text { text: parent.text; color: "#334155"; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                        onClicked: deleteConfirmDialog.close()
+                    }
+
+                    Button {
+                        text: "Xóa"
+                        Layout.fillWidth: true
+                        implicitHeight: 38
+                        HoverHandler { cursorShape: Qt.PointingHandCursor }
+                        background: Rectangle { color: parent.pressed ? "#991B1B" : "#DC2626"; radius: 8 }
+                        contentItem: Text { text: parent.text; color: "white"; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                        onClicked: {
+                            if (typeof supplierManager !== "undefined") {
+                                supplierManager.deleteSupplier(deleteConfirmDialog.targetId)
+                            }
+                            deleteConfirmDialog.close()
                         }
-                        deleteConfirmDialog.close()
                     }
                 }
             }

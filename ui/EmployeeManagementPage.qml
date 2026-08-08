@@ -2122,10 +2122,19 @@ Page {
 
                         if (typeof coffeeSystem !== "undefined" && coffeeSystem.updateEmployeeCSV) {
                             if (coffeeSystem.updateEmployeeCSV(
-                                    editId.text.trim(), editName.text.trim(), editPhone.text.trim(), salaryVal,
-                                    editGender.currentText, editRole.currentText, editDob.text.trim(),
-                                    editCccd.text.trim(), "", "",
-                                    editAvatar.text.trim(), editCccdFront.text.trim(), editCccdBack.text.trim()
+                                    editId.text.trim(),
+                                    editName.text.trim(),
+                                    editPhone.text.trim(),
+                                    salaryVal,
+                                    editGender.currentText,
+                                    editRole.currentText,
+                                    editDob.text.trim(),
+                                    editCccd.text.trim(),
+                                    editEmpDialog.currentShiftDate, // Thay cho "": Giữ lại ngày ca làm
+                                    editEmpDialog.currentShiftTime, // Thay cho "": Giữ lại giờ ca làm
+                                    editAvatar.text.trim(),
+                                    editCccdFront.text.trim(),
+                                    editCccdBack.text.trim()
                             )) {
                                 editEmpError.text = ""
                                 editEmpDialog.close()

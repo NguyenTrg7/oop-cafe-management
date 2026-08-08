@@ -7,6 +7,8 @@ Page {
     title: "Trang Nhân Viên"
 
     property string currentAction: ""
+    property var activeShift: null
+    property var activeEmployee: null
 
     function syncNavBar() {
         var win = typeof appWindow !== "undefined" ? appWindow : (typeof ApplicationWindow !== "undefined" ? ApplicationWindow.window : null)
@@ -34,7 +36,6 @@ Page {
         if (!tStr) return null
         var str = tStr.toString().trim().toLowerCase()
 
-        // Định dạng "07:00", "7:00", "07:00:00"
         var m1 = str.match(/^(\d{1,2}):(\d{2})/)
         if (m1) {
             var d1 = new Date()
@@ -42,7 +43,6 @@ Page {
             return d1
         }
 
-        // Định dạng "7h", "7h30", "15h00"
         var m2 = str.match(/^(\d{1,2})h(\d{2})?/)
         if (m2) {
             var hrs = parseInt(m2[1], 10)
@@ -78,6 +78,68 @@ Page {
         }
 
         return { start: startDate, end: endDate, startStr: startStr, endStr: endStr }
+    }
+
+    // ===== HÀM TÌM CA LÀM PHÙ HỢP NHẤT TRONG NGÀY =====
+    function findBestShift(employeeIdentifier, now) {
+        if (typeof coffeeSystem === "undefined" || !coffeeSystem.loadShifts) return null
+
+        var todayStr1 = Qt.formatDateTime(now, "dd/MM/yyyy")
+        var todayStr2 = Qt.formatDateTime(now, "yyyy-MM-dd")
+
+        var todayShifts = coffeeSystem.loadShifts(todayStr1)
+        if (!todayShifts || todayShifts.length === 0) todayShifts = coffeeSystem.loadShifts(todayStr2)
+        if (!todayShifts || todayShifts.length === 0) todayShifts = coffeeSystem.loadShifts()
+
+        if (!todayShifts || todayShifts.length === 0) return null
+
+        var userShifts = []
+        for (var i = 0; i < todayShifts.length; i++) {
+            var sh = todayShifts[i]
+            var shPhone = sh.phone || sh.employeePhone || sh.identifier || ""
+            var shId = sh.id || sh.employeeId || sh.empId || ""
+
+            if (shPhone === employeeIdentifier || shId === employeeIdentifier) {
+                userShifts.push(sh)
+            }
+        }
+
+        if (userShifts.length === 0) return null
+        if (userShifts.length === 1) return userShifts[0]
+
+        // Nếu làm nhiều ca/ngày: Tìm ca có khoảng cách gần thời gian hiện tại nhất
+        var bestShift = null
+        var minDiff = Infinity
+
+        for (var j = 0; j < userShifts.length; j++) {
+            var times = parseShiftTime(userShifts[j])
+            if (times.start) {
+                var diff = Math.abs(now.getTime() - times.start.getTime())
+                if (diff < minDiff) {
+                    minDiff = diff
+                    bestShift = userShifts[j]
+                }
+            }
+        }
+
+        return bestShift
+    }
+
+    // ===== HÀM ĐỌC TRẠNG THÁI ĐIỂM DANH GẦN NHẤT =====
+    function getLastAttendance(empId, phone, todayStr) {
+        if (typeof coffeeSystem === "undefined" || !coffeeSystem.loadAttendance) return ""
+
+        var list = coffeeSystem.loadAttendance()
+        var lastType = ""
+        for (var i = 0; i < list.length; i++) {
+            var att = list[i]
+            if (att.identifier === phone || att.identifier === empId) {
+                if (att.timestamp && att.timestamp.indexOf(todayStr) !== -1) {
+                    lastType = att.type
+                }
+            }
+        }
+        return lastType
     }
 
     StackView.onActivating: syncNavBar()
@@ -197,6 +259,7 @@ Page {
                             employeePage.currentAction = "CHECK_IN"
                             txtConfirmPhone.text = ""
                             lblDialogError.visible = false
+                            lblShiftInfo.visible = false
                             statusText.visible = false
                             confirmDialog.open()
                         }
@@ -269,6 +332,7 @@ Page {
                             employeePage.currentAction = "CHECK_OUT"
                             txtConfirmPhone.text = ""
                             lblDialogError.visible = false
+                            lblShiftInfo.visible = false
                             statusText.visible = false
                             confirmDialog.open()
                         }
@@ -304,11 +368,11 @@ Page {
         }
     }
 
-    // ===== DIALOG XÁC NHẬN VỚI TÍNH NĂNG TỰ ĐỘNG ÉP GIỜ LÊN HỆ THỐNG =====
+    // ===== DIALOG XÁC NHẬN ĐIỂM DANH =====
     Popup {
         id: confirmDialog
         width: Math.min(440, employeePage.width * 0.9)
-        height: 320
+        height: 340
         modal: true
         focus: true
         anchors.centerIn: parent
@@ -364,6 +428,16 @@ Page {
                 }
                 Keys.onReturnPressed: btnConfirm.clicked()
                 Keys.onEnterPressed: btnConfirm.clicked()
+            }
+
+            Text {
+                id: lblShiftInfo
+                text: ""
+                color: "#0284C7"
+                font.pixelSize: 13
+                font.bold: true
+                visible: false
+                Layout.alignment: Qt.AlignHCenter
             }
 
             Text {
@@ -427,7 +501,7 @@ Page {
                             return
                         }
 
-                        // 1. Xác thực nhân viên
+                        // 1. Xác thực thông tin Nhân viên
                         var isValid = false
                         var employeeName = ""
                         var phoneToRecord = inputStr
@@ -456,34 +530,10 @@ Page {
                             return
                         }
 
-                        // 2. Tìm ca làm hôm nay
+                        // 2. Lấy ca làm việc phù hợp nhất dựa trên thời gian hiện tại
                         var now = new Date()
                         var todayStr1 = Qt.formatDateTime(now, "dd/MM/yyyy")
-                        var todayStr2 = Qt.formatDateTime(now, "yyyy-MM-dd")
-                        var userShift = null
-
-                        if (typeof coffeeSystem !== "undefined" && coffeeSystem.loadShifts) {
-                            var todayShifts = coffeeSystem.loadShifts(todayStr1)
-                            if (!todayShifts || todayShifts.length === 0) {
-                                todayShifts = coffeeSystem.loadShifts(todayStr2)
-                            }
-                            if (!todayShifts || todayShifts.length === 0) {
-                                todayShifts = coffeeSystem.loadShifts()
-                            }
-
-                            if (todayShifts && todayShifts.length > 0) {
-                                for (var s = 0; s < todayShifts.length; s++) {
-                                    var sh = todayShifts[s]
-                                    var shPhone = sh.phone || sh.employeePhone || sh.identifier || ""
-                                    var shId = sh.id || sh.employeeId || sh.empId || ""
-
-                                    if (shPhone === phoneToRecord || shId === empId || shId === inputStr || shPhone === inputStr) {
-                                        userShift = sh
-                                        break
-                                    }
-                                }
-                            }
-                        }
+                        var userShift = findBestShift(empId !== "" ? empId : phoneToRecord, now)
 
                         if (!userShift) {
                             lblDialogError.text = "⚠️ Bạn không có ca làm việc đăng ký hôm nay (" + todayStr1 + ")!"
@@ -491,7 +541,7 @@ Page {
                             return
                         }
 
-                        // 3. Parse giờ ca làm
+                        // 3. Phân tích khung giờ ca
                         var shiftTimes = parseShiftTime(userShift)
                         if (!shiftTimes.start || !shiftTimes.end) {
                             lblDialogError.text = "⚠️ Không thể xác định giờ ca làm!"
@@ -499,37 +549,25 @@ Page {
                             return
                         }
 
-                        // 4. Đọc lượt điểm danh gần nhất trong ngày
-                        var lastActionToday = ""
-                        if (typeof coffeeSystem !== "undefined" && coffeeSystem.loadAttendance) {
-                            var attendanceList = coffeeSystem.loadAttendance()
-                            for (var a = 0; a < attendanceList.length; a++) {
-                                var att = attendanceList[a]
-                                if (att.identifier === phoneToRecord || att.identifier === empId) {
-                                    if (att.timestamp && att.timestamp.indexOf(todayStr1) !== -1) {
-                                        lastActionToday = att.type
-                                    }
-                                }
-                            }
-                        }
+                        var startStr = Qt.formatDateTime(shiftTimes.start, "hh:mm")
+                        var endStr = Qt.formatDateTime(shiftTimes.end, "hh:mm")
+                        lblShiftInfo.text = "📅 Ca làm: " + startStr + " - " + endStr
+                        lblShiftInfo.visible = true
 
-                        // 5. CẤU HÌNH RÀNG BUỘC THỜI GIAN
+                        // 4. Kiểm tra trạng thái lượt điểm danh gần nhất
+                        var lastActionToday = getLastAttendance(empId, phoneToRecord, todayStr1)
+
+                        // 5. Ràng buộc thời gian cho phép Check-in / Check-out
                         var tenMinsMs = 10 * 60 * 1000
                         var minCheckIn = new Date(shiftTimes.start.getTime() - tenMinsMs)
                         var maxCheckIn = shiftTimes.end
-
-                        var startStr = Qt.formatDateTime(shiftTimes.start, "hh:mm")
-                        var endStr = Qt.formatDateTime(shiftTimes.end, "hh:mm")
                         var minCheckInStr = Qt.formatDateTime(minCheckIn, "hh:mm")
 
-                        // Giới hạn Check-out sớm tối đa 5 phút
                         var minCheckOut = new Date(shiftTimes.end.getTime() - (5 * 60 * 1000))
                         var minCheckOutStr = Qt.formatDateTime(minCheckOut, "hh:mm")
-
-                        // Ngưỡng Tự động Check-Out: Giờ kết thúc ca + 30 phút
                         var autoCheckoutThreshold = new Date(shiftTimes.end.getTime() + (30 * 60 * 1000))
 
-                        // ===== XỬ LÝ TỰ ĐỘNG CHECK-OUT KHI QUÁ CA 30 PHÚT =====
+                        // Tự động Check-Out nếu quá ca 30 phút
                         var autoCheckedOutTriggered = false
                         if (lastActionToday === "CHECK_IN" && now > autoCheckoutThreshold) {
                             var autoTimeStr = Qt.formatDateTime(shiftTimes.end, "hh:mm dd/MM/yyyy")
@@ -542,7 +580,7 @@ Page {
 
                         var displayName = employeeName !== "" ? employeeName : ("SĐT " + phoneToRecord)
 
-                        // 6. XỬ LÝ CHECK-IN
+                        // 6. Xử lý logic Check-In
                         if (employeePage.currentAction === "CHECK_IN") {
                             if (lastActionToday === "CHECK_IN") {
                                 lblDialogError.text = "⚠️ Bạn đã Check-In cho ca hôm nay rồi!"
@@ -560,9 +598,8 @@ Page {
                                 return
                             }
                         }
-                        // 7. XỬ LÝ CHECK-OUT
+                        // 7. Xử lý logic Check-Out
                         else if (employeePage.currentAction === "CHECK_OUT") {
-                            // Nếu đã được tự động Check-Out do quá 30 phút
                             if (autoCheckedOutTriggered) {
                                 confirmDialog.close()
                                 statusText.text = "🔴 Ca làm kết thúc lúc " + endStr + ". Hệ thống đã TỰ ĐỘNG Check-Out chuẩn " + endStr + " cho " + displayName + "!"
@@ -572,7 +609,7 @@ Page {
                             }
 
                             if (lastActionToday !== "CHECK_IN") {
-                                lblDialogError.text = "⚠️ Bạn chưa Check-In hôm nay, không thể Check-Out!"
+                                lblDialogError.text = "⚠️ Bạn chưa Check-In cho ca này, không thể Check-Out!"
                                 lblDialogError.visible = true
                                 return
                             }
@@ -583,21 +620,19 @@ Page {
                             }
                         }
 
-                        // 8. GHI NHẬN LƯỢT ĐIỂM DANH
-                        // Nếu Check-Out vượt quá giờ hết ca (VD: quẹt lúc 22:12 cho ca hết lúc 22:00), tự động ép về đúng 22:00
+                        // 8. Chốt thời gian và ghi vào hệ thống
                         var recordTime = now
                         if (employeePage.currentAction === "CHECK_OUT" && now > shiftTimes.end) {
                             recordTime = shiftTimes.end
                         }
 
                         var formattedRecordTime = Qt.formatDateTime(recordTime, "hh:mm dd/MM/yyyy")
-
                         confirmDialog.close()
 
                         if (employeePage.currentAction === "CHECK_IN") {
                             if (typeof coffeeSystem !== "undefined" && coffeeSystem.recordAttendanceCSV)
                                 coffeeSystem.recordAttendanceCSV(phoneToRecord, "CHECK_IN", formattedRecordTime)
-                            statusText.text = "🟢 Nhân viên " + displayName + " đã Check-In thành công lúc " + formattedRecordTime
+                            statusText.text = "🟢 Nhân viên " + displayName + " đã Check-In thành công lúc " + formattedRecordTime + " (Ca: " + startStr + " - " + endStr + ")"
                             statusText.color = "#15803D"
                         } else {
                             if (typeof coffeeSystem !== "undefined" && coffeeSystem.recordAttendanceCSV)
