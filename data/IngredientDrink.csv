@@ -8,11 +8,11 @@ ING006,Syrup socola,Raw,,ml,4985,500
 ING007,Syrup vani,Raw,,ml,3000,300
 ING008,Syrup caramel,Raw,,ml,3000,300
 ING009,Đường,Raw,,g,19980,2000
-ING010,Đá viên,Raw,,g,79220,5000
+ING010,Đá viên,Raw,,kg,79220,5000
 ING011,Hồng trà,Raw,,g,4992,500
 ING012,Trà ô long,Raw,,g,5000,500
 ING013,Bột trà sữa,Raw,,g,5000,500
-ING014,Trân châu,Raw,,g,5000,500
+ING014,Trân châu,Raw,Topping,g,5000,500
 ING015,Cam,Raw,,quả,49,10
 ING016,Đào ngâm,Raw,,lát,146,20
 ING017,Vải ngâm,Raw,,quả,120,20
@@ -23,3 +23,5 @@ ING021,Dưa hấu,Raw,,quả,15,3
 ING022,Thơm,Raw,,quả,20,3
 ING023,Bánh Oreo,Raw,,cái,100,20
 ING024,Whipping Cream,Raw,,ml,5000,500
+ING026,Thạch trái cây,Raw,Topping,g,2500,400
+ING027,Kem cheese,Raw,Topping,g,1800,300
