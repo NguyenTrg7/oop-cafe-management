@@ -36,8 +36,8 @@ Page {
         {num: 12, x: 420, y: 320}
     ]
 
-    readonly property int gridWidth: 540   // 420 + 120
-    readonly property int gridHeight: 450  // 320 + 130
+    readonly property int gridWidth: 540
+    readonly property int gridHeight: 450
 
     function refresh() {
         if (typeof coffeeSystem !== "undefined" && coffeeSystem.getSeatingList)
@@ -74,14 +74,12 @@ Page {
         contentItem: ColumnLayout {
             spacing: 0
 
-            // ===== HEADER =====
             Rectangle {
                 Layout.fillWidth: true
                 implicitHeight: 64
                 color: "#F0F9FF"
                 radius: 16
 
-                // Che bo góc dưới để header liền mạch
                 Rectangle {
                     anchors.left: parent.left
                     anchors.right: parent.right
@@ -151,13 +149,11 @@ Page {
                 }
             }
 
-            // ===== BODY =====
             ColumnLayout {
                 Layout.fillWidth: true
                 Layout.margins: 20
                 spacing: 16
 
-                // Hình dạng
                 ColumnLayout {
                     Layout.fillWidth: true
                     spacing: 6
@@ -240,7 +236,6 @@ Page {
                         }
                     }
 
-                    // ComboBox ẩn (giữ để logic cũ vẫn chạy)
                     ComboBox {
                         id: editShape
                         model: ["Vuông", "Tròn"]
@@ -327,7 +322,6 @@ Page {
                             }
                         }
 
-                        // SpinBox ẩn (giữ logic)
                         SpinBox {
                             id: editCapacity
                             from: 1
@@ -374,7 +368,6 @@ Page {
                 }
             }
 
-            // ===== FOOTER =====
             Rectangle {
                 Layout.fillWidth: true
                 implicitHeight: 1
@@ -441,7 +434,6 @@ Page {
         anchors.margins: 24
         spacing: 16
 
-        // ===== HEADER =====
         RowLayout {
             Layout.fillWidth: true
 
@@ -483,7 +475,7 @@ Page {
             }
         }
 
-        // ===== THANH GỘP / TÁCH BÀN =====
+        // Thanh gộp/tách bàn
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 72
@@ -608,7 +600,7 @@ Page {
             }
         }
 
-        // ===== SƠ ĐỒ BÀN =====
+        // Sơ đồ bàn
         Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -688,7 +680,7 @@ Page {
                                 }
                             }
 
-                            // Nút sửa (Căn chỉnh chuẩn neo vào góc trên phải của tableShape)
+                            // Nút sửa
                             Button {
                                 anchors.top: tableShape.top
                                 anchors.right: tableShape.right

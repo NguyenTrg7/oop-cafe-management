@@ -18,7 +18,7 @@ bool IngredientManager::loadIngredientsCSV(const QString &path, bool clearFirst)
 
     QTextStream in(&file);
 
-    // Một số file có header, một số không → đọc dòng đầu để kiểm tra
+    // Đọc dòng đầu để kiểm tra file có header không
     QString firstLine = in.readLine().trimmed();
     bool hasHeader = firstLine.contains("IngredientID", Qt::CaseInsensitive)
                      || firstLine.contains("ID", Qt::CaseInsensitive);
@@ -45,7 +45,7 @@ bool IngredientManager::loadIngredientsCSV(const QString &path, bool clearFirst)
         double qty   = data[5].toDouble();
         double minTh = data[6].toDouble();
 
-        // Chỉ thêm nếu chưa tồn tại (tránh ghi đè)
+        // Chỉ thêm nếu chưa tồn tại
         if (!m_ingredients.contains(id)) {
             Ingredient ing(id, name, qty, unit, minTh);
             m_ingredients.insert(id, ing);
@@ -90,7 +90,6 @@ bool IngredientManager::loadRecipesCSV(const QString &path)
     return true;
 }
 
-// F001 → ING101, F002 → ING102, ... F015 → ING115
 QString IngredientManager::resolveStockId(const QString &menuId) const{
     if (menuId.isEmpty())
         return menuId;
@@ -115,9 +114,9 @@ bool IngredientManager::checkAvailability(const QString &menuId,
                                           int quantity) const
 {
     if (!m_recipes.contains(menuId)) {
-        QString stockId = resolveStockId(menuId);   // F001 → ING101
+        QString stockId = resolveStockId(menuId);
         if (!m_ingredients.contains(stockId))
-            return true;   // không quản lý kho → cho bán
+            return true;
         return m_ingredients.value(stockId).getQuantity() >= quantity;
     }
 
@@ -125,12 +124,11 @@ bool IngredientManager::checkAvailability(const QString &menuId,
     QString s = size.isEmpty() ? "M" : size.toUpper();
 
     if (!sizeMap.contains(s)) {
-        // fallback size đầu tiên
         if (sizeMap.isEmpty()) return false;
         s = sizeMap.keys().first();
     }
 
-    const QList<RecipeItem> recipe = sizeMap.value(s); // Lấy bản sao an toàn
+    const QList<RecipeItem> recipe = sizeMap.value(s);
     for (const auto &item : recipe) {
         if (!m_ingredients.contains(item.ingredientId))
             return false;
@@ -147,7 +145,7 @@ int IngredientManager::getMaxServings(const QString &menuId,
                                       const QString &size) const
 {
     if (!m_recipes.contains(menuId)) {
-        QString stockId = resolveStockId(menuId);   // F001 → ING101
+        QString stockId = resolveStockId(menuId);
         if (!m_ingredients.contains(stockId))
             return 999;
         return static_cast<int>(m_ingredients.value(stockId).getQuantity());
@@ -162,7 +160,7 @@ int IngredientManager::getMaxServings(const QString &menuId,
     }
 
     int maxServings = 999;
-    const QList<RecipeItem> recipe = sizeMap.value(s); // Lấy bản sao an toàn
+    const QList<RecipeItem> recipe = sizeMap.value(s);
 
     for (const auto &item : recipe) {
         if (!m_ingredients.contains(item.ingredientId) || item.requiredAmount <= 0)
@@ -183,7 +181,7 @@ bool IngredientManager::deductIngredientsForOrder(const QString &menuId,
     if (menuId.isEmpty() || quantity <= 0)
         return false;
 
-    // Không có công thức → bỏ qua, không crash
+    // Không có công thức thì bỏ qua
     if (!m_recipes.contains(menuId)) {
         QString stockId = resolveStockId(menuId);
         if (!m_ingredients.contains(stockId)) {
@@ -196,7 +194,7 @@ bool IngredientManager::deductIngredientsForOrder(const QString &menuId,
                        << "còn" << m_ingredients.value(stockId).getQuantity();
             return false;
         }
-        m_ingredients[stockId].consume(quantity); // Được phép dùng [] vì đây không phải hàm const và muốn chỉnh sửa map
+        m_ingredients[stockId].consume(quantity);
         emit ingredientsChanged();
         autoSave();
         return true;
@@ -273,7 +271,7 @@ bool IngredientManager::saveIngredientsCSV(const QString &path) const
         const Ingredient &ing = it.value();
         out << ing.getId() << ","
             << ing.getName() << ","
-            << "Raw,,"                       // Type, Category tạm
+            << "Raw,,"
             << ing.getUnit() << ","
             << ing.getQuantity() << ","
             << ing.getMinThreshold() << "\n";
@@ -301,9 +299,9 @@ void IngredientManager::setPaths(const QString &drinkPath, const QString &foodPa
 void IngredientManager::autoSave()
 {
     if (!m_drinkPath.isEmpty())
-        saveFiltered(m_drinkPath, "ING0");   // Drink
+        saveFiltered(m_drinkPath, "ING0");
     if (!m_foodPath.isEmpty())
-        saveFiltered(m_foodPath, "ING1");    // Food
+        saveFiltered(m_foodPath, "ING1");
 }
 
 bool IngredientManager::saveFiltered(const QString &path, const QString &idPrefix) const

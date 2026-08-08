@@ -35,7 +35,7 @@ void Seating::occupyTable() { isOccupied = true; }
 void Seating::clearTable()
 {
     isOccupied = false;
-    m_note.clear();   // Xóa ghi chú khi trả bàn
+    m_note.clear();
 }
 
 bool Seating::canSeat(int guestCount) const

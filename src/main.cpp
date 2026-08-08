@@ -11,10 +11,10 @@
 #include "Account.h"
 #include "Customer.h"
 #include "EmployeeModel.h"
-#include "GiangCoffeeSystem.h"   // Import Header Singleton xử lý Menu
+#include "GiangCoffeeSystem.h"
 #include "IngredientManager.h"
 #include "OrderHistoryManager.h"
-#include "SupplierManager.h"     // <--- 1. BỔ SUNG HEADER SUPPLIER MANAGER
+#include "SupplierManager.h"
 
 int main(int argc, char *argv[])
 {
@@ -27,30 +27,24 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
-    // ==========================================
-    // 1. XỬ LÝ ACCOUNT, CUSTOMER & EMPLOYEE
-    // ==========================================
+    // Xử lý tài khoản, khách hàng và nhân viên
     Account accountHandler;
     Customer customerHandler;
 
     accountHandler.setCustomerHandler(&customerHandler);
     EmployeeModel employeeModel(&accountHandler);
 
-    // ==========================================
-    // 2. XỬ LÝ MENU (GIANG COFFEE SYSTEM)
-    // ==========================================
+    // Xử lý menu
     GiangCoffeeSystem *systemInstance = GiangCoffeeSystem::getInstance();
 
     QString drinkPath = GiangCoffeeSystem::getSaveFilePath("drink.csv");
     QString foodPath  = GiangCoffeeSystem::getSaveFilePath("food.csv");
 
-    // Nạp dữ liệu từ CSV trong thư mục saves
+    // Nạp dữ liệu từ csv trong thư mục saves
     systemInstance->getMenuManager()->loadDrinksCSV(drinkPath);
     systemInstance->getMenuManager()->loadFoodsCSV(foodPath);
 
-    // ==========================================
-    // 3. XỬ LÝ QUẢN LÝ TỒN KHO (INGREDIENT MANAGER)
-    // ==========================================
+    // Xử lý nguyên liệu tồn kho
     IngredientManager ingManager;
     systemInstance->getMenuManager()->setIngredientManager(&ingManager);
 
@@ -63,23 +57,15 @@ int main(int argc, char *argv[])
     ingManager.loadRecipesCSV(recipesPath);
     ingManager.setPaths(drinkIngPath, foodIngPath);
 
-    // ==========================================
-    // 4. XỬ LÝ LỊCH SỬ ĐƠN HÀNG (ORDER HISTORY MANAGER)
-    // ==========================================
+    // Xử lý lịch sử đơn hàng
     QString historyPath = GiangCoffeeSystem::getSaveFilePath("OrderHistory.csv");
     OrderHistoryManager *historyManager = new OrderHistoryManager();
     historyManager->setSavePath(historyPath);
     historyManager->loadFromCSV(historyPath);
 
-    // ==========================================
-    // 4.5. XỬ LÝ NHÀ CUNG CẤP (SUPPLIER MANAGER)
-    // ==========================================
-    SupplierManager supplierManager; // <--- 2. KHỞI TẠO SUPPLIER MANAGER
+    // Xử lý nhà cung cấp
+    SupplierManager supplierManager;
 
-    // ==========================================
-    // 5. ĐĂNG KÝ QML CONTEXT PROPERTIES
-    // ==========================================
-    // Lấy đường dẫn tuyệt đối của thư mục save (cùng chỗ load CSV)
     QString savesPath = QDir(SAVE_DIR_PATH).absolutePath();
     if (!savesPath.endsWith('/'))
         savesPath += '/';
@@ -94,12 +80,10 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("coffeeSystem", systemInstance);
     engine.rootContext()->setContextProperty("ingredientManager", &ingManager);
     engine.rootContext()->setContextProperty("orderHistoryManager", historyManager);
-    engine.rootContext()->setContextProperty("supplierManager", &supplierManager); // <--- 3. ĐĂNG KÝ VỚI ENGINE QML
+    engine.rootContext()->setContextProperty("supplierManager", &supplierManager);
     engine.rootContext()->setContextProperty("applicationDir", QCoreApplication::applicationDirPath());
 
-    // ==========================================
-    // 6. LOAD FILE QML CHÍNH
-    // ==========================================
+    // Load QML chính
     const QUrl url(QStringLiteral("qrc:/qt/qml/GiangsCoffee/ui/main.qml"));
 
     QObject::connect(

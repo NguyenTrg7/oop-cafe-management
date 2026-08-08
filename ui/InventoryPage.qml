@@ -295,7 +295,6 @@ Item {
             }
             onClicked: {
                 if (typeof ingredientManager !== "undefined") {
-                    // Gọi setQuantity lại để trigger autoSave
                     var list = ingredientManager.getAllIngredients()
                     for (var i = 0; i < list.length; i++) {
                         ingredientManager.setQuantity(list[i].id, list[i].quantity)

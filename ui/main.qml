@@ -16,7 +16,6 @@ ApplicationWindow {
     property color colorText: "#1E293B"
 
     property string currentActivePage: "OrderPage.qml"
-    //property string currentActivePage: "OrderHistoryPage.qml"
     property var pageCache: ({})
 
     background: Rectangle { color: colorBackground }
@@ -109,9 +108,7 @@ ApplicationWindow {
         }
     }
 
-    // ---------------------------------------------------
-    // SIDEBAR NAVIGATION
-    // ---------------------------------------------------
+    // Thanh điều hướng
     Rectangle {
         id: sideBar
         width: Math.max(220, Math.min(280, appWindow.width * 0.20))
@@ -216,7 +213,7 @@ ApplicationWindow {
                 }
             }
 
-            // 🔴 TRANG CHỦ: Mở cho cả Admin & Nhân viên (Admin -> ManagerPage.qml, Staff -> EmployeePage.qml)
+            // Trang chủ
             MenuButton {
                 iconStr: "🏠"
                 btnText: "Trang Chủ"
@@ -230,7 +227,6 @@ ApplicationWindow {
             MenuButton { iconStr: "🚚"; btnText: "Nhà Cung Cấp"; targetPage: "SupplierPage.qml"; checkAccess: isAdmin || isStaff; alignRight: false }
             MenuButton { iconStr: "📜"; btnText: "Lịch Sử Đơn Hàng"; targetPage: "OrderHistoryPage.qml"; checkAccess: isAdmin || isStaff; alignRight: false }
 
-            // Nhóm dưới: Né mèo bên trái
             MenuButton { iconStr: "🪑"; btnText: "Sơ Đồ Bàn"; targetPage: "SeatingPage.qml"; checkAccess: isAdmin || isStaff; alignRight: true }
             MenuButton { iconStr: "🎁"; btnText: "Tích điểm"; targetPage: "LoyaltyPage.qml"; checkAccess: isAdmin || isStaff; alignRight: true }
 
@@ -282,7 +278,7 @@ ApplicationWindow {
         }
     }
 
-    // Dialog Xác nhận đăng xuất
+    // Dialog xác nhận đăng xuất
     Dialog {
         id: logoutDialog
         width: Math.min(320, parent.width * 0.9)

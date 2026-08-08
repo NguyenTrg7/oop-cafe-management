@@ -24,13 +24,11 @@ public:
     void removeItem(const QString& itemId);
     void printInvoice() const;
 
-    // Getters
     QString getID() const { return m_ID; }
     double getTotalPrice() const { return m_totalPrice; }
     QString getStatus() const { return m_status; }
     QList<Menu> getItems() const { return m_items; }
 
-    // Setters
     void setStatus(const QString& status) { m_status = status; }
 };
 

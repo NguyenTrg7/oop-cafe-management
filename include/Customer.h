@@ -35,13 +35,8 @@ public:
     Q_INVOKABLE QVariantMap redeemVoucher(int pointsRequired);
     Q_INVOKABLE QVariantList voucherTiers() const;
 
-    // Voucher dang co (chua dung)
     QVariantList activeVouchers() const;
-
-    // Ap dung voucher: tra ve so tien giam. totalAmount = tong don
     Q_INVOKABLE double applyVoucher(const QString &code, double totalAmount);
-
-    // Danh dau da dung (goi sau khi thanh toan xong)
     Q_INVOKABLE bool useVoucher(const QString &code);
 
     QString phoneNumber() const { return m_phoneNumber; }
@@ -50,13 +45,13 @@ public:
     Q_INVOKABLE void loadFrom(const QString &phone, const QString &name, int points);
     Q_INVOKABLE void resetToGuest();
 
-    // Load/save voucher cung customers (Account se goi)
+    // Load/save voucher cùng customers
     QList<Voucher> vouchers() const { return m_vouchers; }
     void setVouchers(const QList<Voucher> &list);
-    QString vouchersToString() const;          // luu CSV
-    void vouchersFromString(const QString &s); // doc CSV
+    QString vouchersToString() const;          // Lưu csv
+    void vouchersFromString(const QString &s); // Đọc csv
 
-    // Doc sdt
+    // Đọc số điện thoại
     Q_INVOKABLE bool loadByPhone(const QString &phone);
     Q_INVOKABLE bool save();
 

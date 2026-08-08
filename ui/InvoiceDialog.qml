@@ -47,7 +47,6 @@ Dialog {
                 return savesDirUrl + folder + "/" + fileName + ".png";
             }
 
-            // Fallback (nếu chưa sửa main)
             var appDir = (typeof applicationDir !== "undefined" && applicationDir) ? applicationDir : "";
             appDir = appDir.replace(/\\/g, "/");
             if (appDir.length > 0 && !appDir.endsWith("/"))
@@ -156,14 +155,6 @@ Dialog {
             }
 
             ListView {
-                // id: itemList
-                // Layout.fillWidth: true
-                // Layout.leftMargin: 20
-                // Layout.rightMargin: 20
-                // implicitHeight: contentHeight
-                // interactive: false
-                // spacing: 8
-                // model: root.items
                 Layout.fillWidth: true
                 Layout.leftMargin: 20
                 Layout.rightMargin: 20
@@ -250,12 +241,11 @@ Dialog {
                                 }
                             }
 
-                            // Giá (cố định để thẳng hàng)
+                            // Giá
                             Text {
                                 text: formatVND(modelData.totalPrice)
                                 font.bold: true
                                 font.pixelSize: 13
-                                //color: "#8B5A2B"
                                 color: "#0369A1"
                                 Layout.preferredWidth: 110
                                 Layout.minimumWidth: 110

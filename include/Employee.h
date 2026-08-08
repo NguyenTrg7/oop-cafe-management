@@ -79,7 +79,6 @@ public:
     // Chuyển đổi dữ liệu sang QVariantMap phục vụ giao diện QML
     Q_INVOKABLE QVariantMap toVariantMap() const;
 
-    // Tính lương theo đúng quy định Luật Lao động
     double calculateSalary(double normalHours, double weekdayOtHours, double sundayOtHours) const;
 
     QString role() const override { return m_jobRole; }

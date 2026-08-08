@@ -6,10 +6,7 @@ Page {
     id: financePage
     title: "Quản Lý Tài Chính & Ngân Sách"
 
-    // -------------------------------------------------------------------------
-    // PROPERTIES & DATA MODELS
-    // -------------------------------------------------------------------------
-    ListModel { id: rawFinanceModel }      // Chứa toàn bộ dữ liệu từ CSV
+    ListModel { id: rawFinanceModel }      // Toàn bộ dữ liệu từ csv
     ListModel { id: filteredFinanceModel } // Dữ liệu đã lọc
 
     property double totalRevenue: 0.0
@@ -27,28 +24,23 @@ Page {
     property var hitBoxes: []
 
     Component.onCompleted: {
-        // Init years model (Chỉ khảo sát 2025 - 2027)
         cbYear.model = ["2025", "2026", "2027"];
         cbYear.currentIndex = 1; // Focus vào năm 2026
 
         var now = new Date();
         cbMonth.currentIndex = now.getMonth();
 
-        // Tự động chọn tuần hiện tại (Tính từ ngày hiện tại: ngày 1-7 là tuần 1, 8-14 là tuần 2...)
+        // Focus vào tuần hiện tại
         var currentDay = now.getDate();
         cbWeek.currentIndex = Math.min(Math.floor((currentDay - 1) / 7), 3);
 
         refreshData();
     }
 
-    // Alias để hàm tự động được main.qml gọi mỗi khi focus vào trang Tài Chính
     function refreshData() {
         refreshFinance();
     }
 
-    // -------------------------------------------------------------------------
-    // XỬ LÝ LOGIC TÍNH TOÁN & LỌC DỮ LIỆU
-    // -------------------------------------------------------------------------
     function formatMoney(val) {
         if (val === undefined || val === null || isNaN(val)) return "0";
         var num = Math.round(val);
@@ -65,7 +57,6 @@ Page {
         return sign + Math.round(absVal).toString();
     }
 
-    // Hàm lấy chính xác Date và Time để chuẩn hóa (Fix lỗi số 08, 09 ở hệ Octal)
     function parseDateStrFull(dateStr) {
         if (!dateStr) return new Date(0);
         var cleanStr = dateStr.toString().trim();
@@ -106,7 +97,6 @@ Page {
         return new Date(y, m, d, hh, min, ss);
     }
 
-    // Hàm chuẩn hóa chuỗi Date xuất ra giao diện
     function normalizeDateString(dateStr) {
         var d = parseDateStrFull(dateStr);
         if (d.getTime() === 0) return dateStr;
@@ -126,7 +116,7 @@ Page {
 
         var tempArr = [];
 
-        // 1. Tải dữ liệu từ finance.csv (Chi phí cố định, giao dịch tay)
+        // Tải dữ liệu giao dịch tay từ finance.csv
         if (typeof coffeeSystem !== "undefined" && coffeeSystem.loadFinance) {
             var data = coffeeSystem.loadFinance();
             for (var i = 0; i < data.length; i++) {
@@ -139,7 +129,7 @@ Page {
             }
         }
 
-        // 2. Tải dữ liệu từ OrderHistoryManager (Lịch sử bán hàng tự động)
+        // Tải dữ liệu Lịch sử bán hàng từ OrderHistoryManager
         if (typeof orderHistoryManager !== "undefined") {
             var orders = orderHistoryManager.getHistory();
             for (var j = 0; j < orders.length; j++) {
@@ -158,14 +148,12 @@ Page {
             }
         }
 
-        // 3. Sắp xếp mảng gộp lại (Giảm dần - Mới nhất lên đầu)
         tempArr.sort(function(a, b) {
             var da = parseDateStrFull(a.date);
             var db = parseDateStrFull(b.date);
             return db.getTime() - da.getTime();
         });
 
-        // 4. Nhồi vào Model
         for (var k = 0; k < tempArr.length; k++) {
             rawFinanceModel.append(tempArr[k]);
         }
@@ -202,7 +190,7 @@ Page {
         var curD = now.getDate();
         var today = new Date(curY, curM, curD);
 
-        // 1. THIẾT LẬP TRỤC X & XÁC ĐỊNH MỐC TƯƠNG LAI
+        // Lập trục x và xác định mốc tương lai
         if (m_mode === 0) {
             numBuckets = 7;
             var startDay = m_week * 7 + 1;
@@ -241,7 +229,7 @@ Page {
             }
         }
 
-        // 2. TÍNH TOÁN DỮ LIỆU CHO BIỂU ĐỒ & TỔNG QUAN
+        // Tính toán số liệu biểu đồ
         var totalRevChart = 0.0;
         var totalExpChart = 0.0;
 
@@ -302,7 +290,7 @@ Page {
         financePage.chartProfit = profit;
         financePage.chartIsFuture = isFuture;
 
-        // 3. LỌC DỮ LIỆU DANH SÁCH LỊCH SỬ BÊN DƯỚI
+        // Lọc dữ liệu lịch sử giao dịch
         filteredFinanceModel.clear();
         var searchTxt = searchInput.text ? searchInput.text.toLowerCase().trim() : "";
         var filterExactDate = filterDateField.text.trim();
@@ -342,15 +330,12 @@ Page {
         chartCanvas.requestPaint();
     }
 
-    // -------------------------------------------------------------------------
-    // LAYOUT CHÍNH
-    // -------------------------------------------------------------------------
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 20
         spacing: 15
 
-        // --- THANH TIÊU ĐỀ & NÚT TÁC VỤ ---
+        // Thanh tiêu đề và nút
         RowLayout {
             Layout.fillWidth: true
 
@@ -370,7 +355,7 @@ Page {
             }
         }
 
-        // --- BỘ LỌC THỜI GIAN & CHẾ ĐỘ XEM BIỂU ĐỒ ---
+        // Bộ lọc thời gian và chế độ xem biểu đồ
         Rectangle {
             Layout.fillWidth: true
             height: 55
@@ -424,12 +409,12 @@ Page {
             }
         }
 
-        // --- KHU VỰC THẺ TỔNG QUAN ---
+        // Thẻ tổng quan
         RowLayout {
             Layout.fillWidth: true
             spacing: 12
 
-            // Thẻ Tổng Thu
+            // Tổng Thu
             Rectangle {
                 Layout.fillWidth: true; height: 90; color: "#F0FDF4"; radius: 10; border.color: "#BBF7D0"
                 ColumnLayout {
@@ -439,7 +424,7 @@ Page {
                 }
             }
 
-            // Thẻ Tổng Chi
+            // Tổng Chi
             Rectangle {
                 Layout.fillWidth: true; height: 90; color: "#FEF2F2"; radius: 10; border.color: "#FECACA"
                 ColumnLayout {
@@ -449,7 +434,7 @@ Page {
                 }
             }
 
-            // Thẻ Lợi Nhuận
+            // Lợi Nhuận
             Rectangle {
                 Layout.fillWidth: true; height: 90; color: netProfit >= 0 ? "#F0F9FF" : "#FFF1F2"; radius: 10; border.color: netProfit >= 0 ? "#BAE6FD" : "#FECDD3"
                 ColumnLayout {
@@ -460,7 +445,7 @@ Page {
             }
         }
 
-        // --- KHU VỰC BIỂU ĐỒ KẾT HỢP HAI TRỤC ---
+        // Biểu đồ
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 250
@@ -479,7 +464,7 @@ Page {
                 onPaint: {
                     var ctx = getContext("2d");
                     ctx.clearRect(0, 0, width, height);
-                    financePage.hitBoxes = []; // Reset hitBoxes mỗi lần vẽ lại
+                    financePage.hitBoxes = [];
 
                     var w = width;
                     var h = height;
@@ -492,7 +477,7 @@ Page {
 
                     if (labels.length === 0) return;
 
-                    // 1. TÍNH TOÁN GIỚI HẠN TRỤC TRÁI (Cho Cột Thu / Chi)
+                    // Tính giới hạn trục y bên trái
                     var maxBar = 10;
                     for (var i = 0; i < labels.length; i++) {
                         if (!isFuture[i]) {
@@ -501,7 +486,7 @@ Page {
                     }
                     maxBar *= 1.2;
 
-                    // 2. TÍNH TOÁN GIỚI HẠN TRỤC PHẢI (Cho Đường Lợi Nhuận)
+                    // Tính giới hạn trục y bên phải
                     var pMax = -Infinity;
                     var pMin = Infinity;
                     var hasValidProfit = false;
@@ -531,7 +516,6 @@ Page {
                     var chartH = h - paddingTop - paddingBottom;
                     var stepX = chartW / labels.length;
 
-                    // 3. VẼ LƯỚI GRID & NHÃN HAI TRỤC (AXES LABELS)
                     ctx.strokeStyle = "#E2E8F0";
                     ctx.lineWidth = 1;
                     ctx.font = "10px sans-serif";
@@ -563,7 +547,7 @@ Page {
                     ctx.fillStyle = "#0284C7";
                     ctx.fillText("(VNĐ)", w - paddingRight, paddingTop - 15);
 
-                    // 4. VẼ BIỂU ĐỒ CỘT THU/CHI VÀ LƯU TỌA ĐỘ HITBOX
+                    // Vẽ biểu đồ và lưu hitbox
                     ctx.textAlign = "center";
                     var barW = stepX * 0.25;
                     if (barW > 30) barW = 30;
@@ -574,7 +558,7 @@ Page {
                         var xCenter = paddingLeft + b * stepX + stepX / 2;
 
                         if (!isFuture[b]) {
-                            // Cột Thu
+                            // Cột thu
                             var hRev = (revData[b] / maxBar) * chartH;
                             var rx = xCenter - barW - 1;
                             var ry = h - paddingBottom - hRev;
@@ -582,7 +566,7 @@ Page {
                             ctx.fillRect(rx, ry, barW, hRev);
                             financePage.hitBoxes.push({type: 'bar', name: 'Thu', label: labels[b], val: revData[b], x: rx, y: ry, w: barW, h: hRev});
 
-                            // Cột Chi
+                            // Cột chi
                             var hExp = (expData[b] / maxBar) * chartH;
                             var ex = xCenter + 1;
                             var ey = h - paddingBottom - hExp;
@@ -590,7 +574,7 @@ Page {
                             ctx.fillRect(ex, ey, barW, hExp);
                             financePage.hitBoxes.push({type: 'bar', name: 'Chi', label: labels[b], val: expData[b], x: ex, y: ey, w: barW, h: hExp});
 
-                            // Tính tọa độ đường Lợi Nhuận
+                            // Tính tọa độ đường lợi nhuận
                             var hProf = ((profitData[b] - pMin) / pRange) * chartH;
                             profitPointsX.push(xCenter);
                             profitPointsY.push(h - paddingBottom - hProf);
@@ -601,7 +585,7 @@ Page {
                         ctx.fillText(labels[b], xCenter, h - 10);
                     }
 
-                    // 5. VẼ ĐƯỜNG LỢI NHUẬN
+                    // Vẽ đường lợi nhuận
                     if (profitPointsX.length > 0) {
                         ctx.beginPath();
                         ctx.strokeStyle = "#0284C7";
@@ -620,7 +604,7 @@ Page {
                         }
                     }
 
-                    // 6. VẼ CHÚ THÍCH (LEGEND)
+                    // Vẽ chú thích
                     ctx.font = "12px sans-serif";
                     ctx.textAlign = "left";
                     var lx = paddingLeft + 10;
@@ -644,7 +628,7 @@ Page {
                     ctx.fillText("Lợi nhuận ròng", lx + 140, ly + 12);
                 }
 
-                // XỬ LÝ SỰ KIỆN HOVER QUA BIỂU ĐỒ
+                // Xử lý hover qua biểu đồ
                 MouseArea {
                     anchors.fill: parent
                     hoverEnabled: true
@@ -658,7 +642,7 @@ Page {
                             if (b.type === "node") {
                                 var dx = mx - b.x;
                                 var dy = my - b.y;
-                                if (dx * dx + dy * dy <= 36) { // Bán kính bắt dính = 6
+                                if (dx * dx + dy * dy <= 36) {
                                     found = b;
                                     break;
                                 }
@@ -677,7 +661,6 @@ Page {
                             chartToolTipText.text = "<b>" + found.label + " - " + found.name + "</b><br>"
                                                   + "<font color='" + colorCode + "'>" + sign + formatMoney(found.val) + " VNĐ</font>";
 
-                            // Tránh tooltip bị tràn ra ngoài cạnh phải/dưới của Canvas
                             var tipX = mx + 15;
                             var tipY = my - 15;
                             if (tipX + chartToolTipRect.width > chartCanvas.width) tipX = mx - chartToolTipRect.width - 15;
@@ -692,7 +675,7 @@ Page {
                     onExited: chartToolTipRect.visible = false
                 }
 
-                // TOOLTIP KHUNG NỔI
+                // Tooltip
                 Rectangle {
                     id: chartToolTipRect
                     visible: false
@@ -704,7 +687,6 @@ Page {
                     border.width: 1
                     z: 99
 
-                    // Bóng đổ nhẹ cho Tooltip
                     Rectangle {
                         anchors.fill: parent
                         anchors.margins: -1
@@ -727,7 +709,7 @@ Page {
             }
         }
 
-        // --- BẢNG LỊCH SỬ TÀI CHÍNH ---
+        // Lịch sử giao dịch
         Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -768,7 +750,7 @@ Page {
                     }
                 }
 
-                // Tiêu đề Bảng
+                // Tiêu đề bảng
                 Rectangle {
                     Layout.fillWidth: true
                     height: 35
@@ -847,9 +829,7 @@ Page {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // POPUP THÊM GIAO DỊCH MỚI
-    // -------------------------------------------------------------------------
+    // Popup thêm giao dịch mới
     Dialog {
         id: addTransactionDialog
         title: "Thêm Giao Dịch Mới"
@@ -857,7 +837,6 @@ Page {
         anchors.centerIn: parent
         modal: true
 
-        // Reset dữ liệu mỗi khi mở popup
         onOpened: {
             inputAmount.text = "";
             inputNote.text = "";
@@ -878,7 +857,7 @@ Page {
                 id: inputAmount
                 placeholderText: "Số tiền (VD: 150000)"
                 Layout.fillWidth: true
-                inputMethodHints: Qt.ImhDigitsOnly // Gợi ý bàn phím số trên thiết bị di động
+                inputMethodHints: Qt.ImhDigitsOnly
 
                 onTextChanged: errorMsg.visible = false // Ẩn lỗi khi người dùng bắt đầu sửa lại
             }
@@ -923,7 +902,6 @@ Page {
                             return;
                         }
 
-                        // Nếu hợp lệ, mở popup xác nhận
                         errorMsg.visible = false;
                         confirmAddDialog.open();
                     }
@@ -932,9 +910,7 @@ Page {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // POPUP XÁC NHẬN LƯU GIAO DỊCH
-    // -------------------------------------------------------------------------
+    // Popup xác nhận lưu giao dịch
     Dialog {
         id: confirmAddDialog
         width: 350
@@ -976,7 +952,7 @@ Page {
                         var amt = parseFloat(inputAmount.text.trim());
                         var noteStr = inputNote.text.trim();
 
-                        // Lấy chính xác thời gian ngay lúc bấm nút Lưu ngay (HH cho giờ 24h)
+                        // Lấy thời gian chính xác lúc bấm nút Lưu ngay
                         var exactCurrentTime = Qt.formatDateTime(new Date(), "yyyy-MM-dd HH:mm:ss");
 
                         if (typeof coffeeSystem !== "undefined" && coffeeSystem.addTransactionCSV) {

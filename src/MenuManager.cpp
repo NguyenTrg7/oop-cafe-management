@@ -191,7 +191,6 @@ bool MenuManager::saveFoodsCSV(const QString &path)
 
     out << "ID, Name, Category, BasePrice, Status\n";
 
-    // Đã dùng m_foods (Sửa lỗi dùng nhầm m_drinks ở Source 6)
     for (const Menu &item : m_foods) {
         out << item.getId() << "," << item.getName() << "," << item.getCategory() << ","
             << item.getPrice() << "," << item.getStatus() << "\n";
@@ -222,7 +221,7 @@ QVariantList MenuManager::getMenuByCategory(const QString &type) const
         int maxStock = 999;
         bool isAvailable = (item.getStatus() == "Available");
 
-        // Liên kết dữ liệu tồn kho từ IngredientManager (Lấy từ Source 5)
+        // Liên kết dữ liệu tồn kho từ IngredientManager
         if (m_ingredientManager) {
             QString defaultSize = item.getSizes().isEmpty() ? "M" : item.getSizes().first();
             maxStock = m_ingredientManager->getMaxServings(item.getId(), defaultSize);

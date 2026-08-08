@@ -20,7 +20,7 @@ public:
     // Băm mật khẩu bằng SHA-256
     static QString hashPassword(const QString &password);
 
-    // Xác thực tài khoản với mã hóa SHA-256
+    // Xác thực tài khoản với mã SHA-256
     Q_INVOKABLE QString authenticate(const QString &username, const QString &password);
 
     Q_INVOKABLE void setCustomerHandler(Customer *customer);

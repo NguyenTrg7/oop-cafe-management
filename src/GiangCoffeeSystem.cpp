@@ -616,7 +616,7 @@ bool GiangCoffeeSystem::addTransactionCSV(const QString &date, const QString &ty
 {
     QString path = getSaveFilePath("finance.csv");
 
-    // 1. Kiểm tra ký tự cuối cùng của file xem đã có dấu xuống dòng chưa
+    // Kiểm tra file đã xuống dòng ở cuối chưa
     bool needsNewline = false;
     QFile checkFile(path);
     if (checkFile.open(QIODevice::ReadOnly)) {
@@ -632,13 +632,12 @@ bool GiangCoffeeSystem::addTransactionCSV(const QString &date, const QString &ty
         checkFile.close();
     }
 
-    // 2. Ghi thêm giao dịch (Append)
     QFile file(path);
     if (!file.open(QIODevice::Append | QIODevice::Text)) return false;
 
     QTextStream out(&file);
 
-    // Bổ sung xuống dòng trước khi ghi nếu file cũ bị thiếu
+    // Xuống dòng trước khi ghi nếu file cũ bị thiếu
     if (needsNewline) {
         out << "\n";
     }
@@ -694,7 +693,7 @@ QVariantList GiangCoffeeSystem::calculateMonthlyPayroll(int month, int year)
     QVariantList payrollList;
     QVariantList employees = loadEmployees();
 
-    // 1. Đọc lịch phân ca
+    // Đọc lịch phân ca
     struct ShiftEntry {
         QTime startTime;
         QTime endTime;
@@ -729,7 +728,7 @@ QVariantList GiangCoffeeSystem::calculateMonthlyPayroll(int month, int year)
         shiftFile.close();
     }
 
-    // 2. Đọc dữ liệu điểm danh
+    // Đọc dữ liệu điểm danh
     struct AttendanceEntry {
         QString type;
         QDateTime time;
@@ -759,14 +758,14 @@ QVariantList GiangCoffeeSystem::calculateMonthlyPayroll(int month, int year)
         attFile.close();
     }
 
-    // 3. Quy chuẩn ngày công (26 ngày công chuẩn cho tháng 30 ngày)
+    // 26 ngày công chuẩn cho tháng 30 ngày
     int daysInMonth = QDate(year, month, 1).daysInMonth();
     int standardWorkingDays = daysInMonth - 4;
     if (standardWorkingDays < 20) standardWorkingDays = 26;
 
     double standardHours = standardWorkingDays * 8.0;
 
-    // 4. Tính toán lương từng nhân viên
+    // Tính lương từng nhân viên
     for (const QVariant& item : std::as_const(employees)) {
         QVariantMap empMap = item.toMap();
         QString empId = empMap["id"].toString().trimmed();
@@ -808,7 +807,6 @@ QVariantList GiangCoffeeSystem::calculateMonthlyPayroll(int month, int year)
                     QDateTime effectiveIn = lastCheckIn;
                     QDateTime effectiveOut = rec.time;
 
-                    // Khống chế theo ca làm việc tương ứng (tránh đè lỗi khi làm nhiều ca/ngày)
                     if (!scheduledShifts.isEmpty()) {
                         QTime inTime = lastCheckIn.time();
                         QTime outTime = rec.time.time();
@@ -831,7 +829,7 @@ QVariantList GiangCoffeeSystem::calculateMonthlyPayroll(int month, int year)
                 }
             }
 
-            // Mức 8 tiếng/ngày. Nghỉ 30 phút vẫn nằm trong 8 tiếng này và được hưởng đủ tiền
+            // Mức 8 tiếng/ngày.
             double normal = qMin(8.0, qMax(0.0, dailyHours));
             double ot = qMax(0.0, dailyHours - 8.0);
 
@@ -839,7 +837,7 @@ QVariantList GiangCoffeeSystem::calculateMonthlyPayroll(int month, int year)
             totalOtHours += ot;
         }
 
-        // 5. Bảng tính Lương
+        // Bảng tính Lương
         double baseSalary = 0.0;
         double totalSalary = 0.0;
         double completionRatio = 0.0;

@@ -96,7 +96,6 @@ Item {
         return pts
     }
 
-    // ==================== TOPPING & ICE ====================
     property var toppingInventoryMap: ({
         "Trân châu":       { id: "ING014", amount: 40 },
         "Whipping Cream":  { id: "ING024", amount: 30 },
@@ -176,7 +175,6 @@ Item {
         return true
     }
 
-    // Invoice Info
     property string invoiceNumber: ""
     property string invoiceDate: ""
     property string invoiceTime: ""
@@ -212,20 +210,18 @@ Item {
         anchors.margins: 12
         spacing: 12
 
-        // =====================================================================
-        // 2. KHU VỰC GIỮA (Menu / Tồn kho / Lịch sử)
-        // =====================================================================
+        // Phần menu, tồn kho, lịch sử
         Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            // MENU ĐỒ UỐNG / MÓN ĂN
+            // Menu
             ColumnLayout {
                 anchors.fill: parent
                 spacing: 16
                 visible: !showingInventory && !showingHistory
 
-                // ===== THANH TÌM KIẾM + LỌC =====
+                // Thanh tìm kiếm, lọc
                 Rectangle {
                     Layout.fillWidth: true
                     height: 52
@@ -257,7 +253,6 @@ Item {
                             onTextChanged: filterMenu()
                         }
 
-                        // Chỉ dùng 1 ComboBox làm nút Lọc
                         ComboBox {
                             id: categoryFilter
                             Layout.preferredWidth: 120
@@ -283,7 +278,7 @@ Item {
                                 verticalAlignment: Text.AlignVCenter
                             }
 
-                            indicator: Item {}     // ẩn mũi tên mặc định
+                            indicator: Item {}
 
                             popup: Popup {
                                 y: parent.height + 6
@@ -326,7 +321,7 @@ Item {
                         }
                     }
                 }
-                // ===== THANH DANH MỤC NGANG =====
+                // Thanh danh mục ngang
                 Row {
                     spacing: 10
                     Layout.leftMargin: 4
@@ -463,7 +458,7 @@ Item {
                 }
             }
 
-            // TRANG TỒN KHO
+            // Trang tồn kho
             Loader {
                 id: inventoryLoader
                 anchors.fill: parent
@@ -480,7 +475,7 @@ Item {
                 }
             }
 
-            // TRANG LỊCH SỬ
+            // Trang lịch sử
             Loader {
                 id: historyLoader
                 anchors.fill: parent
@@ -498,9 +493,7 @@ Item {
             }
         }
 
-        // =====================================================================
-        // CỘT BÊN PHẢI: GIỎ HÀNG & TỔNG TIỀN ĐƠN HÀNG
-        // =====================================================================
+        // Giỏ hàng và tổng tiền đơn hàng
         Rectangle {
             Layout.preferredWidth: (showingInventory || showingHistory) ? 0 : 320
             Layout.fillHeight: true
@@ -624,62 +617,6 @@ Item {
                     color: "#BAE6FD"
                 }
 
-                // ComboBox {
-                //     id: voucherCombo
-                //     Layout.fillWidth: true
-                //     model: {
-                //         var items = ["Không dùng voucher"]
-                //         if (typeof customerHandler !== "undefined" && customerHandler) {
-                //             var list = customerHandler.activeVouchers || []
-                //             for (var i = 0; i < list.length; i++)
-                //                 items.push(list[i].code + " (" + list[i].percent + "%)")
-                //         }
-                //         return items
-                //     }
-                //     onActivated: {
-                //         if (currentIndex <= 0) {
-                //             selectedVoucherCode = ""
-                //             voucherDiscount = 0
-                //         } else if (typeof customerHandler !== "undefined" && customerHandler) {
-                //             var list = customerHandler.activeVouchers || []
-                //             if (currentIndex - 1 < list.length) {
-                //                 var v = list[currentIndex - 1]
-                //                 selectedVoucherCode = v.code
-                //                 voucherDiscount = customerHandler.applyVoucher(v.code, calculateGrandTotal())
-                //             }
-                //         }
-                //     }
-                // }
-
-                // Text {
-                //     visible: voucherDiscount > 0
-                //     text: "Giảm giá: " + formatVND(voucherDiscount)
-                //     color: "#2E7D32"
-                //     font.bold: true
-                //     font.pixelSize: 13
-                // }
-
-                // RowLayout {
-                //     Layout.fillWidth: true
-
-                //     Text {
-                //         text: "TỔNG CỘNG:"
-                //         font.bold: true
-                //         font.pixelSize: 15
-                //         color: "#2C1D11"
-                //     }
-
-                //     Item { Layout.fillWidth: true }
-
-                //     Text {
-                //         text: formatVND(calculateGrandTotal())
-                //         font.bold: true
-                //         font.pixelSize: 14
-                //         color: "#757575"
-                //         font.strikeout: voucherDiscount > 0
-                //     }
-                // }
-
                 RowLayout {
                     Layout.fillWidth: true
 
@@ -713,36 +650,11 @@ Item {
                         invoiceDialog.open()
                     }
                 }
-
-                // Button {
-                //     text: "⭐ Xem điểm Loyalty"
-                //     Layout.fillWidth: true
-                //     implicitHeight: 40
-                //     onClicked: {
-                //         if (typeof StackView !== "undefined" && StackView.view)
-                //             StackView.view.push("LoyaltyPage.qml")
-                //         else if (typeof stackView !== "undefined" && stackView)
-                //             stackView.push("LoyaltyPage.qml")
-                //     }
-                // }
-
-                // Button {
-                //     text: "🪑 Xem trạng thái bàn"
-                //     Layout.fillWidth: true
-                //     implicitHeight: 40
-                //     onClicked: {
-                //         if (typeof StackView !== "undefined" && StackView.view)
-                //             StackView.view.push("SeatingPage.qml")
-                //         else if (typeof stackView !== "undefined" && stackView)
-                //             stackView.push("SeatingPage.qml")
-                //     }
-                // }
             }
         }
     }
-    // =========================================================================
-    // DIALOG TÙY CHỌN MÓN
-    // =========================================================================
+
+    // Dialog tùy chọn món
     Dialog {
         id: itemDialog
         modal: true
@@ -934,7 +846,7 @@ Item {
                                             itemDialog.maxAllowedQuantity =
                                                 ingredientManager.getMaxServings(itemDialog.itemData.id, modelData)
 
-                                            // Nếu số lượng hiện tại vượt max mới → kéo về max
+                                            // Nếu số lượng hiện tại vượt max mới thì kéo về max
                                             if (itemDialog.quantityValue > itemDialog.maxAllowedQuantity) {
                                                 itemDialog.quantityValue = Math.max(1, itemDialog.maxAllowedQuantity)
                                                 quantityField.text = "" + itemDialog.quantityValue   // ← quan trọng
@@ -967,7 +879,7 @@ Item {
                             width: 40
                             height: 40
                             radius: 10
-                            color: "#FFFFFF"                    // luôn trắng
+                            color: "#FFFFFF"
                             border.color: "#BAE6FD"
                             border.width: 1.5
                             opacity: itemDialog.quantityValue <= 1 ? 0.5 : 1.0   // mờ nhẹ khi không bấm được
@@ -1268,7 +1180,7 @@ Item {
                     }
                 }
 
-                // KHUNG THÀNH TIỀN
+                // Khung thành tiền
                 Rectangle {
                     Layout.fillWidth: true
                     height: 50
@@ -1427,9 +1339,7 @@ Item {
         }
     }
 
-    // =========================================================================
-    // DIALOG HÓA ĐƠN & THANH TOÁN
-    // =========================================================================
+    // Dialog hóa đơn và thanh toán
     Dialog {
         id: invoiceDialog
         modal: true
@@ -1954,9 +1864,7 @@ Item {
         }
     }
 
-    // =========================================================================
-    // DIALOG PHÓNG TO MÃ QR
-    // =========================================================================
+    // Dialog phóng to mã QR
     Dialog {
         id: qrZoomDialog
         modal: true
@@ -2025,7 +1933,8 @@ Item {
             }
         }
     }
-    // ==================== PHÁO HOA ====================
+
+    // Pháo hoa
     Item {
         id: fireworksOverlay
         anchors.fill: parent
@@ -2109,7 +2018,7 @@ Item {
             anchors.fill: parent
         }
 
-        // === Component lõi sáng ===
+        // Lõi sáng
         Component {
             id: glowComp
             Rectangle {
@@ -2138,7 +2047,7 @@ Item {
             }
         }
 
-        // === Component tia dài ===
+        // Tia dài
         Component {
             id: streakComp
             Rectangle {
@@ -2186,7 +2095,7 @@ Item {
             }
         }
 
-        // === Component hạt lấp lánh ===
+        // Hạt lấp lánh
         Component {
             id: sparkComp
             Rectangle {
