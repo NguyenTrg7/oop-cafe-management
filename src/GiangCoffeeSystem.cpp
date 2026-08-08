@@ -250,27 +250,29 @@ bool GiangCoffeeSystem::updateEmployeeCSV(const QString &id, const QString &name
     QStringList lines;
     QTextStream in(&file);
     while (!in.atEnd()) {
-        QString line = in.readLine();
-        QStringList fields = line.split(",");
-        if (!fields.isEmpty() && fields[0].trimmed() == id) {
-            QStringList updatedFields = {
-                id, name, phone, QString::number(salary), gender, jobRole,
-                dob, cccd, shiftDate, shiftTime, avatar, cccdFront, cccdBack
-            };
-            line = updatedFields.join(",");
-        }
-        lines.append(line);
+        lines.append(in.readLine());
     }
     file.close();
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) return false;
     QTextStream out(&file);
-    for (const QString &l : lines) {
-        out << l << "\n";
+
+    for (const QString &line : std::as_const(lines)) {
+        QStringList fields = line.split(",");
+        if (!fields.isEmpty() && fields[0].trimmed() == id) {
+            out << id << "," << name << "," << phone << "," << salary << ","
+                << gender << "," << jobRole << "," << dob << "," << cccd << ","
+                << shiftDate << "," << shiftTime << "," << avatar << ","
+                << cccdFront << "," << cccdBack << "\n";
+        } else {
+            out << line << "\n";
+        }
     }
     file.close();
 
+    // Đồng bộ lại tên và SĐT mới sang các ca làm đã đăng ký trong Shift.csv
     updateEmployeeInShifts(id, name, phone);
+
     return true;
 }
 
@@ -612,11 +614,7 @@ double GiangCoffeeSystem::parseShiftDurationHours(const QString &timeStr)
 
 double GiangCoffeeSystem::getNetWorkingHours(const QString &timeStr)
 {
-    double gross = parseShiftDurationHours(timeStr);
-    if (gross >= 6.0) {
-        return gross - 0.5;
-    }
-    return gross;
+ return parseShiftDurationHours(timeStr);
 }
 
 bool GiangCoffeeSystem::validateShiftTimeBounds(const QString &timeStr)
@@ -643,13 +641,46 @@ QVariantList GiangCoffeeSystem::calculateMonthlyPayroll(int month, int year)
     QVariantList payrollList;
     QVariantList employees = loadEmployees();
 
-    // Cấu trúc lưu trữ điểm danh tạm thời
+    // 1. Đọc lịch phân ca
+    struct ShiftEntry {
+        QTime startTime;
+        QTime endTime;
+    };
+    QMap<QString, QMap<QDate, QList<ShiftEntry>>> empShiftMap;
+
+    QString shiftPath = getSaveFilePath("shift.csv");
+    QFile shiftFile(shiftPath);
+    if (shiftFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QTextStream in(&shiftFile);
+        while (!in.atEnd()) {
+            QString line = in.readLine().trimmed();
+            if (line.isEmpty()) continue;
+            QStringList fields = line.split(",");
+            if (fields.size() >= 3) {
+                QString identifier = fields[0].trimmed();
+                QDate date = QDate::fromString(fields[1].trimmed(), "dd/MM/yyyy");
+                QString timeRange = fields[2].trimmed();
+
+                if (date.isValid() && date.month() == month && date.year() == year) {
+                    QStringList times = timeRange.split("-");
+                    if (times.size() == 2) {
+                        QTime start = QTime::fromString(times[0].trimmed(), "HH:mm");
+                        QTime end = QTime::fromString(times[1].trimmed(), "HH:mm");
+                        if (start.isValid() && end.isValid()) {
+                            empShiftMap[identifier][date].append({start, end});
+                        }
+                    }
+                }
+            }
+        }
+        shiftFile.close();
+    }
+
+    // 2. Đọc dữ liệu điểm danh
     struct AttendanceEntry {
-        QString type; // "CHECK_IN" hoặc "CHECK_OUT"
+        QString type;
         QDateTime time;
     };
-
-    // Nhóm điểm danh theo: Identifier (Mã/SĐT) -> Ngày -> Danh sách lượt điểm danh
     QMap<QString, QMap<QDate, QList<AttendanceEntry>>> empAttendanceMap;
 
     QString attPath = getSaveFilePath("attendance.csv");
@@ -664,7 +695,7 @@ QVariantList GiangCoffeeSystem::calculateMonthlyPayroll(int month, int year)
             if (fields.size() >= 3) {
                 QString identifier = fields[0].trimmed();
                 QString type = fields[1].trimmed();
-                QString timeStr = fields[2].trimmed(); // Định dạng "HH:mm dd/MM/yyyy"
+                QString timeStr = fields[2].trimmed();
 
                 QDateTime dt = QDateTime::fromString(timeStr, "HH:mm dd/MM/yyyy");
                 if (dt.isValid() && dt.date().month() == month && dt.date().year() == year) {
@@ -675,19 +706,14 @@ QVariantList GiangCoffeeSystem::calculateMonthlyPayroll(int month, int year)
         attFile.close();
     }
 
-    // 1. Tính tổng số giờ tiêu chuẩn cần đạt trong tháng (Các ngày Thứ 2 -> Thứ 7, mỗi ngày 7.5h)
+    // 3. Quy chuẩn ngày công (26 ngày công chuẩn cho tháng 30 ngày)
     int daysInMonth = QDate(year, month, 1).daysInMonth();
-    int workingDaysInMonth = 0;
-    for (int day = 1; day <= daysInMonth; ++day) {
-        QDate d(year, month, day);
-        if (d.dayOfWeek() != 7) { // Không tính Chủ Nhật
-            workingDaysInMonth++;
-        }
-    }
-    double standardHours = workingDaysInMonth * 7.5; // Ví dụ: 26 ngày * 7.5h = 195h
-    if (standardHours <= 0) standardHours = 195.0;
+    int standardWorkingDays = daysInMonth - 4;
+    if (standardWorkingDays < 20) standardWorkingDays = 26;
 
-    // 2. Duyệt qua từng nhân viên để tính số giờ thực tế và lương
+    double standardHours = standardWorkingDays * 8.0;
+
+    // 4. Tính toán lương từng nhân viên
     for (const QVariant& item : std::as_const(employees)) {
         QVariantMap empMap = item.toMap();
         QString empId = empMap["id"].toString().trimmed();
@@ -696,22 +722,21 @@ QVariantList GiangCoffeeSystem::calculateMonthlyPayroll(int month, int year)
         double hourlySalaryFromCsv = empMap["salary"].toDouble();
 
         double totalNormalHours = 0.0;
-        double totalWeekdayOtHours = 0.0;
-        double totalSundayOtHours = 0.0;
+        double totalOtHours = 0.0;
 
-        // Lấy danh sách điểm danh theo ID hoặc SĐT
-        QMap<QDate, QList<AttendanceEntry>> dailyRecords;
-        if (empAttendanceMap.contains(empId)) {
-            dailyRecords = empAttendanceMap[empId];
-        } else if (empAttendanceMap.contains(empPhone)) {
-            dailyRecords = empAttendanceMap[empPhone];
-        }
+        QMap<QDate, QList<AttendanceEntry>> dailyAttendance;
+        QMap<QDate, QList<ShiftEntry>> dailyShifts;
 
-        for (auto it = dailyRecords.begin(); it != dailyRecords.end(); ++it) {
+        if (empAttendanceMap.contains(empId)) dailyAttendance = empAttendanceMap[empId];
+        else if (empAttendanceMap.contains(empPhone)) dailyAttendance = empAttendanceMap[empPhone];
+
+        if (empShiftMap.contains(empId)) dailyShifts = empShiftMap[empId];
+        else if (empShiftMap.contains(empPhone)) dailyShifts = empShiftMap[empPhone];
+
+        for (auto it = dailyAttendance.begin(); it != dailyAttendance.end(); ++it) {
             QDate date = it.key();
             QList<AttendanceEntry> records = it.value();
 
-            // Sắp xếp các mốc thời gian điểm danh tăng dần
             std::sort(records.begin(), records.end(), [](const AttendanceEntry &a, const AttendanceEntry &b) {
                 return a.time < b.time;
             });
@@ -720,13 +745,32 @@ QVariantList GiangCoffeeSystem::calculateMonthlyPayroll(int month, int year)
             QDateTime lastCheckIn;
             bool isCheckedIn = false;
 
-            // Bắt cặp CHECK_IN và CHECK_OUT
+            QList<ShiftEntry> scheduledShifts = dailyShifts.value(date);
+
             for (const auto &rec : records) {
                 if (rec.type == "CHECK_IN") {
                     lastCheckIn = rec.time;
                     isCheckedIn = true;
                 } else if (rec.type == "CHECK_OUT" && isCheckedIn) {
-                    qint64 secs = lastCheckIn.secsTo(rec.time);
+                    QDateTime effectiveIn = lastCheckIn;
+                    QDateTime effectiveOut = rec.time;
+
+                    // Khống chế theo ca làm việc tương ứng (tránh đè lỗi khi làm nhiều ca/ngày)
+                    if (!scheduledShifts.isEmpty()) {
+                        QTime inTime = lastCheckIn.time();
+                        QTime outTime = rec.time.time();
+
+                        for (const auto& shift : scheduledShifts) {
+                            // Chỉ khớp với ca trùng hoặc gần nhất với khoảng điểm danh
+                            if (inTime <= shift.endTime && outTime >= shift.startTime) {
+                                if (inTime < shift.startTime) effectiveIn.setTime(shift.startTime);
+                                if (outTime > shift.endTime) effectiveOut.setTime(shift.endTime);
+                                break;
+                            }
+                        }
+                    }
+
+                    qint64 secs = effectiveIn.secsTo(effectiveOut);
                     if (secs > 0) {
                         dailyHours += (secs / 3600.0);
                     }
@@ -734,73 +778,61 @@ QVariantList GiangCoffeeSystem::calculateMonthlyPayroll(int month, int year)
                 }
             }
 
-            // Quy định trừ 0.5h nghỉ nếu ca làm thực tế từ 6 tiếng trở lên
-            if (dailyHours >= 6.0) {
-                dailyHours -= 0.5;
-            }
-
-            double normal = qMin(8.0, dailyHours);
+            // Mức 8 tiếng/ngày. Nghỉ 30 phút vẫn nằm trong 8 tiếng này và được hưởng đủ tiền
+            double normal = qMin(8.0, qMax(0.0, dailyHours));
             double ot = qMax(0.0, dailyHours - 8.0);
 
-            if (date.dayOfWeek() == 7) { // Chủ Nhật
-                totalNormalHours += normal;
-                totalSundayOtHours += ot;
-            } else { // Ngày thường
-                totalNormalHours += normal;
-                totalWeekdayOtHours += ot;
-            }
+            totalNormalHours += normal;
+            totalOtHours += ot;
         }
 
+        // 5. Bảng tính Lương
         double baseSalary = 0.0;
         double totalSalary = 0.0;
         double completionRatio = 0.0;
 
-        // 3. Phân loại logic tính lương theo jobRole
         if (jobRole == "Full-time") {
-            baseSalary = 8000000.0; // 8 Triệu
-            completionRatio = totalNormalHours / standardHours;
+            baseSalary = 8000000.0;
+            completionRatio = (standardHours > 0) ? (totalNormalHours / standardHours) : 0.0;
 
             double hourlyRate = baseSalary / standardHours;
             double baseEarned = baseSalary * completionRatio;
-            double weekdayOtEarned = totalWeekdayOtHours * hourlyRate * 1.5;
-            double sundayOtEarned = totalSundayOtHours * hourlyRate * 2.0;
+            double otEarned = totalOtHours * hourlyRate * 1.5;
 
-            totalSalary = baseEarned + weekdayOtEarned + sundayOtEarned;
+            totalSalary = baseEarned + otEarned;
 
         } else if (jobRole == "Bảo vệ (Full-time)" || jobRole == "Bảo vệ") {
-            baseSalary = 7000000.0; // 7 Triệu
-            completionRatio = totalNormalHours / standardHours;
+            baseSalary = 7000000.0;
+            completionRatio = (standardHours > 0) ? (totalNormalHours / standardHours) : 0.0;
 
             double hourlyRate = baseSalary / standardHours;
             double baseEarned = baseSalary * completionRatio;
-            double weekdayOtEarned = totalWeekdayOtHours * hourlyRate * 1.5;
-            double sundayOtEarned = totalSundayOtHours * hourlyRate * 2.0;
+            double otEarned = totalOtHours * hourlyRate * 1.5;
 
-            totalSalary = baseEarned + weekdayOtEarned + sundayOtEarned;
+            totalSalary = baseEarned + otEarned;
 
         } else {
-            // Nhân viên Part-time (Tính trực tiếp theo giờ làm thực tế * đơn giá / giờ)
+            // Part-time: Lương = (Tổng giờ chuẩn x Đơn giá theo giờ) + (Giờ OT x Đơn giá x 1.5)
             baseSalary = hourlySalaryFromCsv;
             completionRatio = (standardHours > 0) ? (totalNormalHours / standardHours) : 0.0;
 
             double normalEarned = totalNormalHours * baseSalary;
-            double weekdayOtEarned = totalWeekdayOtHours * baseSalary * 1.5;
-            double sundayOtEarned = totalSundayOtHours * baseSalary * 2.0;
+            double otEarned = totalOtHours * baseSalary * 1.5;
 
-            totalSalary = normalEarned + weekdayOtEarned + sundayOtEarned;
+            totalSalary = normalEarned + otEarned;
         }
 
-        // Tạo dữ liệu trả về cho QML / UI
         QVariantMap record;
         record["id"] = empId;
         record["name"] = empMap["name"].toString();
         record["jobRole"] = jobRole;
         record["baseSalary"] = baseSalary;
         record["standardHours"] = standardHours;
-        record["completionRatio"] = completionRatio * 100.0; // Phần trăm (%)
+        record["completionRatio"] = completionRatio * 100.0;
         record["normalHours"] = totalNormalHours;
-        record["weekdayOtHours"] = totalWeekdayOtHours;
-        record["sundayOtHours"] = totalSundayOtHours;
+        record["otHours"] = totalOtHours;
+        record["weekdayOtHours"] = totalOtHours;
+        record["sundayOtHours"] = 0.0;
         record["totalSalary"] = totalSalary;
 
         payrollList.append(record);
@@ -1005,7 +1037,7 @@ bool GiangCoffeeSystem::addShift(const QString &id, const QString &name, const Q
     QVariantList employees = loadEmployees();
     QString jobRole = "Part-time";
 
-    for (const QVariant &item : employees) {
+    for (const QVariant &item :std::as_const(employees)) {
         if (item.toMap()["id"].toString() == id) {
             jobRole = item.toMap()["jobRole"].toString();
             break;
