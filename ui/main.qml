@@ -16,6 +16,7 @@ ApplicationWindow {
     property color colorText: "#1E293B"
 
     property string currentActivePage: "OrderPage.qml"
+    //property string currentActivePage: "OrderHistoryPage.qml"
     property var pageCache: ({})
 
     background: Rectangle { color: colorBackground }
@@ -227,7 +228,7 @@ ApplicationWindow {
             MenuButton { iconStr: "🛒"; btnText: "Bán Hàng"; targetPage: "OrderPage.qml"; checkAccess: isAdmin || isStaff; alignRight: false }
             MenuButton { iconStr: "📦"; btnText: "Quản Lý Kho Hàng"; targetPage: "InventoryPage.qml"; checkAccess: isAdmin || isStaff; alignRight: false }
             MenuButton { iconStr: "🚚"; btnText: "Nhà Cung Cấp"; targetPage: "SupplierPage.qml"; checkAccess: isAdmin || isStaff; alignRight: false }
-            MenuButton { iconStr: "📜"; btnText: "Lịch Sử Đơn Hàng"; targetPage: "OrderHistoryPage.qml"; checkAccess: isAdmin || isStaff; alignRight: !isAdmin }
+            MenuButton { iconStr: "📜"; btnText: "Lịch Sử Đơn Hàng"; targetPage: "OrderHistoryPage.qml"; checkAccess: isAdmin || isStaff; alignRight: true }
 
             // Nhóm dưới: Né mèo bên trái
             MenuButton { iconStr: "🪑"; btnText: "Sơ Đồ Bàn"; targetPage: "SeatingPage.qml"; checkAccess: isAdmin || isStaff; alignRight: true }

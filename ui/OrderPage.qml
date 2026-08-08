@@ -96,6 +96,86 @@ Item {
         return pts
     }
 
+    // ==================== TOPPING & ICE ====================
+    property var toppingInventoryMap: ({
+        "Trân châu":       { id: "ING014", amount: 40 },
+        "Whipping Cream":  { id: "ING024", amount: 30 },
+        "Thạch trái cây":  { id: "ING026", amount: 30 },
+        "Kem cheese":      { id: "ING027", amount: 40 }
+    })
+
+    property var iceBySize: ({ "S": 150, "M": 180, "L": 220, "Standard": 180 })
+    property var iceAdjustFactor: ({
+        "Bình thường": 0,
+        "Ít đá": -0.4,
+        "Nhiều đá": 0.4,
+        "Không đá": -1.0
+    })
+    property string iceIngredientId: "ING010"
+
+    function getIngredientById(id) {
+        if (typeof ingredientManager === "undefined" || !ingredientManager) return null
+        var all = ingredientManager.getAllIngredients()
+        for (var i = 0; i < all.length; i++)
+            if (all[i].id === id) return all[i]
+        return null
+    }
+    function getIngredientQuantity(id) {
+        var ing = getIngredientById(id)
+        return ing ? Number(ing.quantity) : 0
+    }
+    function adjustIngredientQuantity(id, delta) {
+        if (typeof ingredientManager === "undefined" || !ingredientManager) return false
+        var ing = getIngredientById(id)
+        if (!ing) return false
+        ingredientManager.setQuantity(id, Math.max(0, Number(ing.quantity) + delta))
+        return true
+    }
+    function getRecipeIceAmount(size) {
+        return iceBySize[size] || 180
+    }
+
+    function canDeductToppings(names, qty) {
+        if (!names || names.length === 0) return true
+        var need = {}
+        for (var i = 0; i < names.length; i++) {
+            var info = toppingInventoryMap[names[i]]
+            if (!info) continue
+            need[info.id] = (need[info.id] || 0) + info.amount * qty
+        }
+        for (var id in need)
+            if (getIngredientQuantity(id) < need[id]) return false
+        return true
+    }
+    function canDeductIce(level, size, qty) {
+        var f = iceAdjustFactor[level] || 0
+        if (f <= 0) return true
+        return getIngredientQuantity(iceIngredientId) >= getRecipeIceAmount(size) * f * qty
+    }
+
+    function deductToppingsAndIce(names, level, size, qty) {
+        if (qty <= 0) return true
+        for (var i = 0; i < (names || []).length; i++) {
+            var info = toppingInventoryMap[names[i]]
+            if (info) adjustIngredientQuantity(info.id, -(info.amount * qty))
+        }
+        var f = iceAdjustFactor[level] || 0
+        if (f !== 0)
+            adjustIngredientQuantity(iceIngredientId, -(getRecipeIceAmount(size) * f * qty))
+        return true
+    }
+    function restoreToppingsAndIce(names, level, size, qty) {
+        if (qty <= 0) return true
+        for (var i = 0; i < (names || []).length; i++) {
+            var info = toppingInventoryMap[names[i]]
+            if (info) adjustIngredientQuantity(info.id, info.amount * qty)
+        }
+        var f = iceAdjustFactor[level] || 0
+        if (f !== 0)
+            adjustIngredientQuantity(iceIngredientId, getRecipeIceAmount(size) * f * qty)
+        return true
+    }
+
     // Invoice Info
     property string invoiceNumber: ""
     property string invoiceDate: ""
@@ -519,14 +599,18 @@ Item {
                                 Layout.preferredWidth: 28
                                 Layout.alignment: Qt.AlignVCenter
                                 onClicked: {
-                                    var itemId = model.id
+                                    var itemId   = model.id
                                     var itemSize = model.size || "M"
-                                    var itemQty = model.quantity
+                                    var itemQty  = model.quantity
+                                    var itemIce  = model.ice || "Bình thường"
+                                    var tops = (model.toppings || "").split(", ").filter(function(s){ return s.length > 0 })
+
                                     cartModel.remove(index)
-                                    // Hoàn lại tồn kho
-                                    if (typeof ingredientManager !== "undefined" && ingredientManager) {
+
+                                    if (typeof ingredientManager !== "undefined" && ingredientManager)
                                         ingredientManager.restoreIngredientsForOrder(itemId, itemSize, itemQty)
-                                    }
+
+                                    restoreToppingsAndIce(tops, itemIce, itemSize, itemQty)
                                     menuGrid.model = getMenuData(orderPageRoot.selectedCategory)
                                 }
                             }
@@ -1048,9 +1132,18 @@ Item {
                                 width: iceLabel.implicitWidth + 20
                                 height: 34
                                 radius: 17
-                                color: itemDialog.selectedIce === modelData ? "#3B82F6" : "#FFFFFF"
-                                border.color: itemDialog.selectedIce === modelData ? "#3B82F6" : "#BAE6FD"
+                                property real iceNeed: {
+                                    var factor = orderPageRoot.iceAdjustFactor[modelData] || 0
+                                    if (factor <= 0) return 0
+                                    return orderPageRoot.getRecipeIceAmount(itemDialog.selectedSize) * factor * itemDialog.quantityValue
+                                }
+                                property bool iceEnough: iceNeed <= 0 || orderPageRoot.getIngredientQuantity(orderPageRoot.iceIngredientId) >= iceNeed
+                                property bool iceLow: orderPageRoot.iceIngredientId ? orderPageRoot.isIngredientLow(orderPageRoot.iceIngredientId) : false
+
+                                color: itemDialog.selectedIce === modelData ? "#3B82F6" : (iceEnough ? "#FFFFFF" : "#FEF2F2")
+                                border.color: itemDialog.selectedIce === modelData ? "#3B82F6" : (iceEnough ? (iceLow && modelData !== "Không đá" ? "#F59E0B" : "#BAE6FD") : "#FCA5A5")
                                 border.width: 1.5
+                                opacity: iceEnough ? 1.0 : 0.7
 
                                 Text {
                                     id: iceLabel
@@ -1058,13 +1151,17 @@ Item {
                                     text: modelData
                                     font.pixelSize: 12
                                     font.bold: itemDialog.selectedIce === modelData
-                                    color: itemDialog.selectedIce === modelData ?"white" : "#1E40AF"
+                                    color: itemDialog.selectedIce === modelData ? "white" : (iceEnough ? "#1E40AF" : "#DC2626")
                                 }
 
                                 MouseArea {
                                     anchors.fill: parent
-                                    cursorShape: Qt.PointingHandCursor
+                                    cursorShape: iceEnough ? Qt.PointingHandCursor : Qt.ForbiddenCursor
                                     onClicked: {
+                                        if (!iceEnough) {
+                                            console.warn("Không đủ đá")
+                                            return
+                                        }
                                         itemDialog.selectedIce = modelData
                                     }
                                 }
@@ -1093,47 +1190,76 @@ Item {
                             id: toppingRepeater
                             model: [
                                 { name: "Trân châu", price: 10000 },
-                                { name: "Whipping", price: 15000 },
-                                { name: "Thạch", price: 12000 },
+                                { name: "Whipping Cream", price: 15000 },
+                                { name: "Thạch trái cây", price: 12000 },
                                 { name: "Kem cheese", price: 20000 }
                             ]
 
                             delegate: Rectangle {
-                                width: 105
-                                height: 46
+                                width: 120
+                                height: 52
                                 radius: 10
                                 property bool checked: false
                                 property real toppingPrice: modelData.price
                                 property string toppingName: modelData.name
+                                property int stockQty: {
+                                    var info = orderPageRoot.toppingInventoryMap[modelData.name]
+                                    return info ? orderPageRoot.getIngredientQuantity(info.id) : 999
+                                }
+                                property bool isOutOfStock: stockQty <= 0
+                                property bool isLowStock: {
+                                    var info = orderPageRoot.toppingInventoryMap[modelData.name]
+                                    return info ? orderPageRoot.isIngredientLow(info.id) : false
+                                }
 
-                                color: checked ? "#3B82F6" : "#FFFFFF"
-                                border.color: checked ? "#3B82F6" : "#BAE6FD"
+                                color: isOutOfStock ? "#F1F5F9" : (checked ? "#3B82F6" : "#FFFFFF")
+                                border.color: isOutOfStock ? "#CBD5E1" : (checked ? "#3B82F6" : (isLowStock ? "#F59E0B" : "#BAE6FD"))
                                 border.width: 1.5
+                                opacity: isOutOfStock ? 0.55 : 1.0
 
                                 Column {
                                     anchors.centerIn: parent
-                                    spacing: 2
-
+                                    spacing: 1
                                     Text {
                                         anchors.horizontalCenter: parent.horizontalCenter
                                         text: modelData.name
                                         font.pixelSize: 12
                                         font.bold: true
-                                        color: checked ? "white" : "#1E40AF"
+                                        color: isOutOfStock ? "#94A3B8" : (checked ? "white" : "#1E40AF")
                                     }
                                     Text {
                                         anchors.horizontalCenter: parent.horizontalCenter
-                                        text: "+" + formatVND(modelData.price)
+                                        text: isOutOfStock ? "HẾT HÀNG" : ("+" + formatVND(modelData.price))
                                         font.pixelSize: 10
-                                        color: checked ? "#DBEAFE" : "#64748B"
+                                        color: isOutOfStock ? "#EF4444" : (checked ? "#DBEAFE" : "#64748B")
+                                    }
+                                    Text {
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                        visible: !isOutOfStock && isLowStock
+                                        text: "⚠ Còn " + stockQty
+                                        font.pixelSize: 9
+                                        font.bold: true
+                                        color: checked ? "#FDE68A" : "#D97706"
                                     }
                                 }
 
                                 MouseArea {
                                     anchors.fill: parent
-                                    cursorShape: Qt.PointingHandCursor
+                                    enabled: !isOutOfStock
+                                    cursorShape: isOutOfStock ? Qt.ForbiddenCursor : Qt.PointingHandCursor
                                     onClicked: {
-                                        checked = !checked
+                                        if (isOutOfStock) return
+                                        if (checked) {
+                                            checked = false
+                                            itemDialog.updatePrice()
+                                            return
+                                        }
+                                        var info = orderPageRoot.toppingInventoryMap[modelData.name]
+                                        if (info && orderPageRoot.getIngredientQuantity(info.id) < itemDialog.quantityValue * info.amount) {
+                                            console.warn("Không đủ tồn kho topping")
+                                            return
+                                        }
+                                        checked = true
                                         itemDialog.updatePrice()
                                     }
                                 }
@@ -1252,18 +1378,6 @@ Item {
         onAccepted: {
             if (quantityValue <= 0) return
 
-            if (typeof ingredientManager !== "undefined" && ingredientManager && itemDialog.itemData) {
-                var success = ingredientManager.deductIngredientsForOrder(
-                    itemDialog.itemData.id,
-                    sizeSection.visible ? selectedSize : "M",
-                    quantityValue
-                )
-                if (!success) {
-                    console.warn("Không đủ nguyên liệu để thêm món:", itemDialog.itemData.name)
-                    return
-                }
-            }
-
             var toppingNames = []
             for (var i = 0; i < toppingRepeater.count; i++) {
                 var btn = toppingRepeater.itemAt(i)
@@ -1272,18 +1386,42 @@ Item {
                 }
             }
 
+            // Kiểm tra tồn kho topping + đá
+            if (!canDeductToppings(toppingNames, quantityValue)) {
+                console.warn("Không đủ topping")
+                return
+            }
+            if (category === "Drink" && !canDeductIce(selectedIce, selectedSize, quantityValue)) {
+                console.warn("Không đủ đá")
+                return
+            }
+
+            if (typeof ingredientManager !== "undefined" && ingredientManager && itemData) {
+                var ok = ingredientManager.deductIngredientsForOrder(
+                    itemData.id,
+                    sizeSection.visible ? selectedSize : "M",
+                    quantityValue
+                )
+                if (!ok) {
+                    console.warn("Không đủ nguyên liệu món")
+                    return
+                }
+            }
+
+            if (category === "Drink")
+                deductToppingsAndIce(toppingNames, selectedIce, selectedSize, quantityValue)
+
             cartModel.append({
-                "id": itemDialog.itemData ? itemDialog.itemData.id : "",
-                "name": itemDialog.itemData ? itemDialog.itemData.name : "",
-                "category": itemDialog.category,
+                "id": itemData ? itemData.id : "",
+                "name": itemData ? itemData.name : "",
+                "category": category,
                 "size": sizeSection.visible ? selectedSize : "",
-                "ice": itemDialog.category === "Drink" ? selectedIce : "",
+                "ice": category === "Drink" ? selectedIce : "",
                 "toppings": toppingNames.join(", "),
                 "quantity": quantityValue,
                 "note": tfNote.text,
-                "totalPrice": itemDialog.calculatedPrice
+                "totalPrice": calculatedPrice
             })
-
             menuGrid.model = getMenuData(orderPageRoot.selectedCategory)
             close()
         }
