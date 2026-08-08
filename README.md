@@ -14,9 +14,9 @@ Dự án được chia quyền sử dụng theo hai vai trò: **Quản lý** và
 *   **Bán hàng (POS) & Sơ đồ bàn:**
     *   Giao diện gọi món trực quan, phân loại Đồ uống/Món ăn.
     *   Quản lý sơ đồ bàn thực tế (mở bàn, ghép bàn, thanh toán).
-    *   Tự động tính toán giá tiền, áp dụng mã giảm giá (Voucher).
+    *   Tự động tính toán giá tiền, áp dụng mã giảm giá.
     *   In hóa đơn chi tiết kèm mã QR thanh toán.
-*   **Quản lý Kho hàng (Inventory):**
+*   **Quản lý Kho hàng:**
     *   Thiết lập định mức tồn kho và công thức pha chế.
     *   **Tự động trừ nguyên liệu** trong kho khi có đơn hàng mới.
     *   Cảnh báo nguyên liệu sắp hết (dưới mức tối thiểu).
@@ -25,11 +25,11 @@ Dự án được chia quyền sử dụng theo hai vai trò: **Quản lý** và
     *   Lên lịch làm việc (Phân ca Part-time, Full-time).
     *   Hệ thống Check-in / Check-out tự động lưu thời gian thực.
     *   Bảng báo cáo điểm danh
-*   **Quản lý Tài chính (Finance):**
+*   **Quản lý Tài chính:**
     *   Theo dõi tổng thu, tổng chi và lợi nhuận ròng.
     *   Trực quan hóa dữ liệu bằng **Biểu đồ động** (thống kê theo Tuần/Tháng/Năm/Quý).
     *   Thêm các giao dịch thủ công (chi phí điện nước, mặt bằng, nhập hàng...).
-*   **Chương trình Khách hàng thân thiết (Loyalty):**
+*   **Chương trình Khách hàng thân thiết:**
     *   Tích điểm tự động dựa trên số lượng ly/món khách mua.
     *   Đổi điểm lấy mã giảm giá (Voucher 10%, 20%, 30%...).
 *   **Lịch sử Giao dịch:**
