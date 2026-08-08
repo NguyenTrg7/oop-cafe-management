@@ -32,7 +32,7 @@ Page {
     function refreshStats() {
         var rev = 0;
 
-        // 1. Cộng tổng các khoản Thu từ giao dịch thủ công (finance.csv)
+        // Tổng Thu từ giao dịch thủ công finance.csv
         if (typeof coffeeSystem !== "undefined" && coffeeSystem.loadFinance) {
             var dataFinance = coffeeSystem.loadFinance()
             if (dataFinance) {
@@ -44,7 +44,7 @@ Page {
             }
         }
 
-        // 2. Cộng tổng các hóa đơn từ Lịch sử bán hàng (OrderHistory.csv)
+        // Tổng hóa đơn từ Lịch sử bán hàng OrderHistory.csv
         if (typeof orderHistoryManager !== "undefined") {
             var orders = orderHistoryManager.getHistory();
             if (orders) {
@@ -56,7 +56,7 @@ Page {
 
         totalRevenueText = Number(rev).toLocaleString(Qt.locale("vi_VN")) + " VNĐ"
 
-        // 3. Cập nhật số lượng nhân sự
+        // Cập nhật số lượng nhân sự
         var empCount = 0;
         if (typeof coffeeSystem !== "undefined" && coffeeSystem.loadEmployees) {
             var empData = coffeeSystem.loadEmployees()
@@ -79,7 +79,7 @@ Page {
         }
     }
 
-    // Component Nút bấm Dashboard
+    // Nút bấm Dashboard
     component DashboardButton: Button {
         id: control
         property string iconText: "📦"
@@ -257,7 +257,7 @@ Page {
                 }
 
                 GridLayout {
-                    columns: managerPage.width < 600 ? 1 : 2 // Auto xuống dòng nếu màn hình quá hẹp
+                    columns: managerPage.width < 600 ? 1 : 2
                     Layout.fillWidth: true
                     columnSpacing: 15
                     rowSpacing: 15

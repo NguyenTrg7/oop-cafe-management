@@ -9,9 +9,9 @@ private:
     QString m_id;
     QString m_name;
     double m_price;
-    QString m_category; // "Coffee", "Tea", "Cake"...
-    QStringList m_sizes;     // "S", "M", "L"
-    QString m_status;   // "Available", "OutOfStock"
+    QString m_category;
+    QStringList m_sizes;
+    QString m_status;
 
 public:
 
@@ -38,7 +38,6 @@ public:
     void setSizes(const QStringList& size) { m_sizes = size; }
     void setStatus(const QString& status) { m_status = status; }
 
-    // Phương thức hiển thị món
     void displayMenu() const;
 };
 

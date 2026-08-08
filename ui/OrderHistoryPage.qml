@@ -9,7 +9,6 @@ Item {
     property string selectedInvoice: ""
     property var rawHistory: []
 
-    // Danh sách cho các ComboBox bộ lọc
     property var dayList: {
         var arr = ["Tất cả ngày"];
         for(var i=1; i<=31; i++) arr.push(i.toString());
@@ -88,7 +87,7 @@ Item {
         for (var i = 0; i < rawHistory.length; i++) {
             var item = rawHistory[i];
 
-            // Xử lý ngày (định dạng có thể là DD/MM/YYYY hoặc YYYY-MM-DD)
+            // Xử lý ngày định dạng DD/MM/YYYY hoặc YYYY-MM-DD
             var dYear = -1, dMonth = -1, dDay = -1;
             if (item.date.indexOf("/") !== -1) {
                 var dParts = item.date.split("/");
@@ -116,7 +115,6 @@ Item {
         }
     }
 
-    // Component ComboBox giới hạn chiều cao tối đa (250px) để không bị che khuất màn hình
     component FilterCombo : ComboBox {
         id: control
         popup: Popup {
@@ -160,7 +158,7 @@ Item {
             Item { Layout.fillWidth: true }
         }
 
-        // BỘ LỌC THỜI GIAN
+        // Bộ lọc thời gian
         Rectangle {
             Layout.fillWidth: true
             height: 55
@@ -222,7 +220,6 @@ Item {
                 width: historyList.width
                 height: 82
                 radius: 10
-                // Lưu ý: Đã sửa từ modelData thành model
                 color: selectedInvoice === model.invoiceNumber ? "#E0F2FE" : "#FFFFFF"
                 border.color: selectedInvoice === model.invoiceNumber ? "#3B82F6" : "#BAE6FD"
 
@@ -267,7 +264,7 @@ Item {
                         }
                     }
 
-                    // Cột giá (cố định chiều rộng → thẳng hàng)
+                    // Cột giá
                     Text {
                         text: formatVND(model.totalAmount)
                         font.bold: true

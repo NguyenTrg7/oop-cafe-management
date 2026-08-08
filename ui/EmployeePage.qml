@@ -31,7 +31,6 @@ Page {
         return ""
     }
 
-    // ===== HÀM ĐỌC & ÉP KIỂU THỜI GIAN ĐA NĂNG =====
     function parseTimeString(tStr) {
         if (!tStr) return null
         var str = tStr.toString().trim().toLowerCase()
@@ -80,7 +79,7 @@ Page {
         return { start: startDate, end: endDate, startStr: startStr, endStr: endStr }
     }
 
-    // ===== HÀM TÌM CA LÀM PHÙ HỢP NHẤT TRONG NGÀY =====
+    // Tìm ca làm phù hợp nhất trong ngày
     function findBestShift(employeeIdentifier, now) {
         if (typeof coffeeSystem === "undefined" || !coffeeSystem.loadShifts) return null
 
@@ -107,7 +106,7 @@ Page {
         if (userShifts.length === 0) return null
         if (userShifts.length === 1) return userShifts[0]
 
-        // Nếu làm nhiều ca/ngày: Tìm ca có khoảng cách gần thời gian hiện tại nhất
+        // Nếu làm nhiều ca/ngày thì tìm ca có khoảng cách gần thời gian hiện tại nhất
         var bestShift = null
         var minDiff = Infinity
 
@@ -125,7 +124,7 @@ Page {
         return bestShift
     }
 
-    // ===== HÀM ĐỌC TRẠNG THÁI ĐIỂM DANH GẦN NHẤT =====
+    // Đọc trạng thái điểm danh gần nhất
     function getLastAttendance(empId, phone, todayStr) {
         if (typeof coffeeSystem === "undefined" || !coffeeSystem.loadAttendance) return ""
 
@@ -154,7 +153,7 @@ Page {
             width: Math.min(800, parent.width * 0.9)
             spacing: 28
 
-            // ===== LOGO + TÊN QUÁN =====
+            // Logo và tên quán
             RowLayout {
                 Layout.alignment: Qt.AlignHCenter
                 spacing: Math.max(8, Math.min(16, employeePage.width * 0.015))
@@ -179,7 +178,7 @@ Page {
                 }
             }
 
-            // ===== TIÊU ĐỀ PHỤ =====
+            // Tiêu đề phụ
             Text {
                 text: "CA LÀM VIỆC CỦA BẠN"
                 font.pixelSize: 32
@@ -188,7 +187,6 @@ Page {
                 Layout.alignment: Qt.AlignHCenter
             }
 
-            // ===== 2 NÚT CHECK-IN / CHECK-OUT =====
             RowLayout {
                 Layout.alignment: Qt.AlignHCenter
                 spacing: 40
@@ -340,7 +338,7 @@ Page {
                 }
             }
 
-            // ===== TRẠNG THÁI =====
+            // Trạng thái
             Text {
                 id: statusText
                 text: ""
@@ -356,7 +354,7 @@ Page {
                 Layout.minimumHeight: 20
             }
 
-            // ===== SLOGAN =====
+            // Slogan
             Text {
                 text: "-Gửi chút bình yên vào tách cà phê ấm-"
                 font.pixelSize: 20
@@ -368,7 +366,7 @@ Page {
         }
     }
 
-    // ===== DIALOG XÁC NHẬN ĐIỂM DANH =====
+    // Dialog xác nhận điểm danh
     Popup {
         id: confirmDialog
         width: Math.min(440, employeePage.width * 0.9)
@@ -501,7 +499,7 @@ Page {
                             return
                         }
 
-                        // 1. Xác thực thông tin Nhân viên
+                        // Xác thực thông tin Nhân viên
                         var isValid = false
                         var employeeName = ""
                         var phoneToRecord = inputStr
@@ -530,7 +528,7 @@ Page {
                             return
                         }
 
-                        // 2. Lấy ca làm việc phù hợp nhất dựa trên thời gian hiện tại
+                        // Lấy ca làm việc phù hợp nhất dựa trên thời gian hiện tại
                         var now = new Date()
                         var todayStr1 = Qt.formatDateTime(now, "dd/MM/yyyy")
                         var userShift = findBestShift(empId !== "" ? empId : phoneToRecord, now)
@@ -541,7 +539,7 @@ Page {
                             return
                         }
 
-                        // 3. Phân tích khung giờ ca
+                        // Phân tích khung giờ ca
                         var shiftTimes = parseShiftTime(userShift)
                         if (!shiftTimes.start || !shiftTimes.end) {
                             lblDialogError.text = "⚠️ Không thể xác định giờ ca làm!"
@@ -554,10 +552,10 @@ Page {
                         lblShiftInfo.text = "📅 Ca làm: " + startStr + " - " + endStr
                         lblShiftInfo.visible = true
 
-                        // 4. Kiểm tra trạng thái lượt điểm danh gần nhất
+                        // Kiểm tra trạng thái lượt điểm danh gần nhất
                         var lastActionToday = getLastAttendance(empId, phoneToRecord, todayStr1)
 
-                        // 5. Ràng buộc thời gian cho phép Check-in / Check-out
+                        // Ràng buộc thời gian cho phép Check-in / Check-out
                         var tenMinsMs = 10 * 60 * 1000
                         var minCheckIn = new Date(shiftTimes.start.getTime() - tenMinsMs)
                         var maxCheckIn = shiftTimes.end
@@ -580,7 +578,7 @@ Page {
 
                         var displayName = employeeName !== "" ? employeeName : ("SĐT " + phoneToRecord)
 
-                        // 6. Xử lý logic Check-In
+                        // Xử lý logic Check-In
                         if (employeePage.currentAction === "CHECK_IN") {
                             if (lastActionToday === "CHECK_IN") {
                                 lblDialogError.text = "⚠️ Bạn đã Check-In cho ca hôm nay rồi!"
@@ -598,7 +596,7 @@ Page {
                                 return
                             }
                         }
-                        // 7. Xử lý logic Check-Out
+                        // Xử lý logic Check-Out
                         else if (employeePage.currentAction === "CHECK_OUT") {
                             if (autoCheckedOutTriggered) {
                                 confirmDialog.close()
@@ -620,7 +618,7 @@ Page {
                             }
                         }
 
-                        // 8. Chốt thời gian và ghi vào hệ thống
+                        // Chốt thời gian và ghi vào hệ thống
                         var recordTime = now
                         if (employeePage.currentAction === "CHECK_OUT" && now > shiftTimes.end) {
                             recordTime = shiftTimes.end

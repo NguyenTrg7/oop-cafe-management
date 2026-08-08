@@ -28,7 +28,6 @@ Page {
             anchors.margins: 16
             spacing: 16
 
-            // HEADER BAR
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 16
@@ -64,7 +63,6 @@ Page {
                         Column {
                             Text { text: "Tổng NCC"; font.pixelSize: 11; color: "#0369A1" }
                             Text {
-                                // ===> [CHỈNH SỬA 4]: Đổi từ .rowCount() sang thuộc tính reactive .totalCount
                                 text: typeof supplierManager !== "undefined" ? supplierManager.totalCount : "0"
                                 font.pixelSize: 16
                                 font.bold: true
@@ -75,7 +73,6 @@ Page {
                 }
             }
 
-            // TOOLBAR
             Rectangle {
                 Layout.fillWidth: true
                 implicitHeight: 60
@@ -142,7 +139,6 @@ Page {
                 }
             }
 
-            // LISTVIEW
             ListView {
                 id: supplierListView
                 Layout.fillWidth: true
@@ -325,7 +321,6 @@ Page {
         }
     }
 
-    // DIALOG CHI TIẾT
     Dialog {
         id: detailDialog
         width: Math.min(560, supplierPage.width * 0.92)
@@ -561,7 +556,7 @@ Page {
         }
     }
 
-    // DIALOG THÊM / SỬA NHÀ CUNG CẤP (ADMIN)
+    // Dialog thêm/sửa nhà cung cấp
     Dialog {
         id: supplierDialog
         width: Math.min(580, supplierPage.width * 0.92)
@@ -1005,7 +1000,7 @@ Page {
         }
     }
 
-    // DIALOG XÁC NHẬN XÓA (ADMIN)
+    // Dialog xác nhận xóa
     Dialog {
         id: deleteConfirmDialog
         width: 360
@@ -1100,7 +1095,6 @@ Page {
         }
     }
 
-    // FILE DIALOGS
     FileDialog {
         id: importFileDialog
         title: "Chọn file CSV để nhập danh sách Nhà Cung Cấp"

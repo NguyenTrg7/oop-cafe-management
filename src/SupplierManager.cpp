@@ -122,14 +122,13 @@ void SupplierManager::loadFromCSV() {
         m_suppliers.append(Supplier("SUP006", "Công ty Nguyên liệu Pha Chế Việt", "Đặng Quốc Khánh", "0906234567", "info@phacheviet.vn", "Gò Vấp - TP.HCM", "Bột Matcha / Cacao / Trân châu", "Hoạt động"));
         m_suppliers.append(Supplier("SUP007", "Công ty ABC Bakery", "Trần Hoài Nam", "0907234567", "sales@abcbakery.vn", "Bình Thạnh - TP.HCM", "Bánh ngọt / Bánh mì", "Hoạt động"));
 
-        // Sort theo Mã NCC (ID Tăng dần)
         std::sort(m_suppliers.begin(), m_suppliers.end(), [](const Supplier &a, const Supplier &b) {
             return QString::compare(a.getID(), b.getID(), Qt::CaseInsensitive) < 0;
         });
 
         saveToCSV();
         endResetModel();
-        emit countChanged(); // ===> [CHỈNH SỬA 3.1]
+        emit countChanged();
         return;
     }
 
@@ -181,13 +180,12 @@ void SupplierManager::loadFromCSV() {
         file.close();
     }
 
-    // Sort theo Mã NCC (ID Tăng dần)
     std::sort(m_suppliers.begin(), m_suppliers.end(), [](const Supplier &a, const Supplier &b) {
         return QString::compare(a.getID(), b.getID(), Qt::CaseInsensitive) < 0;
     });
 
     endResetModel();
-    emit countChanged(); // ===> [CHỈNH SỬA 3.2]
+    emit countChanged();
 }
 
 void SupplierManager::saveToCSV() {
@@ -225,7 +223,6 @@ bool SupplierManager::addSupplier(const QString &id, const QString &name, const 
 
     Supplier newSupplier(id, name, contactPerson, phone, email, address, itemsSupplied, status.isEmpty() ? "Hoạt động" : status);
 
-    // Tự động chèn đúng vị trí sắp xếp theo Mã NCC (ID Tăng dần)
     auto it = std::lower_bound(m_suppliers.begin(), m_suppliers.end(), newSupplier,
                                [](const Supplier &a, const Supplier &b) {
                                    return QString::compare(a.getID(), b.getID(), Qt::CaseInsensitive) < 0;
@@ -237,7 +234,7 @@ bool SupplierManager::addSupplier(const QString &id, const QString &name, const 
     m_suppliers.insert(insertIndex, newSupplier);
     endInsertRows();
 
-    emit countChanged(); // ===> [CHỈNH SỬA 3.3]: Báo QML cập nhật số lượng sau khi thêm
+    emit countChanged(); // Phát tín hiệu cập nhật số lượng trên giao diện sau khi thêm
     saveToCSV();
     return true;
 }
@@ -269,7 +266,7 @@ bool SupplierManager::deleteSupplier(const QString &id) {
             m_suppliers.removeAt(i);
             endRemoveRows();
 
-            emit countChanged(); // ===> [CHỈNH SỬA 3.4]: Báo QML cập nhật số lượng sau khi xóa
+            emit countChanged(); // Phát tín hiệu cập nhật số lượng trên giao diện sau khi xóa
             saveToCSV();
             return true;
         }
@@ -338,7 +335,6 @@ bool SupplierManager::importFromCSV(const QString &fileUrl) {
     file.close();
 
     if (importedCount > 0) {
-        // Sort tempSuppliers theo Mã NCC (ID Tăng dần)
         std::sort(tempSuppliers.begin(), tempSuppliers.end(), [](const Supplier &a, const Supplier &b) {
             return QString::compare(a.getID(), b.getID(), Qt::CaseInsensitive) < 0;
         });
@@ -347,7 +343,7 @@ bool SupplierManager::importFromCSV(const QString &fileUrl) {
         m_suppliers = tempSuppliers;
         endResetModel();
 
-        emit countChanged(); // ===> [CHỈNH SỬA 3.5]: Báo QML cập nhật số lượng sau khi import
+        emit countChanged(); // Phát tín hiệu cập nhật số lượng trên giao diện sau khi import
         saveToCSV();
         return true;
     }

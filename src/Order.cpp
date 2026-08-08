@@ -2,7 +2,6 @@
 #include <iomanip>
 #include <iostream>
 
-// Constructor khởi tạo đầy đủ thuộc tính ban đầu
 Order::Order(const QString &id, Customer *customer)
     : m_ID(id)
     , m_customer(customer)
@@ -12,14 +11,12 @@ Order::Order(const QString &id, Customer *customer)
     m_date = QDateTime::currentDateTime();
 }
 
-// Thêm món vào danh sách đơn hàng
 void Order::addItem(const Menu &item)
 {
     m_items.append(item);
     m_totalPrice += item.getPrice();
 }
 
-// Xóa món khỏi danh sách đơn hàng theo ID món
 void Order::removeItem(const QString &itemId)
 {
     for (int i = 0; i < m_items.size(); ++i) {

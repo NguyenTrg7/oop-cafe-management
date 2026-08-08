@@ -16,16 +16,9 @@ private:
 public:
     explicit OrderHistoryManager(QObject *parent = nullptr);
 
-    // Lưu 1 đơn hàng mới
     Q_INVOKABLE void addOrder(const QVariantMap &orderData);
-
-    // Lấy danh sách lịch sử (cho QML)
     Q_INVOKABLE QVariantList getHistory() const;
-
-    // Lấy chi tiết 1 đơn theo mã hóa đơn
     Q_INVOKABLE QVariantMap getOrderDetail(const QString &invoiceNumber) const;
-
-    // Xóa / hủy đơn (tuỳ chọn)
     Q_INVOKABLE bool removeOrder(const QString &invoiceNumber);
 
     // Load / Save file

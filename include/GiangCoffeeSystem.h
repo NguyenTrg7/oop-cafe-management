@@ -52,6 +52,7 @@ public:
     Q_INVOKABLE void addEmployee(Employee* emp);
     Q_INVOKABLE void removeEmployee(const QString& empID);
 
+    // Tính tiền lương nhân viên (tính năng mở rộng chưa có trong dự án)
     Q_INVOKABLE QVariantList calculateMonthlyPayroll(int month, int year);
 
     Q_INVOKABLE void addItem(const Menu& item);

@@ -808,7 +808,7 @@ Page {
                     }
                 }
 
-                // KHU VỰC BẢNG PHÂN CA LÀM
+                // Bảng phân ca làm
                 Rectangle {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
@@ -838,7 +838,7 @@ Page {
                             Layout.fillWidth: true
                             spacing: 12
 
-                            // DÒNG NHẬP LIỆU PHÂN CA
+                            // Dòng nhập liệu phân ca
                             RowLayout {
                                 Layout.fillWidth: true
                                 spacing: 8
@@ -852,7 +852,7 @@ Page {
                                     font.pixelSize: 13
                                     displayText: currentIndex === -1 ? "--- Chọn nhân sự (*) ---" : currentText
 
-                                    // Ô CHỌN CHÍNH
+                                    // Ô chọn chính
                                     contentItem: Text {
                                         leftPadding: 8
                                         rightPadding: 24
@@ -864,14 +864,13 @@ Page {
                                         minimumPixelSize: 8
                                     }
 
-                                    // BẢNG XỔ XUỐNG HIỆN ĐẠI (Tự động cuộn & mở rộng đều 2 bên)
+                                    // Bảng xổ xuống
                                     popup: Popup {
                                         id: employeePopup
                                         y: cbEmployee.height + 6
 
-                                        // 1. Rộng ra 2 bên: Căn giữa bảng so với ô chọn chính
                                         width: Math.max(cbEmployee.width + 120, 360)
-                                        x: -(width - cbEmployee.width) / 2  // Dịch x sang trái để bảng mở rộng đều sang cả 2 bên
+                                        x: -(width - cbEmployee.width) / 2
 
                                         padding: 6
 
@@ -881,7 +880,6 @@ Page {
                                             implicitHeight: Math.min(contentHeight, 280)
                                             model: cbEmployee.popup.visible ? cbEmployee.delegateModel : null
 
-                                            // 🔴 2. SỬA LỖI ĐỨNG IM: Bắt ListView tự cuộn theo phím mũi tên khi di chuyển
                                             currentIndex: cbEmployee.highlightedIndex
 
                                             ScrollIndicator.vertical: ScrollIndicator { }
@@ -891,17 +889,17 @@ Page {
                                             color: "#FFFFFF"
                                             border.color: "#CBD5E1"
                                             border.width: 1
-                                            radius: 12 // Góc bo tròn hiện đại hơn
+                                            radius: 12
                                         }
                                     }
 
-                                    // ITEM TRONG DANH SÁCH
+                                    // Item trong danh sách
                                     delegate: ItemDelegate {
                                         width: ListView.view ? ListView.view.width : cbEmployee.width
                                         height: 36
 
                                         background: Rectangle {
-                                            color: cbEmployee.highlightedIndex === index ? "#E0F2FE" : "transparent" // Màu hover xanh nhẹ hiện đại
+                                            color: cbEmployee.highlightedIndex === index ? "#E0F2FE" : "transparent"
                                             radius: 6
                                         }
 
@@ -1036,7 +1034,7 @@ Page {
                                 }
                             }
 
-                            // DÒNG GỢI Ý
+                            // Dòng gợi ý
                             RowLayout {
                                 Layout.fillWidth: true
                                 spacing: 10
@@ -1341,7 +1339,7 @@ Page {
         }
     }
 
-    // FORM TẠO HỒ SƠ NHÂN SỰ MỚI
+    // Form tạo hồ sơ nhân sự mới
     Dialog {
         id: newEmpDialog
         width: Math.min(500, empPage.width > 0 ? empPage.width - 24 : 500)
@@ -1655,7 +1653,7 @@ Page {
         }
     }
 
-    // FORM CHỈNH SỬA HỒ SƠ CHI TIẾT
+    // Form chỉnh sửa hồ sơ chi tiết
     Dialog {
         id: editEmpDialog
         width: Math.min(600, empPage.width > 0 ? empPage.width - 24 : 600)
@@ -2130,8 +2128,8 @@ Page {
                                     editRole.currentText,
                                     editDob.text.trim(),
                                     editCccd.text.trim(),
-                                    editEmpDialog.currentShiftDate, // Thay cho "": Giữ lại ngày ca làm
-                                    editEmpDialog.currentShiftTime, // Thay cho "": Giữ lại giờ ca làm
+                                    editEmpDialog.currentShiftDate,
+                                    editEmpDialog.currentShiftTime,
                                     editAvatar.text.trim(),
                                     editCccdFront.text.trim(),
                                     editCccdBack.text.trim()

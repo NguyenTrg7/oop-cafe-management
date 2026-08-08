@@ -10,7 +10,6 @@
 
 class SupplierManager : public QAbstractListModel {
     Q_OBJECT
-    // ===> [CHỈNH SỬA 1]: Thêm Q_PROPERTY để QML có thể liên kết trực tiếp biến totalCount
     Q_PROPERTY(int totalCount READ rowCount NOTIFY countChanged)
 
 public:
@@ -41,7 +40,6 @@ public:
     Q_INVOKABLE QString getSavePath() const;
 
 signals:
-    // ===> [CHỈNH SỬA 2]: Khai báo tín hiệu phát đi khi số lượng dòng thay đổi
     void countChanged();
 
 private:

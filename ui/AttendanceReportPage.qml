@@ -9,7 +9,6 @@ Page {
 
     property var rawAttendance: []
 
-    // Danh sách cho các ComboBox bộ lọc
     property var dayList: {
         var arr = ["Tất cả ngày"];
         for(var i=1; i<=31; i++) arr.push(i.toString());
@@ -100,7 +99,6 @@ Page {
         for (var i = 0; i < rawAttendance.length; i++) {
             var record = rawAttendance[i];
 
-            // Format timestamp từ CSV: "hh:mm dd/MM/yyyy"
             var parts = record.timestamp.split(" ");
             if (parts.length < 2) continue;
 
@@ -124,7 +122,6 @@ Page {
         }
     }
 
-    // Component ComboBox giới hạn chiều cao tối đa (250px) để không bị che khuất màn hình
     component FilterCombo : ComboBox {
         id: control
         popup: Popup {
@@ -172,7 +169,7 @@ Page {
             }
         }
 
-        // BỘ LỌC THỜI GIAN
+        // Bộ lọc thời gian
         Rectangle {
             Layout.fillWidth: true
             height: 55

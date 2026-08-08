@@ -8,7 +8,7 @@ Rectangle {
     height: parent.height
     color: "#000000"
 
-    // Timer giúp ép con trỏ nhấp nháy vào ô Tên đăng nhập sau khi trang render xong
+    // Timer ép con trỏ nhấp nháy vào ô Tên đăng nhập sau khi trang render xong
     Timer {
         id: focusTimer
         interval: 150
@@ -206,7 +206,7 @@ Rectangle {
 
                         Text { text: "👤"; font.pixelSize: 18; anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter; anchors.leftMargin: 12; opacity: 0.7 }
 
-                        // Chữ gợi ý mờ luôn hiển thị cho tới khi ĐÃ GÕ chữ
+                        // Chữ gợi ý mờ
                         Text {
                             text: qsTr("Nhập tài khoản của bạn ...")
                             color: "#94A3B8"
@@ -241,7 +241,7 @@ Rectangle {
 
                         Text { text: "🔒"; font.pixelSize: 18; anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter; anchors.leftMargin: 12; opacity: 0.7 }
 
-                        // Chữ gợi ý mờ cho mật khẩu
+                        // Chữ gợi ý mờ
                         Text {
                             text: qsTr("Nhập mật khẩu...")
                             color: "#94A3B8"
@@ -283,7 +283,7 @@ Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
 
-                // Nút Đăng nhập bo tròn chuẩn không bị viền vuông khi Hover
+                // Nút Đăng nhập
                 Rectangle {
                     id: loginBtn
                     width: parent.width

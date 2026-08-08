@@ -26,7 +26,6 @@ void OrderHistoryManager::addOrder(const QVariantMap &orderData)
     order.voucherCode   = orderData.value("voucherCode", "").toString();
     order.status        = "Completed";
 
-    // Parse danh sách món
     QVariantList items = orderData["items"].toList();
     for (const QVariant &v : items) {
         QVariantMap m = v.toMap();
@@ -43,7 +42,7 @@ void OrderHistoryManager::addOrder(const QVariantMap &orderData)
         order.items.append(item);
     }
 
-    m_history.prepend(order);   // đơn mới nhất lên đầu
+    m_history.prepend(order);
     emit historyChanged();
 
     if(!m_savePath.isEmpty())
@@ -123,7 +122,6 @@ bool OrderHistoryManager::saveToCSV(const QString &path) const
         return false;
 
     QTextStream out(&file);
-    // Header đơn giản: mỗi dòng = 1 hóa đơn, items JSON-escaped trong 1 cột
     out << "InvoiceNumber,Date,Time,CustomerName,TotalAmount,Discount,VoucherCode,Status,ItemsJson\n";
 
     for (const auto &order : m_history) {

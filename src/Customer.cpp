@@ -264,8 +264,8 @@ bool Customer::loadByPhone(const QString &phone)
     }
 
     QFile file(loyaltyFilePath());
+    // File chưa tồn tại thì tạo khách mới
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        // File chưa tồn tại → tạo khách mới
         setPhoneNumber(cleanPhone);
         setName(cleanPhone);
         setLoyaltyPoints(0);
@@ -278,8 +278,8 @@ bool Customer::loadByPhone(const QString &phone)
     QString firstLine = in.readLine();
     bool hasHeader = firstLine.startsWith("phone");
 
-    if (!hasHeader) {
-        // Quay lại đầu file nếu không có header
+    // Quay lại đầu file nếu không có header
+    if (!hasHeader) {    
         file.seek(0);
         in.seek(0);
     }
@@ -307,8 +307,8 @@ bool Customer::loadByPhone(const QString &phone)
     }
     file.close();
 
+    // File chưa tồn tại thì tạo khách mới
     if (!found) {
-        // Chưa có trong file → khách mới
         setPhoneNumber(cleanPhone);
         setName(cleanPhone);
         setLoyaltyPoints(0);
@@ -329,7 +329,7 @@ bool Customer::save()
     QFile file(path);
 
     // Đọc toàn bộ dữ liệu hiện có
-    QMap<QString, QString> allData; // phone → "points,vouchers"
+    QMap<QString, QString> allData;
 
     if (file.exists() && file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QTextStream in(&file);

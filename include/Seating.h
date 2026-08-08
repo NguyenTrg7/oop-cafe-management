@@ -11,7 +11,7 @@ private:
     int capacity;
     bool isOccupied;
     QString shape;
-    QString m_note;   // <-- Ghi chú khách đặt bàn
+    QString m_note;
     QList<int> m_originalCapacities;
     QList<int> m_originalNumbers;
     QList<QString> m_originalShapes;

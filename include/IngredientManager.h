@@ -13,7 +13,6 @@ struct RecipeItem {
     double  requiredAmount;
 };
 
-// menuId → (size → list RecipeItem)
 using SizeRecipeMap = QMap<QString, QList<RecipeItem>>;
 
 class IngredientManager : public QObject
@@ -22,7 +21,7 @@ class IngredientManager : public QObject
 
 private:
     QMap<QString, Ingredient>   m_ingredients;
-    QMap<QString, SizeRecipeMap> m_recipes;    // menuId → size → ingredients
+    QMap<QString, SizeRecipeMap> m_recipes;
 
     QString m_drinkPath;
     QString m_foodPath;
@@ -36,7 +35,6 @@ public:
     Q_INVOKABLE bool loadIngredientsCSV(const QString &path, bool clearFirst);
     Q_INVOKABLE bool loadRecipesCSV(const QString &path);
 
-    // Kiểm tra & tính toán
     Q_INVOKABLE bool checkAvailability(const QString &menuId,
                                        const QString &size,
                                        int quantity) const;
