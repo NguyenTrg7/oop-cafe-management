@@ -1,6 +1,6 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
-import QtQuick.Layouts 1.15
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
 
 Page {
     id: managerPage
@@ -16,7 +16,10 @@ Page {
         }
     }
 
-    StackView.onActivating: syncNavBar()
+    StackView.onActivating: {
+        syncNavBar()
+        refreshStats() // Tự động làm mới số liệu khi mở lại trang
+    }
 
     property string totalRevenueText: "0 VNĐ"
     property string totalEmpText: "0"
@@ -28,18 +31,32 @@ Page {
 
     function refreshStats() {
         var rev = 0;
+
+        // 1. Cộng tổng các khoản Thu từ giao dịch thủ công (finance.csv)
         if (typeof coffeeSystem !== "undefined" && coffeeSystem.loadFinance) {
             var dataFinance = coffeeSystem.loadFinance()
             if (dataFinance) {
                 for (var i = 0; i < dataFinance.length; i++) {
                     if (dataFinance[i].type === "Thu") {
-                        rev += dataFinance[i].amount
+                        rev += Number(dataFinance[i].amount)
                     }
                 }
             }
         }
+
+        // 2. Cộng tổng các hóa đơn từ Lịch sử bán hàng (OrderHistory.csv)
+        if (typeof orderHistoryManager !== "undefined") {
+            var orders = orderHistoryManager.getHistory();
+            if (orders) {
+                for (var j = 0; j < orders.length; j++) {
+                    rev += Number(orders[j].totalAmount);
+                }
+            }
+        }
+
         totalRevenueText = Number(rev).toLocaleString(Qt.locale("vi_VN")) + " VNĐ"
 
+        // 3. Cập nhật số lượng nhân sự
         var empCount = 0;
         if (typeof coffeeSystem !== "undefined" && coffeeSystem.loadEmployees) {
             var empData = coffeeSystem.loadEmployees()
@@ -62,7 +79,7 @@ Page {
         }
     }
 
-    // Component Nút bấm Dashboard (Layout.preferredWidth: 0 giúp chia đều 50/50 tuyệt đối)
+    // Component Nút bấm Dashboard
     component DashboardButton: Button {
         id: control
         property string iconText: "📦"
@@ -168,7 +185,7 @@ Page {
                     Item { Layout.fillWidth: true }
                 }
 
-                // Thống kê Doanh thu & Nhân sự (Chia 50/50)
+                // Thống kê Doanh thu & Nhân sự
                 RowLayout {
                     Layout.fillWidth: true
                     spacing: 15
@@ -270,7 +287,7 @@ Page {
                 }
 
                 GridLayout {
-                    columns: managerPage.width < 600 ? 1 : 2 // Auto xuống dòng nếu màn hình quá hẹp
+                    columns: managerPage.width < 600 ? 1 : 2
                     Layout.fillWidth: true
                     columnSpacing: 15
                     rowSpacing: 15

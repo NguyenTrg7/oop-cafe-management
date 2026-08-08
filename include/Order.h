@@ -24,9 +24,6 @@ public:
     void removeItem(const QString& itemId);
     void printInvoice() const;
 
-    // Hàm ảo thuần túy (Pure Virtual Function) phục vụ tính Đa hình (InStoreOrder / DeliverOrder)
-    virtual void calculate() = 0;
-
     // Getters
     QString getID() const { return m_ID; }
     double getTotalPrice() const { return m_totalPrice; }
